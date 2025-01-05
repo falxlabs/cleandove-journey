@@ -21,9 +21,9 @@ const Chat = () => {
     { id: "games", emoji: "🎮", label: "Games" },
     { id: "anger", emoji: "😠", label: "Anger" },
     { id: "anxiety", emoji: "😰", label: "Anxiety" },
-    { id: "pride", emoji: "😤", label: "Pride" },
+    { id: "pride", emoji: "👑", label: "Pride" },
     { id: "greed", emoji: "🤑", label: "Greed" },
-    { id: "laziness", emoji: "😴", label: "Laziness" },
+    { id: "laziness", emoji: "🦥", label: "Laziness" },
   ];
 
   const therapyTopics = [
