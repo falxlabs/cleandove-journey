@@ -1,4 +1,4 @@
-import { Target } from "lucide-react";
+import { Calendar } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 
@@ -18,7 +18,7 @@ const Index = () => {
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center justify-center w-10 h-10 rounded-full bg-muted">
-            <Target className="h-6 w-6" />
+            <span className="text-2xl">🕊️</span>
           </div>
           <div className="flex-1 flex items-center bg-muted rounded-lg px-4 py-2">
             <p className="text-sm text-muted-foreground">Keep going strong! Your daily spiritual journey continues to inspire.</p>
