@@ -15,6 +15,10 @@ const Chat = () => {
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
 
   const temptations = [
+    { id: "lust", emoji: "💋", label: "Lust" },
+    { id: "alcohol", emoji: "🍺", label: "Alcohol" },
+    { id: "cigarettes", emoji: "🚬", label: "Cigarettes" },
+    { id: "games", emoji: "🎮", label: "Games" },
     { id: "anger", emoji: "😠", label: "Anger" },
     { id: "anxiety", emoji: "😰", label: "Anxiety" },
     { id: "pride", emoji: "😤", label: "Pride" },
