@@ -1,4 +1,4 @@
-import { Star, MessageSquare, Calendar, Search, MessageCircle } from "lucide-react";
+import { Star, MessageSquare, Calendar, Search } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,7 +50,7 @@ const History = () => {
           <div className="flex items-center justify-center w-10 h-10 rounded-full bg-muted">
             <span className="text-2xl">🕊️</span>
           </div>
-          <div className="flex items-center bg-muted rounded-lg px-4 py-2">
+          <div className="flex items-center bg-muted rounded-lg px-4 py-2 w-full max-w-[280px] min-h-[40px] sm:max-w-[320px] md:max-w-[360px]">
             <p className="text-sm text-muted-foreground">Let's look back at our previous conversations</p>
           </div>
         </div>
