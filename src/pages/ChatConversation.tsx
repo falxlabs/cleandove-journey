@@ -36,6 +36,18 @@ const ChatConversation = () => {
     };
 
     setMessages((prev) => [...prev, newMessage]);
+
+    // Simulate Grace's response
+    setTimeout(() => {
+      const graceResponse: Message = {
+        id: (Date.now() + 1).toString(),
+        content: `I understand you're ${location.state?.topic ? `dealing with ${location.state.topic}` : "seeking guidance"}. Let me help you with that. What specific challenges are you facing?`,
+        sender: "assistant",
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, graceResponse]);
+    }, 1000);
+
     setInput("");
   };
 
