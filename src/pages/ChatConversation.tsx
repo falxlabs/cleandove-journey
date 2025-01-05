@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ArrowLeft, Send, ThumbsUp, ThumbsDown, Copy, Share2, RefreshCw, Circle } from "lucide-react";
+import { ArrowLeft, Send, ThumbsUp, ThumbsDown, Copy, Share2, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 interface Message {
   id: string;
@@ -71,11 +71,14 @@ const ChatConversation = () => {
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <Avatar className="h-8 w-8">
-          <AvatarImage src="/placeholder.svg" />
-          <AvatarFallback>🕊️</AvatarFallback>
+          <AvatarFallback>
+            <div className="rounded-full bg-muted p-2 flex items-center justify-center">
+              <span className="text-lg">🕊️</span>
+            </div>
+          </AvatarFallback>
         </Avatar>
         <div>
-          <h2 className="font-semibold">Grace</h2>
+          <h2 className="font-semibold">Assistant</h2>
           <p className="text-sm text-muted-foreground">
             {location.state?.topic ? `Topic: ${location.state.topic}` : "New Chat"}
           </p>
