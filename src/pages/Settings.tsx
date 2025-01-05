@@ -3,21 +3,23 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
-import { ChevronLeft, User, Infinity, DollarSign, Gift, Share2, ThumbsUp, MessageSquareHeart, Contact, FileText, Settings as SettingsIcon, Clock } from "lucide-react"
+import { ArrowLeft, User, Infinity, DollarSign, Gift, Share2, ThumbsUp, MessageSquareHeart, Contact, FileText, Settings as SettingsIcon, Clock } from "lucide-react"
 import { Link } from "react-router-dom"
 
 const Settings = () => {
   return (
     <div className="min-h-screen pb-20 animate-fade-in">
       {/* Header */}
-      <header className="px-6 py-8">
-        <div className="flex items-center gap-3">
-          <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
-            <ChevronLeft className="h-6 w-6" />
-          </Link>
-          <span className="text-lg">Back</span>
-        </div>
-      </header>
+      <div className="flex items-center gap-2 px-4 py-3 border-b">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => window.history.back()}
+          className="mr-2"
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
+      </div>
 
       {/* Profile Section */}
       <div className="px-6 py-6 space-y-6">
@@ -149,7 +151,7 @@ const Settings = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Settings
+export default Settings;
