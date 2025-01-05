@@ -8,7 +8,8 @@ const Index = () => {
   return (
     <div className="min-h-screen pb-20 animate-fade-in">
       <header className="px-6 py-8 space-y-4">
-        <div className="flex justify-end">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-semibold">Today's Quest</h1>
           <div className="inline-flex items-center gap-2 bg-muted rounded-lg px-4 py-2">
             <span className="text-xl">🔥</span>
             <span className="font-medium text-sm text-muted-foreground">Day {currentStreak}</span>
