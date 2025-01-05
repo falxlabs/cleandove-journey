@@ -50,7 +50,7 @@ const History = () => {
           <div className="flex items-center justify-center w-10 h-10 rounded-full bg-muted">
             <span className="text-2xl">🕊️</span>
           </div>
-          <div className="flex items-center bg-muted rounded-lg px-4 py-2 min-h-[3rem] w-full">
+          <div className="flex items-center bg-muted rounded-lg px-4 py-2">
             <p className="text-sm text-muted-foreground">Let's look back at our previous conversations</p>
           </div>
         </div>
