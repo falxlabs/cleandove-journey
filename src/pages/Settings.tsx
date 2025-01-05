@@ -2,6 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Switch } from "@/components/ui/switch"
 import { ChevronLeft, User, Infinity, DollarSign, Gift, Share2, ThumbsUp, MessageSquareHeart, Contact, FileText, Settings as SettingsIcon, Clock } from "lucide-react"
 import { Link } from "react-router-dom"
 
@@ -50,30 +51,8 @@ const Settings = () => {
           <Input placeholder="Write..." className="bg-transparent" />
 
           <div className="flex justify-between items-center">
-            <span>Denomination</span>
-            <Select defaultValue="other">
-              <SelectTrigger className="w-32 bg-transparent">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="other">Other</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <Input placeholder="Your denomination" className="bg-transparent" />
-          <Input placeholder="Church" className="bg-transparent" />
-
-          <div className="flex justify-between items-center">
-            <span>Bible</span>
-            <Select defaultValue="nkjv">
-              <SelectTrigger className="w-64 bg-transparent">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="nkjv">New King James Version (NKJV)</SelectItem>
-              </SelectContent>
-            </Select>
+            <span>Religious content</span>
+            <Switch />
           </div>
         </div>
 
