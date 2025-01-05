@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navigation from "./components/Navigation";
 import Index from "./pages/Index";
 import Chat from "./pages/Chat";
+import ChatConversation from "./pages/ChatConversation";
 import History from "./pages/History";
 
 const queryClient = new QueryClient();
@@ -20,6 +21,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/chat" element={<Chat />} />
+            <Route path="/chat/conversation" element={<ChatConversation />} />
             <Route path="/history" element={<History />} />
           </Routes>
           <Navigation />
