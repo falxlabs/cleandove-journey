@@ -7,14 +7,15 @@ const Index = () => {
 
   return (
     <div className="min-h-screen pb-20 animate-fade-in">
-      <header className="px-6 py-8 flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-semibold">Today's Journey</h1>
-          <p className="text-muted-foreground mt-1">Keep going strong!</p>
+      <header className="px-6 py-8">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-muted">
+            <span className="text-2xl">🕊️</span>
+          </div>
+          <div className="flex items-center bg-muted rounded-lg px-4 py-2">
+            <p className="text-sm text-muted-foreground">Keep going strong!</p>
+          </div>
         </div>
-        <button className="p-2 hover:bg-secondary rounded-full transition-colors">
-          <Calendar className="h-6 w-6" />
-        </button>
       </header>
 
       <section className="px-6 mb-8">
