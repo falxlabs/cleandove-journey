@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ArrowLeft, Send, ThumbsUp, ThumbsDown, Copy, Share2, RefreshCw } from "lucide-react";
+import { ArrowLeft, Send, ThumbsUp, ThumbsDown, Copy, Share2, RefreshCw, Circle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -19,7 +19,7 @@ const ChatConversation = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
-      content: "Hello! I'm Grace 🕊️ How can I help you today?",
+      content: "Hello! How can I help you today?",
       sender: "assistant",
       timestamp: new Date(),
     },
@@ -59,7 +59,7 @@ const ChatConversation = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-background">
+    <div className="flex flex-col h-screen bg-background pb-0">
       {/* Header */}
       <div className="flex items-center gap-2 px-4 py-3 border-b">
         <Button
@@ -91,19 +91,20 @@ const ChatConversation = () => {
               message.sender === "user" ? "justify-end" : "justify-start"
             }`}
           >
+            {message.sender === "assistant" && (
+              <div className="flex items-start gap-2">
+                <div className="rounded-full bg-muted p-2 flex items-center justify-center">
+                  <span className="text-lg">🕊️</span>
+                </div>
+              </div>
+            )}
             <div
               className={`max-w-[80%] rounded-lg p-3 ${
                 message.sender === "user"
                   ? "bg-primary text-primary-foreground ml-auto"
-                  : "bg-muted"
+                  : "bg-muted ml-2"
               }`}
             >
-              {message.sender === "assistant" && (
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-lg">🕊️</span>
-                  <span className="font-medium">Grace</span>
-                </div>
-              )}
               <p className="text-sm">{message.content}</p>
               {message.sender === "assistant" && (
                 <div className="flex items-center gap-2 mt-2 text-muted-foreground">
@@ -130,7 +131,7 @@ const ChatConversation = () => {
       </div>
 
       {/* Input */}
-      <div className="p-4 border-t">
+      <div className="p-4 border-t mt-auto">
         <div className="flex gap-2">
           <Input
             value={input}
