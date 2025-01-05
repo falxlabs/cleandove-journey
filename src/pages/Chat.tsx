@@ -1,66 +1,30 @@
-import { useState } from "react";
-import { ChevronRight, Settings } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
 import { useNavigate } from "react-router-dom";
-import SettingsButton from "@/components/SettingsButton";
+import PageHeader from "@/components/PageHeader";
+import TopicCarousel from "@/components/TopicCarousel";
+import { useTopicSelection } from "@/hooks/useTopicSelection";
 
 const Chat = () => {
   const navigate = useNavigate();
-  const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
-
-  const temptations = [
-    { id: "lust", emoji: "👄", label: "Lust" },
-    { id: "alcohol", emoji: "🍺", label: "Alcohol" },
-    { id: "cigarettes", emoji: "🚬", label: "Cigarettes" },
-    { id: "games", emoji: "🎮", label: "Games" },
-    { id: "sugar", emoji: "🍬", label: "Sugar" },
-    { id: "anger", emoji: "😡", label: "Anger" },
-    { id: "anxiety", emoji: "😰", label: "Anxiety" },
-    { id: "pride", emoji: "👑", label: "Pride" },
-    { id: "greed", emoji: "🤑", label: "Greed" },
-    { id: "laziness", emoji: "🦥", label: "Laziness" },
-  ];
-
-  const therapyTopics = [
-    { id: "cbt", emoji: "🧠", label: "CBT" },
-    { id: "mindfulness", emoji: "🧘", label: "Mindfulness" },
-    { id: "trauma", emoji: "❤️‍🩹", label: "Trauma" },
-    { id: "relationships", emoji: "🫂", label: "Relationships" },
-    { id: "self-esteem", emoji: "✨", label: "Self-Esteem" },
-  ];
+  const { selectedTopic, setSelectedTopic, temptations, therapyTopics } = useTopicSelection();
 
   const handleStartChat = () => {
-    navigate("/chat/conversation", { 
-      state: { 
+    navigate("/chat/conversation", {
+      state: {
         topic: selectedTopic,
-        mascot: "🕊️"
-      } 
+        mascot: "🕊️",
+      },
     });
   };
 
   return (
     <div className="min-h-screen pb-20 animate-fade-in">
-      <header className="px-6 py-8 space-y-4">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold">Chat</h1>
-          <SettingsButton />
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-muted">
-            <span className="text-2xl">🕊️</span>
-          </div>
-          <div className="flex items-center bg-muted rounded-lg px-4 py-2">
-            <p className="text-sm text-muted-foreground">Choose a topic to begin</p>
-          </div>
-        </div>
-      </header>
+      <PageHeader
+        title="Chat"
+        emoji="🕊️"
+        description="Choose a topic to begin"
+      />
 
       <section className="px-6 space-y-6">
         <Button
@@ -73,49 +37,17 @@ const Chat = () => {
           </div>
         </Button>
 
-        <div className="space-y-4">
-          <h2 className="text-lg font-medium">I'm struggling with...</h2>
-          <Carousel className="w-full">
-            <CarouselContent>
-              {temptations.map((item) => (
-                <CarouselItem key={item.id} className="basis-1/3">
-                  <Button
-                    variant="outline"
-                    className="w-full h-24 flex flex-col items-center justify-center gap-2"
-                    onClick={() => setSelectedTopic(item.id)}
-                  >
-                    <span className="text-2xl">{item.emoji}</span>
-                    <span className="text-sm">{item.label}</span>
-                  </Button>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
-        </div>
+        <TopicCarousel
+          title="I'm struggling with..."
+          topics={temptations}
+          onTopicSelect={setSelectedTopic}
+        />
 
-        <div className="space-y-4">
-          <h2 className="text-lg font-medium">Ask about...</h2>
-          <Carousel className="w-full">
-            <CarouselContent>
-              {therapyTopics.map((item) => (
-                <CarouselItem key={item.id} className="basis-1/3">
-                  <Button
-                    variant="outline"
-                    className="w-full h-24 flex flex-col items-center justify-center gap-2"
-                    onClick={() => setSelectedTopic(item.id)}
-                  >
-                    <span className="text-2xl">{item.emoji}</span>
-                    <span className="text-sm">{item.label}</span>
-                  </Button>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
-        </div>
+        <TopicCarousel
+          title="Ask about..."
+          topics={therapyTopics}
+          onTopicSelect={setSelectedTopic}
+        />
       </section>
     </div>
   );
