@@ -11,7 +11,7 @@ const Index = () => {
       <header className="px-6 py-8 space-y-4">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-semibold">Today's Quest</h1>
-          <Button variant="ghost" size="icon" className="gap-0.5">
+          <Button variant="ghost" size="icon" className="px-4 gap-0.5">
             <span className="text-xl">🔥</span>
             <span className="text-sm text-muted-foreground">{currentStreak}</span>
           </Button>
