@@ -1,4 +1,4 @@
-import { Star, MessageSquare, Calendar, Search, User, MessageCircle } from "lucide-react";
+import { Star, MessageSquare, Calendar, Search, MessageCircle } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,8 +47,8 @@ const History = () => {
     <div className="min-h-screen pb-20 animate-fade-in">
       <header className="px-6 py-8">
         <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-12 h-12 rounded-full bg-primary/10">
-            <User className="w-6 h-6 text-primary" />
+          <div className="flex items-center justify-center w-12 h-12 rounded-full bg-[#8E9196]">
+            <span className="text-2xl">🕊️</span>
           </div>
           <div className="flex items-center bg-muted rounded-lg px-4 py-2">
             <MessageCircle className="w-4 h-4 text-muted-foreground mr-2" />
