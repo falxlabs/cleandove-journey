@@ -19,7 +19,7 @@ const Chat = () => {
     { id: "alcohol", emoji: "🍺", label: "Alcohol" },
     { id: "cigarettes", emoji: "🚬", label: "Cigarettes" },
     { id: "games", emoji: "🎮", label: "Games" },
-    { id: "sugar", emoji: "🍽️", label: "Sugar" },
+    { id: "sugar", emoji: "🍬", label: "Sugar" },
     { id: "anger", emoji: "😡", label: "Anger" },
     { id: "anxiety", emoji: "😰", label: "Anxiety" },
     { id: "pride", emoji: "👑", label: "Pride" },
