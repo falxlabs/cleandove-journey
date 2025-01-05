@@ -79,7 +79,7 @@ const Settings = () => {
             </Button>
             <Button variant="ghost" className="w-full justify-start gap-3">
               <Gift className="h-5 w-5" />
-              <span>Gift Bible Chat</span>
+              <span>Gift Cleansed</span>
             </Button>
           </div>
         </div>
@@ -90,7 +90,7 @@ const Settings = () => {
           <div className="space-y-2">
             <Button variant="ghost" className="w-full justify-start gap-3">
               <Share2 className="h-5 w-5" />
-              <span>Share Bible Chat & Earn</span>
+              <span>Share Cleansed & Earn</span>
             </Button>
             <Button variant="ghost" className="w-full justify-start gap-3">
               <ThumbsUp className="h-5 w-5" />
@@ -98,7 +98,7 @@ const Settings = () => {
             </Button>
             <Button variant="ghost" className="w-full justify-start gap-3">
               <MessageSquareHeart className="h-5 w-5" />
-              <span>Help us improve Bible Chat</span>
+              <span>Help us improve Cleansed</span>
             </Button>
             <Button variant="ghost" className="w-full justify-start gap-3">
               <Share2 className="h-5 w-5" />
@@ -140,8 +140,8 @@ const Settings = () => {
 
         {/* App Version */}
         <div className="pt-6 text-gray-500 text-sm space-y-1">
-          <p>App Version: 3.3.5</p>
-          <p className="break-all">UID: tdaTiVuagxfZV8LBXwe1GlLH4Lh2</p>
+          <p>App Version: 1.0.0</p>
+          <p className="break-all">UID: mock-user-id-123456789</p>
         </div>
       </div>
     </div>
