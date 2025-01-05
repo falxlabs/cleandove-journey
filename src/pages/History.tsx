@@ -2,6 +2,7 @@ import { Star, MessageSquare, Calendar, Search, Settings } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Link } from "react-router-dom";
 
 const History = () => {
   const [filter, setFilter] = useState<"all" | "favorites">("all");
@@ -48,9 +49,11 @@ const History = () => {
       <header className="px-6 py-8 space-y-4">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-semibold">History</h1>
-          <Button variant="ghost" size="icon">
-            <Settings className="h-5 w-5" />
-          </Button>
+          <Link to="/settings">
+            <Button variant="ghost" size="icon">
+              <Settings className="h-5 w-5" />
+            </Button>
+          </Link>
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center justify-center w-10 h-10 rounded-full bg-muted">
