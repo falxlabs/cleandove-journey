@@ -94,7 +94,7 @@ const ChatConversation = () => {
             {message.sender === "assistant" && (
               <div className="flex items-start gap-2">
                 <div className="rounded-full bg-muted p-2 flex items-center justify-center">
-                  <span className="text-lg">🕊️</span>
+                  🕊️
                 </div>
               </div>
             )}
