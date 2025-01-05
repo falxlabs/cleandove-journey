@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Chat from "./pages/Chat";
 import ChatConversation from "./pages/ChatConversation";
 import History from "./pages/History";
+import Settings from "./pages/Settings";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +24,7 @@ const App = () => (
             <Route path="/chat" element={<Chat />} />
             <Route path="/chat/conversation" element={<ChatConversation />} />
             <Route path="/history" element={<History />} />
+            <Route path="/settings" element={<Settings />} />
           </Routes>
           <Navigation />
         </div>
