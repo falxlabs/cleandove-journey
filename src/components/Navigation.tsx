@@ -1,4 +1,4 @@
-import { Home, MessageSquare, History } from "lucide-react";
+import { Home, MessageSquare, History, BookOpen, Library } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 const Navigation = () => {
@@ -10,6 +10,8 @@ const Navigation = () => {
     { icon: Home, label: "Journey", path: "/" },
     { icon: MessageSquare, label: "Chat", path: "/chat" },
     { icon: History, label: "History", path: "/history" },
+    { icon: BookOpen, label: "Bible", path: "/bible" },
+    { icon: Library, label: "Study", path: "/study" },
   ];
 
   return (
