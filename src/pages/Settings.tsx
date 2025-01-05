@@ -10,14 +10,12 @@ const Settings = () => {
   return (
     <div className="min-h-screen pb-20 animate-fade-in">
       {/* Header */}
-      <header className="px-6 py-8 space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
-              <ChevronLeft className="h-6 w-6" />
-            </Link>
-            <h1 className="text-2xl font-semibold">Settings</h1>
-          </div>
+      <header className="px-6 py-8">
+        <div className="flex items-center gap-3">
+          <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
+            <ChevronLeft className="h-6 w-6" />
+          </Link>
+          <span className="text-lg">Back</span>
         </div>
       </header>
 

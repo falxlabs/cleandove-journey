@@ -4,8 +4,8 @@ import { Link, useLocation } from "react-router-dom";
 const Navigation = () => {
   const location = useLocation();
 
-  // Hide navigation on chat conversation page
-  if (location.pathname === "/chat/conversation") {
+  // Hide navigation on chat conversation page and settings page
+  if (location.pathname === "/chat/conversation" || location.pathname === "/settings") {
     return null;
   }
 
