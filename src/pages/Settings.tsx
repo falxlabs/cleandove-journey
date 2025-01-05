@@ -41,9 +41,12 @@ const Settings = () => {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="13-17">13-17</SelectItem>
                 <SelectItem value="18-24">18-24</SelectItem>
                 <SelectItem value="25-34">25-34</SelectItem>
                 <SelectItem value="35-44">35-44</SelectItem>
+                <SelectItem value="45-54">45-54</SelectItem>
+                <SelectItem value="55+">55+</SelectItem>
               </SelectContent>
             </Select>
           </div>
