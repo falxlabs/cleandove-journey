@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Carousel,
@@ -47,13 +47,22 @@ const Chat = () => {
   return (
     <div className="min-h-screen pb-20 animate-fade-in">
       <header className="px-6 py-8">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-muted">
-            <span className="text-2xl">🕊️</span>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-muted">
+              <span className="text-2xl">🕊️</span>
+            </div>
+            <div className="flex items-center bg-muted rounded-lg px-4 py-2">
+              <p className="text-sm text-muted-foreground">Choose a topic to begin</p>
+            </div>
           </div>
-          <div className="flex items-center bg-muted rounded-lg px-4 py-2">
-            <p className="text-sm text-muted-foreground">Choose a topic to begin</p>
-          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-muted-foreground hover:text-foreground"
+          >
+            <Settings className="h-5 w-5" />
+          </Button>
         </div>
       </header>
 
