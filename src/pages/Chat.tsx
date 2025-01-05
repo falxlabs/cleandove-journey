@@ -31,7 +31,7 @@ const Chat = () => {
     { id: "cbt", emoji: "🧠", label: "CBT" },
     { id: "mindfulness", emoji: "🧘", label: "Mindfulness" },
     { id: "trauma", emoji: "❤️‍🩹", label: "Trauma" },
-    { id: "relationships", emoji: "💝", label: "Relationships" },
+    { id: "relationships", emoji: "🫂", label: "Relationships" },
     { id: "self-esteem", emoji: "✨", label: "Self-Esteem" },
   ];
 
