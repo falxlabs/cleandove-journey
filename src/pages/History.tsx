@@ -51,7 +51,6 @@ const History = () => {
             <span className="text-2xl">🕊️</span>
           </div>
           <div className="flex items-center bg-muted rounded-lg px-4 py-2">
-            <MessageCircle className="w-4 h-4 text-muted-foreground mr-2" />
             <p className="text-sm text-muted-foreground">Let's look back at our previous conversations</p>
           </div>
         </div>
