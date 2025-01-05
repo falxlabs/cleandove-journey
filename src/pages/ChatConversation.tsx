@@ -71,14 +71,10 @@ const ChatConversation = () => {
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <Avatar className="h-8 w-8">
-          <AvatarFallback>
-            <div className="rounded-full bg-muted p-2 flex items-center justify-center">
-              <span className="text-lg">🕊️</span>
-            </div>
-          </AvatarFallback>
+          <AvatarFallback>G</AvatarFallback>
         </Avatar>
         <div>
-          <h2 className="font-semibold">Assistant</h2>
+          <h2 className="font-semibold">Grace</h2>
           <p className="text-sm text-muted-foreground">
             {location.state?.topic ? `Topic: ${location.state.topic}` : "New Chat"}
           </p>
