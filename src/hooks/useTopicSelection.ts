@@ -14,6 +14,7 @@ export const useTopicSelection = () => {
     { id: "pride", emoji: "👑", label: "Pride" },
     { id: "greed", emoji: "🤑", label: "Greed" },
     { id: "laziness", emoji: "🦥", label: "Laziness" },
+    { id: "sleep", emoji: "😴", label: "Sleep" },
   ];
 
   const therapyTopics = [
