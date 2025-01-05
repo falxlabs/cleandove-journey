@@ -19,14 +19,6 @@ const Settings = () => {
             <h1 className="text-2xl font-semibold">Settings</h1>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-muted">
-            <span className="text-2xl">🕊️</span>
-          </div>
-          <div className="flex items-center bg-muted rounded-lg px-4 py-2">
-            <p className="text-sm text-muted-foreground">Customize your experience</p>
-          </div>
-        </div>
       </header>
 
       {/* Profile Section */}
