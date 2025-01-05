@@ -26,9 +26,9 @@ const App = () => (
           </Routes>
           <Navigation />
         </div>
-        <Toaster />
-        <Sonner />
       </TooltipProvider>
+      <Toaster />
+      <Sonner />
     </BrowserRouter>
   </QueryClientProvider>
 );
