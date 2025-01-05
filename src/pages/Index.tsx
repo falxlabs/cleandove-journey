@@ -1,5 +1,6 @@
 import { Calendar } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
 
 const Index = () => {
   const weekDays = ["M", "T", "W", "T", "F", "S", "S"];
@@ -10,10 +11,10 @@ const Index = () => {
       <header className="px-6 py-8 space-y-4">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-semibold">Today's Quest</h1>
-          <div className="inline-flex items-center gap-2 bg-muted rounded-lg px-4 py-2">
+          <Button variant="ghost" size="icon" className="gap-2">
             <span className="text-xl">🔥</span>
-            <span className="font-medium text-sm text-muted-foreground">Day {currentStreak}</span>
-          </div>
+            <span className="text-sm text-muted-foreground">{currentStreak}</span>
+          </Button>
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center justify-center w-10 h-10 rounded-full bg-muted">
