@@ -9,6 +9,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { useNavigate } from "react-router-dom";
+import SettingsButton from "@/components/SettingsButton";
 
 const Chat = () => {
   const navigate = useNavigate();
@@ -49,9 +50,7 @@ const Chat = () => {
       <header className="px-6 py-8 space-y-4">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-semibold">Chat</h1>
-          <Button variant="ghost" size="icon">
-            <Settings className="h-5 w-5" />
-          </Button>
+          <SettingsButton />
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center justify-center w-10 h-10 rounded-full bg-muted">
