@@ -71,7 +71,11 @@ const ChatConversation = () => {
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <Avatar className="h-8 w-8">
-          <AvatarFallback>G</AvatarFallback>
+          <AvatarFallback>
+            <div className="rounded-full bg-muted p-3 flex items-center justify-center">
+              <span className="text-lg">🕊️</span>
+            </div>
+          </AvatarFallback>
         </Avatar>
         <div>
           <h2 className="font-semibold">Grace</h2>
