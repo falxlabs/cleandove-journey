@@ -22,19 +22,19 @@ const Chat = () => {
     { id: "laziness", emoji: "😴", label: "Laziness" },
   ];
 
-  const emotions = [
-    { id: "happy", emoji: "😊", label: "Happy" },
-    { id: "sad", emoji: "😢", label: "Sad" },
-    { id: "worried", emoji: "😟", label: "Worried" },
-    { id: "peaceful", emoji: "😌", label: "Peaceful" },
-    { id: "excited", emoji: "🤩", label: "Excited" },
+  const therapyTopics = [
+    { id: "cbt", emoji: "🧠", label: "CBT" },
+    { id: "mindfulness", emoji: "🧘", label: "Mindfulness" },
+    { id: "trauma", emoji: "❤️‍🩹", label: "Trauma" },
+    { id: "relationships", emoji: "💝", label: "Relationships" },
+    { id: "self-esteem", emoji: "✨", label: "Self-Esteem" },
   ];
 
   const handleStartChat = () => {
     navigate("/chat/conversation", { 
       state: { 
         topic: selectedTopic,
-        mascot: "🕊️" // Grace the dove
+        mascot: "🕊️"
       } 
     });
   };
@@ -49,13 +49,10 @@ const Chat = () => {
       <section className="px-6 space-y-6">
         <Button
           onClick={handleStartChat}
-          className="w-full p-4 bg-primary text-primary-foreground hover:bg-primary/90"
+          className="w-full p-6 bg-primary text-primary-foreground hover:bg-primary/90"
         >
           <div className="flex justify-between items-center w-full">
-            <div>
-              <span className="text-xl mr-2">🕊️</span>
-              <span className="font-medium">Start New Chat</span>
-            </div>
+            <span className="font-medium">Start New Chat</span>
             <ChevronRight className="h-5 w-5" />
           </div>
         </Button>
@@ -83,10 +80,10 @@ const Chat = () => {
         </div>
 
         <div className="space-y-4">
-          <h2 className="text-lg font-medium">I'm feeling...</h2>
+          <h2 className="text-lg font-medium">Ask about...</h2>
           <Carousel className="w-full">
             <CarouselContent>
-              {emotions.map((item) => (
+              {therapyTopics.map((item) => (
                 <CarouselItem key={item.id} className="basis-1/3">
                   <Button
                     variant="outline"
