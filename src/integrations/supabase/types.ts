@@ -15,7 +15,7 @@ export type Database = {
           favorite: boolean
           id: string
           preview: string | null
-          reply_count: number
+          replies: number
           title: string
           updated_at: string
           user_id: string
@@ -25,7 +25,7 @@ export type Database = {
           favorite?: boolean
           id?: string
           preview?: string | null
-          reply_count?: number
+          replies?: number
           title: string
           updated_at?: string
           user_id: string
@@ -35,7 +35,7 @@ export type Database = {
           favorite?: boolean
           id?: string
           preview?: string | null
-          reply_count?: number
+          replies?: number
           title?: string
           updated_at?: string
           user_id?: string
@@ -109,17 +109,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      add_credits: {
-        Args: {
-          user_id: string
-          amount: number
-        }
-        Returns: number
-      }
-      decrement_credits: {
-        Args: Record<PropertyKey, never>
-        Returns: number
-      }
+      [_ in never]: never
     }
     Enums: {
       [_ in never]: never
