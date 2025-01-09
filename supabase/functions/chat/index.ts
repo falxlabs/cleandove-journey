@@ -20,9 +20,10 @@ serve(async (req) => {
       throw new Error('Messages must be an array')
     }
 
-    const openai = new OpenAIApi(new Configuration({
+    const configuration = new Configuration({
       apiKey: Deno.env.get('OPENAI_API_KEY')
-    }))
+    })
+    const openai = new OpenAIApi(configuration)
 
     // Format messages for OpenAI API
     const formattedMessages = messages.map((msg: any) => ({
