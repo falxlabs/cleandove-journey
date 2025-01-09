@@ -36,11 +36,13 @@ const ChatConversation = () => {
           .select()
           .single();
 
-        if (chatError) throw chatError;
+        if (chatError) {
+          console.error("Chat history creation error:", chatError);
+          throw chatError;
+        }
 
         setChatId(chatHistory.id);
 
-        // Insert initial assistant message
         const { error: messageError } = await supabase
           .from("messages")
           .insert({
@@ -50,7 +52,10 @@ const ChatConversation = () => {
             sequence_number: 1,
           });
 
-        if (messageError) throw messageError;
+        if (messageError) {
+          console.error("Initial message creation error:", messageError);
+          throw messageError;
+        }
 
         setMessages([
           {
@@ -78,26 +83,27 @@ const ChatConversation = () => {
   const handleSend = async () => {
     if (!input.trim() || !chatId) return;
 
-    // Check credits before proceeding
-    const hasCredits = await checkCredits();
-    if (!hasCredits) {
-      setShowCreditAlert(true);
-      return;
-    }
-
-    setIsLoading(true);
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      content: input,
-      sender: "user",
-      timestamp: new Date(),
-    };
-
-    setMessages((prev) => [...prev, newMessage]);
-    setInput("");
-
     try {
-      // Insert user message
+      // Check credits before proceeding
+      const hasCredits = await checkCredits();
+      if (!hasCredits) {
+        setShowCreditAlert(true);
+        return;
+      }
+
+      setIsLoading(true);
+      const newMessage: Message = {
+        id: Date.now().toString(),
+        content: input,
+        sender: "user",
+        timestamp: new Date(),
+      };
+
+      // Add user message to UI immediately
+      setMessages((prev) => [...prev, newMessage]);
+      setInput("");
+
+      // Insert user message to database
       const { error: messageError } = await supabase
         .from("messages")
         .insert({
@@ -107,19 +113,26 @@ const ChatConversation = () => {
           sequence_number: messages.length + 1,
         });
 
-      if (messageError) throw messageError;
+      if (messageError) {
+        console.error("Error inserting user message:", messageError);
+        throw new Error("Failed to save your message");
+      }
 
       // Call OpenAI via Edge Function
-      const { data, error } = await supabase.functions.invoke('chat', {
+      const { data, error: aiError } = await supabase.functions.invoke('chat', {
         body: { messages: [...messages, newMessage] }
       });
 
-      if (error) throw error;
+      if (aiError) {
+        console.error("AI response error:", aiError);
+        throw new Error("Failed to get AI response");
+      }
 
       // Deduct credit after successful AI response
       const creditDeducted = await deductCredit();
       if (!creditDeducted) {
-        throw new Error("Failed to deduct credit");
+        console.error("Credit deduction failed");
+        throw new Error("Failed to process credit");
       }
 
       const assistantResponse: Message = {
@@ -139,7 +152,10 @@ const ChatConversation = () => {
           sequence_number: messages.length + 2,
         });
 
-      if (assistantMessageError) throw assistantMessageError;
+      if (assistantMessageError) {
+        console.error("Error inserting AI response:", assistantMessageError);
+        throw new Error("Failed to save AI response");
+      }
 
       // Update chat history preview
       const { error: updateError } = await supabase
@@ -150,16 +166,22 @@ const ChatConversation = () => {
         })
         .eq("id", chatId);
 
-      if (updateError) throw updateError;
+      if (updateError) {
+        console.error("Error updating chat history:", updateError);
+        throw new Error("Failed to update chat history");
+      }
 
       setMessages((prev) => [...prev, assistantResponse]);
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error in handleSend:', error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to send message. Please try again.",
+        description: error.message || "Failed to send message. Please try again.",
       });
+      
+      // Rollback the optimistic UI update if there was an error
+      setMessages((prev) => prev.slice(0, -1));
     } finally {
       setIsLoading(false);
     }

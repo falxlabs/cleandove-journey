@@ -109,6 +109,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      add_credits: {
+        Args: {
+          user_id: string
+          amount: number
+        }
+        Returns: number
+      }
       decrement_credits: {
         Args: Record<PropertyKey, never>
         Returns: number
