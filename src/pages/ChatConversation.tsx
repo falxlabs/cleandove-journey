@@ -4,6 +4,7 @@ import { ArrowLeft, Send, ThumbsUp, ThumbsDown, Copy, Share2, RefreshCw } from "
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Message {
   id: string;
@@ -16,6 +17,8 @@ const ChatConversation = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
@@ -25,9 +28,15 @@ const ChatConversation = () => {
     },
   ]);
 
+  // Simulate initial loading
+  setTimeout(() => {
+    setIsInitialLoading(false);
+  }, 1000);
+
   const handleSend = () => {
     if (!input.trim()) return;
 
+    setIsLoading(true);
     const newMessage: Message = {
       id: Date.now().toString(),
       content: input,
@@ -46,6 +55,7 @@ const ChatConversation = () => {
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, graceResponse]);
+      setIsLoading(false);
     }, 1000);
 
     setInput("");
@@ -87,47 +97,60 @@ const ChatConversation = () => {
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className={`flex ${
-              message.sender === "user" ? "justify-end" : "justify-start"
-            }`}
-          >
-            {message.sender === "assistant" && (
-              <div className="flex items-start gap-2">
-              </div>
-            )}
+        {isInitialLoading ? (
+          <div className="space-y-4">
+            <Skeleton className="h-20 w-3/4" />
+            <Skeleton className="h-20 w-2/3 ml-auto" />
+            <Skeleton className="h-20 w-3/4" />
+          </div>
+        ) : (
+          messages.map((message) => (
             <div
-              className={`max-w-[80%] rounded-lg p-3 ${
-                message.sender === "user"
-                  ? "bg-primary text-primary-foreground ml-auto"
-                  : "bg-muted ml-2"
+              key={message.id}
+              className={`flex ${
+                message.sender === "user" ? "justify-end" : "justify-start"
               }`}
             >
-              <p className="text-sm">{message.content}</p>
               {message.sender === "assistant" && (
-                <div className="flex items-center gap-2 mt-2 text-muted-foreground">
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <ThumbsUp className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <ThumbsDown className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <Copy className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <Share2 className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <RefreshCw className="h-4 w-4" />
-                  </Button>
+                <div className="flex items-start gap-2">
                 </div>
               )}
+              <div
+                className={`max-w-[80%] rounded-lg p-3 ${
+                  message.sender === "user"
+                    ? "bg-primary text-primary-foreground ml-auto"
+                    : "bg-muted ml-2"
+                }`}
+              >
+                <p className="text-sm">{message.content}</p>
+                {message.sender === "assistant" && (
+                  <div className="flex items-center gap-2 mt-2 text-muted-foreground">
+                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                      <ThumbsUp className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                      <ThumbsDown className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                      <Copy className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                      <Share2 className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                      <RefreshCw className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
+              </div>
             </div>
+          ))
+        )}
+        {isLoading && (
+          <div className="flex justify-start">
+            <Skeleton className="h-20 w-3/4" />
           </div>
-        ))}
+        )}
       </div>
 
       {/* Input */}
@@ -139,8 +162,9 @@ const ChatConversation = () => {
             onKeyPress={handleKeyPress}
             placeholder="Type a message..."
             className="flex-1"
+            disabled={isLoading}
           />
-          <Button onClick={handleSend} disabled={!input.trim()}>
+          <Button onClick={handleSend} disabled={!input.trim() || isLoading}>
             <Send className="h-4 w-4" />
           </Button>
         </div>
