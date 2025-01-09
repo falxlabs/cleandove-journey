@@ -5,7 +5,9 @@ import { ChatHeader } from "@/components/ChatHeader";
 import { MessageList } from "@/components/MessageList";
 import { ChatInput } from "@/components/ChatInput";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
+import { checkCredits, deductCredit } from "@/utils/credits";
+import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 const ChatConversation = () => {
   const location = useLocation();
@@ -16,8 +18,8 @@ const ChatConversation = () => {
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [chatId, setChatId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [showCreditAlert, setShowCreditAlert] = useState(false);
 
-  // Create a new chat history when component mounts
   useEffect(() => {
     const createChatHistory = async () => {
       try {
@@ -76,6 +78,13 @@ const ChatConversation = () => {
   const handleSend = async () => {
     if (!input.trim() || !chatId) return;
 
+    // Check credits before proceeding
+    const hasCredits = await checkCredits();
+    if (!hasCredits) {
+      setShowCreditAlert(true);
+      return;
+    }
+
     setIsLoading(true);
     const newMessage: Message = {
       id: Date.now().toString(),
@@ -106,6 +115,12 @@ const ChatConversation = () => {
       });
 
       if (error) throw error;
+
+      // Deduct credit after successful AI response
+      const creditDeducted = await deductCredit();
+      if (!creditDeducted) {
+        throw new Error("Failed to deduct credit");
+      }
 
       const assistantResponse: Message = {
         id: (Date.now() + 1).toString(),
@@ -168,6 +183,22 @@ const ChatConversation = () => {
         onSend={handleSend}
         onKeyPress={handleKeyPress}
       />
+
+      <AlertDialog open={showCreditAlert} onOpenChange={setShowCreditAlert}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Out of Credits</AlertDialogTitle>
+            <AlertDialogDescription>
+              You've reached your credit limit. Each AI response costs 1 credit, and you're currently out of credits.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setShowCreditAlert(false)}>
+              Understood
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
