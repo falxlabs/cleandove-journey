@@ -24,7 +24,14 @@ const ChatConversation = () => {
     const createChatHistory = async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
+        if (!user) {
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: "You must be logged in to chat.",
+          });
+          return;
+        }
 
         const { data: chatHistory, error: chatError } = await supabase
           .from("chat_histories")
@@ -118,6 +125,12 @@ const ChatConversation = () => {
         throw new Error("Failed to save your message");
       }
 
+      // Deduct credit before AI call
+      const creditDeducted = await deductCredit();
+      if (!creditDeducted) {
+        throw new Error("Failed to process credit deduction");
+      }
+
       // Call OpenAI via Edge Function
       const { data, error: aiError } = await supabase.functions.invoke('chat', {
         body: { messages: [...messages, newMessage] }
@@ -128,11 +141,8 @@ const ChatConversation = () => {
         throw new Error("Failed to get AI response");
       }
 
-      // Deduct credit after successful AI response
-      const creditDeducted = await deductCredit();
-      if (!creditDeducted) {
-        console.error("Credit deduction failed");
-        throw new Error("Failed to process credit");
+      if (!data?.content) {
+        throw new Error("Invalid AI response format");
       }
 
       const assistantResponse: Message = {
@@ -162,7 +172,7 @@ const ChatConversation = () => {
         .from("chat_histories")
         .update({
           preview: data.content,
-          replies: messages.length + 2,
+          reply_count: messages.length + 2,
         })
         .eq("id", chatId);
 
@@ -174,14 +184,14 @@ const ChatConversation = () => {
       setMessages((prev) => [...prev, assistantResponse]);
     } catch (error) {
       console.error('Error in handleSend:', error);
+      // Rollback the optimistic UI update
+      setMessages((prev) => prev.slice(0, -1));
+      setInput(input); // Restore the input
       toast({
         variant: "destructive",
         title: "Error",
         description: error.message || "Failed to send message. Please try again.",
       });
-      
-      // Rollback the optimistic UI update if there was an error
-      setMessages((prev) => prev.slice(0, -1));
     } finally {
       setIsLoading(false);
     }
