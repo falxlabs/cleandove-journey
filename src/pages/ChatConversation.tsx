@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import MessageList from "@/components/MessageList";
+import { MessageList } from "@/components/MessageList";
 import MessageInput from "@/components/MessageInput";
 import { updateRepliesCount } from "@/utils/credits";
 
@@ -41,24 +41,55 @@ const ChatConversation = () => {
     if (!content.trim()) return;
 
     try {
+      // Get the current highest sequence number for this chat
+      const { data: lastMessage } = await supabase
+        .from("messages")
+        .select("sequence_number")
+        .eq("chat_id", chatId)
+        .order("sequence_number", { ascending: false })
+        .limit(1)
+        .single();
+
+      const nextSequenceNumber = (lastMessage?.sequence_number || 0) + 1;
+
+      // Insert user message
       const { data: message, error } = await supabase
         .from("messages")
-        .insert([{ chat_id: chatId, content, sender: "user" }])
+        .insert([
+          {
+            chat_id: chatId,
+            content,
+            sender: "user",
+            sequence_number: nextSequenceNumber,
+          },
+        ])
         .single();
 
       if (error) throw error;
 
       setMessages((prev) => [...prev, message]);
 
-      // After receiving AI response
-      const aiResponse = await sendToAI(messages);
-      if (aiResponse) {
-        await addMessage(aiResponse, 'assistant');
-        await updateRepliesCount(chatId);  // Update reply count after AI response
-      }
+      // Insert AI response
+      const nextAISequenceNumber = nextSequenceNumber + 1;
+      const { data: aiMessage, error: aiError } = await supabase
+        .from("messages")
+        .insert([
+          {
+            chat_id: chatId,
+            content: "AI response placeholder", // Replace with actual AI response
+            sender: "assistant",
+            sequence_number: nextAISequenceNumber,
+          },
+        ])
+        .single();
+
+      if (aiError) throw aiError;
+
+      setMessages((prev) => [...prev, aiMessage]);
+      await updateRepliesCount(chatId);
 
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error("Error sending message:", error);
       toast({
         variant: "destructive",
         title: "Error",
