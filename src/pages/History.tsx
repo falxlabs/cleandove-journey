@@ -19,7 +19,7 @@ const History = () => {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      return (data || []) as Chat[];
+      return data as Chat[];
     },
   });
 

@@ -12,4 +12,5 @@ export interface Chat {
   updated_at: string;
   replies: number;
   favorite: boolean;
+  user_id: string;
 }
