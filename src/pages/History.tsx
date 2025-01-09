@@ -50,8 +50,8 @@ const History = () => {
       />
 
       <div className="px-6 space-y-4">
-        <SearchBar value={searchQuery} onChange={setSearchQuery} />
-        <FilterButtons filter={filter} onFilterChange={setFilter} />
+        <SearchBar value={searchQuery} onChange={setSearchQuery} isLoading={isLoading} />
+        <FilterButtons filter={filter} onFilterChange={setFilter} isLoading={isLoading} />
         <ChatList chats={filteredChats} isLoading={isLoading} />
       </div>
     </div>
