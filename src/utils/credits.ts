@@ -17,11 +17,8 @@ export async function deductCredit(): Promise<boolean> {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session?.user?.id) return false;
 
-  const { error } = await supabase
-    .from('profiles')
-    .update({ credits: supabase.rpc('decrement_credits') })
-    .eq('id', session.user.id)
-    .gt('credits', 0);
+  const { data, error } = await supabase
+    .rpc('decrement_credits');
 
-  return !error;
+  return !error && data !== null;
 }
