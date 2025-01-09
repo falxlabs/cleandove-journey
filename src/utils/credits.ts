@@ -22,22 +22,3 @@ export async function deductCredit(): Promise<boolean> {
 
   return !error && data !== null;
 }
-
-export async function updateRepliesCount(chatId: string): Promise<boolean> {
-  const { data: aiMessages, error: countError } = await supabase
-    .from('messages')
-    .select('id')
-    .eq('chat_id', chatId)
-    .eq('sender', 'assistant');
-
-  if (countError) return false;
-
-  const replyCount = aiMessages?.length || 0;
-
-  const { error: updateError } = await supabase
-    .from('chat_histories')
-    .update({ reply_count: replyCount })
-    .eq('id', chatId);
-
-  return !updateError;
-}

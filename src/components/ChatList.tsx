@@ -6,7 +6,7 @@ interface Chat {
   title: string;
   preview: string;
   date: string;
-  reply_count: number;
+  replies: number;
   favorite: boolean;
 }
 
@@ -63,7 +63,7 @@ const ChatList = ({ chats, isLoading = false }: ChatListProps) => {
             <Calendar className="h-4 w-4 mr-1" />
             <span className="mr-4">{chat.date}</span>
             <MessageSquare className="h-4 w-4 mr-1" />
-            <span>{chat.reply_count} replies</span>
+            <span>{chat.replies} replies</span>
           </div>
         </div>
       ))}

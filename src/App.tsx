@@ -75,7 +75,7 @@ const App = () => (
               }
             />
             <Route
-              path="/chat/conversation/:chatId"
+              path="/chat/conversation"
               element={
                 <ProtectedRoute>
                   <ChatConversation />

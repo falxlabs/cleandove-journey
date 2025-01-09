@@ -1,114 +1,204 @@
-import { useEffect, useState } from "react";
-import { useParams, Navigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
+import { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Message } from "@/types/chat";
+import { ChatHeader } from "@/components/ChatHeader";
 import { MessageList } from "@/components/MessageList";
-import MessageInput from "@/components/MessageInput";
-import { updateRepliesCount } from "@/utils/credits";
+import { ChatInput } from "@/components/ChatInput";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { checkCredits, deductCredit } from "@/utils/credits";
+import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 const ChatConversation = () => {
-  const { chatId } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
   const { toast } = useToast();
-  const [messages, setMessages] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  // Redirect if no chatId is provided
-  if (!chatId) {
-    return <Navigate to="/chat" replace />;
-  }
+  const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [chatId, setChatId] = useState<string | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [showCreditAlert, setShowCreditAlert] = useState(false);
 
   useEffect(() => {
-    const fetchMessages = async () => {
-      const { data, error } = await supabase
-        .from("messages")
-        .select("*")
-        .eq("chat_id", chatId)
-        .order("created_at", { ascending: true });
+    const createChatHistory = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
 
-      if (error) {
+        const { data: chatHistory, error: chatError } = await supabase
+          .from("chat_histories")
+          .insert({
+            title: location.state?.topic || "New Chat",
+            preview: "Hello! How can I help you today?",
+            user_id: user.id,
+          })
+          .select()
+          .single();
+
+        if (chatError) throw chatError;
+
+        setChatId(chatHistory.id);
+
+        // Insert initial assistant message
+        const { error: messageError } = await supabase
+          .from("messages")
+          .insert({
+            chat_id: chatHistory.id,
+            content: "Hello! How can I help you today?",
+            sender: "assistant",
+            sequence_number: 1,
+          });
+
+        if (messageError) throw messageError;
+
+        setMessages([
+          {
+            id: "1",
+            content: "Hello! How can I help you today?",
+            sender: "assistant",
+            timestamp: new Date(),
+          },
+        ]);
+      } catch (error) {
+        console.error("Error creating chat:", error);
         toast({
           variant: "destructive",
           title: "Error",
-          description: "Failed to load messages.",
+          description: "Failed to start new chat. Please try again.",
         });
-        setLoading(false);
-        return;
+      } finally {
+        setIsInitialLoading(false);
       }
-
-      setMessages(data);
-      setLoading(false);
     };
 
-    fetchMessages();
-  }, [chatId, toast]);
+    createChatHistory();
+  }, [location.state?.topic, toast]);
 
-  const handleSendMessage = async (content: string) => {
-    if (!content.trim()) return;
+  const handleSend = async () => {
+    if (!input.trim() || !chatId) return;
+
+    // Check credits before proceeding
+    const hasCredits = await checkCredits();
+    if (!hasCredits) {
+      setShowCreditAlert(true);
+      return;
+    }
+
+    setIsLoading(true);
+    const newMessage: Message = {
+      id: Date.now().toString(),
+      content: input,
+      sender: "user",
+      timestamp: new Date(),
+    };
+
+    setMessages((prev) => [...prev, newMessage]);
+    setInput("");
 
     try {
-      // Get the current highest sequence number for this chat
-      const { data: lastMessage } = await supabase
-        .from("messages")
-        .select("sequence_number")
-        .eq("chat_id", chatId)
-        .order("sequence_number", { ascending: false })
-        .limit(1)
-        .single();
-
-      const nextSequenceNumber = (lastMessage?.sequence_number || 0) + 1;
-
       // Insert user message
-      const { data: message, error } = await supabase
+      const { error: messageError } = await supabase
         .from("messages")
-        .insert([
-          {
-            chat_id: chatId,
-            content,
-            sender: "user",
-            sequence_number: nextSequenceNumber,
-          },
-        ])
-        .select()
-        .single();
+        .insert({
+          chat_id: chatId,
+          content: input,
+          sender: "user",
+          sequence_number: messages.length + 1,
+        });
+
+      if (messageError) throw messageError;
+
+      // Call OpenAI via Edge Function
+      const { data, error } = await supabase.functions.invoke('chat', {
+        body: { messages: [...messages, newMessage] }
+      });
 
       if (error) throw error;
 
-      setMessages((prev) => [...prev, message]);
+      // Deduct credit after successful AI response
+      const creditDeducted = await deductCredit();
+      if (!creditDeducted) {
+        throw new Error("Failed to deduct credit");
+      }
 
-      // Insert AI response
-      const nextAISequenceNumber = nextSequenceNumber + 1;
-      const { data: aiMessage, error: aiError } = await supabase
+      const assistantResponse: Message = {
+        id: (Date.now() + 1).toString(),
+        content: data.content,
+        sender: "assistant",
+        timestamp: new Date(),
+      };
+
+      // Insert assistant response
+      const { error: assistantMessageError } = await supabase
         .from("messages")
-        .insert([
-          {
-            chat_id: chatId,
-            content: "AI response placeholder", // Replace with actual AI response
-            sender: "assistant",
-            sequence_number: nextAISequenceNumber,
-          },
-        ])
-        .select()
-        .single();
+        .insert({
+          chat_id: chatId,
+          content: data.content,
+          sender: "assistant",
+          sequence_number: messages.length + 2,
+        });
 
-      if (aiError) throw aiError;
+      if (assistantMessageError) throw assistantMessageError;
 
-      setMessages((prev) => [...prev, aiMessage]);
-      await updateRepliesCount(chatId);
+      // Update chat history preview
+      const { error: updateError } = await supabase
+        .from("chat_histories")
+        .update({
+          preview: data.content,
+          replies: messages.length + 2,
+        })
+        .eq("id", chatId);
 
+      if (updateError) throw updateError;
+
+      setMessages((prev) => [...prev, assistantResponse]);
     } catch (error) {
-      console.error("Error sending message:", error);
+      console.error('Error:', error);
       toast({
         variant: "destructive",
         title: "Error",
         description: "Failed to send message. Please try again.",
       });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
     }
   };
 
   return (
-    <div className="min-h-screen pb-20">
-      <MessageList messages={messages} isLoading={loading} />
-      <MessageInput onSend={handleSendMessage} />
+    <div className="flex flex-col h-screen bg-background pb-0">
+      <ChatHeader topic={location.state?.topic} />
+      <MessageList messages={messages} isLoading={isLoading || isInitialLoading} />
+      <ChatInput
+        input={input}
+        isLoading={isLoading}
+        onInputChange={setInput}
+        onSend={handleSend}
+        onKeyPress={handleKeyPress}
+      />
+
+      <AlertDialog open={showCreditAlert} onOpenChange={setShowCreditAlert}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Out of Credits</AlertDialogTitle>
+            <AlertDialogDescription>
+              You've reached your credit limit. Each AI response costs 1 credit, and you're currently out of credits.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setShowCreditAlert(false)}>
+              Understood
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

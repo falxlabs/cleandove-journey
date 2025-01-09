@@ -15,7 +15,7 @@ export type Database = {
           favorite: boolean
           id: string
           preview: string | null
-          reply_count: number
+          replies: number
           title: string
           updated_at: string
           user_id: string
@@ -25,7 +25,7 @@ export type Database = {
           favorite?: boolean
           id?: string
           preview?: string | null
-          reply_count?: number
+          replies?: number
           title: string
           updated_at?: string
           user_id: string
@@ -35,7 +35,7 @@ export type Database = {
           favorite?: boolean
           id?: string
           preview?: string | null
-          reply_count?: number
+          replies?: number
           title?: string
           updated_at?: string
           user_id?: string
