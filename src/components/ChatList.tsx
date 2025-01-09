@@ -1,4 +1,5 @@
 import { Star, MessageSquare, Calendar } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Chat {
   id: number;
@@ -11,15 +12,39 @@ interface Chat {
 
 interface ChatListProps {
   chats: Chat[];
+  isLoading?: boolean;
 }
 
-const ChatList = ({ chats }: ChatListProps) => {
+const ChatList = ({ chats, isLoading = false }: ChatListProps) => {
+  if (isLoading) {
+    return (
+      <section className="space-y-4">
+        {[1, 2, 3].map((index) => (
+          <div
+            key={index}
+            className="p-4 bg-card rounded-lg border shadow-sm"
+          >
+            <div className="flex justify-between items-start mb-2">
+              <Skeleton className="h-6 w-48" />
+              <Skeleton className="h-6 w-6 rounded-full" />
+            </div>
+            <Skeleton className="h-4 w-full mb-3" />
+            <div className="flex items-center gap-4">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-4 w-24" />
+            </div>
+          </div>
+        ))}
+      </section>
+    );
+  }
+
   return (
     <section className="space-y-4">
       {chats.map((chat) => (
         <div
           key={chat.id}
-          className="p-4 bg-card rounded-lg border shadow-sm hover:shadow-md transition-shadow"
+          className="p-4 bg-card rounded-lg border shadow-sm hover:shadow-md transition-shadow animate-fade-in"
         >
           <div className="flex justify-between items-start mb-2">
             <h3 className="font-medium">{chat.title}</h3>
