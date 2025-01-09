@@ -4,6 +4,7 @@ import { Message } from "@/types/chat";
 import { ChatHeader } from "@/components/ChatHeader";
 import { MessageList } from "@/components/MessageList";
 import { ChatInput } from "@/components/ChatInput";
+import { supabase } from "@/integrations/supabase/client";
 
 const ChatConversation = () => {
   const location = useLocation();
@@ -24,7 +25,7 @@ const ChatConversation = () => {
     setIsInitialLoading(false);
   }, 1000);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!input.trim()) return;
 
     setIsLoading(true);
@@ -36,22 +37,35 @@ const ChatConversation = () => {
     };
 
     setMessages((prev) => [...prev, newMessage]);
+    setInput("");
 
-    // Simulate Grace's response
-    setTimeout(() => {
-      const graceResponse: Message = {
+    try {
+      const { data, error } = await supabase.functions.invoke('chat', {
+        body: { messages: [...messages, newMessage] }
+      });
+
+      if (error) throw error;
+
+      const assistantResponse: Message = {
         id: (Date.now() + 1).toString(),
-        content: `I understand you're ${
-          location.state?.topic ? `dealing with ${location.state.topic}` : "seeking guidance"
-        }. Let me help you with that. What specific challenges are you facing?`,
+        content: data.content,
         sender: "assistant",
         timestamp: new Date(),
       };
-      setMessages((prev) => [...prev, graceResponse]);
-      setIsLoading(false);
-    }, 1000);
 
-    setInput("");
+      setMessages((prev) => [...prev, assistantResponse]);
+    } catch (error) {
+      console.error('Error calling OpenAI:', error);
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        content: "I apologize, but I encountered an error. Please try again.",
+        sender: "assistant",
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
