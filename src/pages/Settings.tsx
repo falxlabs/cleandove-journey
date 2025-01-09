@@ -3,10 +3,40 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
+import { Progress } from "@/components/ui/progress"
+import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { ArrowLeft, User, Infinity, DollarSign, Gift, Share2, ThumbsUp, MessageSquareHeart, Contact, FileText, Settings as SettingsIcon, Clock } from "lucide-react"
 import { Link } from "react-router-dom"
+import { useEffect, useState } from "react"
+import { supabase } from "@/integrations/supabase/client"
 
 const Settings = () => {
+  const [credits, setCredits] = useState<number>(0)
+  const [showCreditAlert, setShowCreditAlert] = useState(false)
+  const MAX_CREDITS = 10
+
+  useEffect(() => {
+    const fetchCredits = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (session?.user?.id) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('credits')
+          .eq('id', session.user.id)
+          .single()
+        
+        if (profile) {
+          setCredits(profile.credits)
+          if (profile.credits <= 0) {
+            setShowCreditAlert(true)
+          }
+        }
+      }
+    }
+
+    fetchCredits()
+  }, [])
+
   return (
     <div className="min-h-screen pb-20 animate-fade-in">
       {/* Header */}
@@ -36,30 +66,44 @@ const Settings = () => {
           />
         </div>
 
-        <div className="space-y-6">
-          <div className="space-y-4">
+        {/* Credits Section */}
+        <div className="space-y-3 bg-secondary/20 p-4 rounded-lg">
+          <h2 className="text-sm font-medium text-muted-foreground">CREDITS</h2>
+          <div className="space-y-2">
             <div className="flex justify-between items-center">
-              <span className="text-sm">Age range</span>
-              <Select defaultValue="25-34">
-                <SelectTrigger className="w-32">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="13-17">13-17</SelectItem>
-                  <SelectItem value="18-24">18-24</SelectItem>
-                  <SelectItem value="25-34">25-34</SelectItem>
-                  <SelectItem value="35-44">35-44</SelectItem>
-                  <SelectItem value="45-54">45-54</SelectItem>
-                  <SelectItem value="55+">55+</SelectItem>
-                </SelectContent>
-              </Select>
+              <span className="text-sm">Available Credits</span>
+              <span className="font-semibold">{credits}/{MAX_CREDITS}</span>
             </div>
-
-            <div className="flex justify-between items-center">
-              <span className="text-sm">Religious content</span>
-              <Switch />
-            </div>
+            <Progress value={(credits / MAX_CREDITS) * 100} className="h-2" />
+            <p className="text-xs text-muted-foreground mt-2">
+              Credits are used for AI-powered features. You have {credits} credits remaining.
+            </p>
           </div>
+        </div>
+
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <span className="text-sm">Age range</span>
+            <Select defaultValue="25-34">
+              <SelectTrigger className="w-32">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="13-17">13-17</SelectItem>
+                <SelectItem value="18-24">18-24</SelectItem>
+                <SelectItem value="25-34">25-34</SelectItem>
+                <SelectItem value="35-44">35-44</SelectItem>
+                <SelectItem value="45-54">45-54</SelectItem>
+                <SelectItem value="55+">55+</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex justify-between items-center">
+            <span className="text-sm">Religious content</span>
+            <Switch />
+          </div>
+        </div>
 
           {/* Subscription Section */}
           <div className="space-y-3">
@@ -148,10 +192,26 @@ const Settings = () => {
             <p className="text-sm text-muted-foreground">App Version: 1.0.0</p>
             <p className="text-sm text-muted-foreground break-all">UID: mock-user-id-123456789</p>
           </div>
-        </div>
       </div>
-    </div>
-  );
-};
 
-export default Settings;
+      {/* Credits Alert Dialog */}
+      <AlertDialog open={showCreditAlert} onOpenChange={setShowCreditAlert}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Out of Credits</AlertDialogTitle>
+            <AlertDialogDescription>
+              You've reached your credit limit. To continue using AI features, please upgrade your plan or wait for your credits to refresh.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setShowCreditAlert(false)}>
+              Understood
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  )
+}
+
+export default Settings
