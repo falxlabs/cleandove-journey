@@ -24,7 +24,7 @@ const History = () => {
       return data.map((chat) => ({
         id: chat.id,
         title: chat.title,
-        preview: chat.preview || "",
+        preview: chat.preview,
         date: format(new Date(chat.created_at), "PP"),
         replies: chat.replies,
         favorite: chat.favorite,
@@ -38,7 +38,7 @@ const History = () => {
       (chat) =>
         searchQuery === "" ||
         chat.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        chat.preview.toLowerCase().includes(searchQuery.toLowerCase())
+        (chat.preview?.toLowerCase() || "").includes(searchQuery.toLowerCase())
     );
 
   return (
@@ -50,8 +50,16 @@ const History = () => {
       />
 
       <div className="px-6 space-y-4">
-        <SearchBar value={searchQuery} onChange={setSearchQuery} />
-        <FilterButtons filter={filter} onFilterChange={setFilter} />
+        <SearchBar 
+          value={searchQuery} 
+          onChange={setSearchQuery} 
+          isLoading={isLoading} 
+        />
+        <FilterButtons 
+          filter={filter} 
+          onFilterChange={setFilter} 
+          isLoading={isLoading} 
+        />
         <ChatList chats={filteredChats} isLoading={isLoading} />
       </div>
     </div>
