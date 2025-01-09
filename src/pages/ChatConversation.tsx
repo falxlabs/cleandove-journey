@@ -68,6 +68,7 @@ const ChatConversation = () => {
             sequence_number: nextSequenceNumber,
           },
         ])
+        .select()
         .single();
 
       if (error) throw error;
@@ -86,6 +87,7 @@ const ChatConversation = () => {
             sequence_number: nextAISequenceNumber,
           },
         ])
+        .select()
         .single();
 
       if (aiError) throw aiError;
