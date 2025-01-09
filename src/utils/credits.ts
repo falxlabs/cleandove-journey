@@ -36,7 +36,7 @@ export async function updateRepliesCount(chatId: string): Promise<boolean> {
 
   const { error: updateError } = await supabase
     .from('chat_histories')
-    .update({ replies: replyCount })
+    .update({ reply_count: replyCount })
     .eq('id', chatId);
 
   return !updateError;

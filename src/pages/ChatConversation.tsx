@@ -100,7 +100,7 @@ const ChatConversation = () => {
 
   return (
     <div className="min-h-screen pb-20">
-      <MessageList messages={messages} loading={loading} />
+      <MessageList messages={messages} isLoading={loading} />
       <MessageInput onSend={handleSendMessage} />
     </div>
   );
