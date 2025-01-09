@@ -1,22 +1,13 @@
+import { ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
 import PageHeader from "@/components/PageHeader";
+import TopicCarousel from "@/components/TopicCarousel";
 import { useTopicSelection } from "@/hooks/useTopicSelection";
-import StartChatButton from "@/components/chat/StartChatButton";
-import ChatTopicSection from "@/components/chat/ChatTopicSection";
-import { supabase } from "@/integrations/supabase/client";
 
 const Chat = () => {
   const navigate = useNavigate();
   const { selectedTopic, setSelectedTopic, temptations, therapyTopics } = useTopicSelection();
-
-  const { isLoading: isUserLoading } = useQuery({
-    queryKey: ["user"],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      return user;
-    },
-  });
 
   const handleStartChat = () => {
     navigate("/chat/conversation", {
@@ -36,20 +27,26 @@ const Chat = () => {
       />
 
       <section className="px-6 space-y-6">
-        <StartChatButton onClick={handleStartChat} />
+        <Button
+          onClick={handleStartChat}
+          className="w-full p-6 bg-primary text-primary-foreground hover:bg-primary/90"
+        >
+          <div className="flex justify-between items-center w-full">
+            <span className="font-medium">Start New Chat</span>
+            <ChevronRight className="h-5 w-5" />
+          </div>
+        </Button>
 
-        <ChatTopicSection
+        <TopicCarousel
           title="I'm struggling with..."
           topics={temptations}
           onTopicSelect={setSelectedTopic}
-          isLoading={isUserLoading}
         />
 
-        <ChatTopicSection
+        <TopicCarousel
           title="Ask about..."
           topics={therapyTopics}
           onTopicSelect={setSelectedTopic}
-          isLoading={isUserLoading}
         />
       </section>
     </div>

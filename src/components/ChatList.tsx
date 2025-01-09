@@ -1,10 +1,10 @@
 import { Star, MessageSquare, Calendar } from "lucide-react";
 
 interface Chat {
-  id: string;
+  id: number;
   title: string;
-  preview?: string;
-  created_at: string;
+  preview: string;
+  date: string;
   replies: number;
   favorite: boolean;
 }
@@ -36,7 +36,7 @@ const ChatList = ({ chats }: ChatListProps) => {
           <p className="text-sm text-muted-foreground mb-3">{chat.preview}</p>
           <div className="flex items-center text-sm text-muted-foreground">
             <Calendar className="h-4 w-4 mr-1" />
-            <span className="mr-4">{new Date(chat.created_at).toLocaleDateString()}</span>
+            <span className="mr-4">{chat.date}</span>
             <MessageSquare className="h-4 w-4 mr-1" />
             <span>{chat.replies} replies</span>
           </div>
