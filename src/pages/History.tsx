@@ -5,6 +5,7 @@ import SearchBar from "@/components/SearchBar";
 import ChatList from "@/components/ChatList";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
+import { Chat } from "@/types/topics";
 
 const History = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -12,11 +13,13 @@ const History = () => {
   const { data: chats, isLoading } = useQuery({
     queryKey: ["chat-history"],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("chat_history")
         .select("*")
         .order("created_at", { ascending: false });
-      return data || [];
+
+      if (error) throw error;
+      return (data || []) as Chat[];
     },
   });
 

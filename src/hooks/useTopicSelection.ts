@@ -1,9 +1,10 @@
 import { useState } from "react";
+import { Topic } from "@/types/topics";
 
 export const useTopicSelection = () => {
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
 
-  const temptations = [
+  const temptations: Topic[] = [
     { id: "lust", emoji: "👄", label: "Lust" },
     { id: "alcohol", emoji: "🍺", label: "Alcohol" },
     { id: "cigarettes", emoji: "🚬", label: "Cigarettes" },
@@ -17,7 +18,7 @@ export const useTopicSelection = () => {
     { id: "sleep", emoji: "😴", label: "Sleep" },
   ];
 
-  const therapyTopics = [
+  const therapyTopics: Topic[] = [
     { id: "cbt", emoji: "🧠", label: "CBT" },
     { id: "mindfulness", emoji: "🧘", label: "Mindfulness" },
     { id: "trauma", emoji: "❤️‍🩹", label: "Trauma" },

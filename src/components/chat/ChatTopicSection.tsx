@@ -1,9 +1,10 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import TopicCarousel from "@/components/TopicCarousel";
+import { Topic } from "@/types/topics";
 
 interface ChatTopicSectionProps {
   title: string;
-  topics: string[];
+  topics: Topic[];
   onTopicSelect: (topic: string) => void;
   isLoading?: boolean;
 }
