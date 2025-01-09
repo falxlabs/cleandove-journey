@@ -6,6 +6,7 @@ import SearchBar from "@/components/SearchBar";
 import FilterButtons from "@/components/FilterButtons";
 import ChatList from "@/components/ChatList";
 import { format } from "date-fns";
+import { useToast } from "@/components/ui/use-toast";
 import type { Database } from "@/integrations/supabase/types";
 
 type ChatHistory = Database['public']['Tables']['chat_histories']['Row'];
@@ -13,16 +14,28 @@ type ChatHistory = Database['public']['Tables']['chat_histories']['Row'];
 const History = () => {
   const [filter, setFilter] = useState<"all" | "favorites">("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const { toast } = useToast();
 
   const { data: chats = [], isLoading } = useQuery({
     queryKey: ["chat-history"],
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("User not authenticated");
+
       const { data, error } = await supabase
         .from("chat_histories")
         .select("*")
-        .order("created_at", { ascending: false });
+        .eq("user_id", user.id)
+        .order("updated_at", { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to load chat history.",
+        });
+        throw error;
+      }
 
       return data.map((chat: ChatHistory) => ({
         id: chat.id,
