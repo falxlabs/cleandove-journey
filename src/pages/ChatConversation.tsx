@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Navigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { MessageList } from "@/components/MessageList";
@@ -11,6 +11,11 @@ const ChatConversation = () => {
   const { toast } = useToast();
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Redirect if no chatId is provided
+  if (!chatId) {
+    return <Navigate to="/chat" replace />;
+  }
 
   useEffect(() => {
     const fetchMessages = async () => {
