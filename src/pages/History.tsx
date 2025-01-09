@@ -6,6 +6,9 @@ import SearchBar from "@/components/SearchBar";
 import FilterButtons from "@/components/FilterButtons";
 import ChatList from "@/components/ChatList";
 import { format } from "date-fns";
+import type { Database } from "@/integrations/supabase/types";
+
+type ChatHistory = Database['public']['Tables']['chat_histories']['Row'];
 
 const History = () => {
   const [filter, setFilter] = useState<"all" | "favorites">("all");
@@ -15,13 +18,13 @@ const History = () => {
     queryKey: ["chat-history"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("chat_history")
+        .from("chat_histories")
         .select("*")
         .order("created_at", { ascending: false });
 
       if (error) throw error;
 
-      return data.map((chat) => ({
+      return data.map((chat: ChatHistory) => ({
         id: chat.id,
         title: chat.title,
         preview: chat.preview || "",
