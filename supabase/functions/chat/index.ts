@@ -1,5 +1,4 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { Configuration, OpenAIApi } from "https://esm.sh/openai@3.2.1"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -20,10 +19,7 @@ serve(async (req) => {
       throw new Error('Messages must be an array')
     }
 
-    const configuration = new Configuration({
-      apiKey: Deno.env.get('OPENAI_API_KEY')
-    })
-    const openai = new OpenAIApi(configuration)
+    console.log('Received messages:', JSON.stringify(messages))
 
     // Format messages for OpenAI API
     const formattedMessages = messages.map((msg: any) => ({
@@ -33,24 +29,36 @@ serve(async (req) => {
 
     console.log('Sending request to OpenAI with messages:', JSON.stringify(formattedMessages))
 
-    const completion = await openai.createChatCompletion({
-      model: "gpt-4o-mini",
-      messages: formattedMessages,
-      temperature: 0.7,
-      max_tokens: 500
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: "gpt-4o-mini",
+        messages: formattedMessages,
+        temperature: 0.7,
+        max_tokens: 500
+      })
     })
 
-    if (!completion.data.choices[0].message) {
-      throw new Error('No response from OpenAI')
+    if (!response.ok) {
+      const errorData = await response.json()
+      console.error('OpenAI API error:', errorData)
+      throw new Error(`OpenAI API error: ${JSON.stringify(errorData)}`)
     }
 
-    const response = completion.data.choices[0].message
+    const data = await response.json()
+    console.log('Received response from OpenAI:', data)
 
-    console.log('Received response from OpenAI:', response)
+    if (!data.choices?.[0]?.message?.content) {
+      throw new Error('No response content from OpenAI')
+    }
 
     return new Response(
       JSON.stringify({ 
-        content: response.content || "I apologize, but I couldn't generate a response."
+        content: data.choices[0].message.content
       }),
       { 
         headers: { 
