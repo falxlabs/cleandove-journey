@@ -2,9 +2,9 @@ import { Star, MessageSquare, Calendar } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface Chat {
-  id: string;
+  id: number;
   title: string;
-  preview: string | null;
+  preview: string;
   date: string;
   replies: number;
   favorite: boolean;
