@@ -89,6 +89,10 @@ const Settings = () => {
               <span>Choose a plan</span>
               <ArrowRight className="h-5 w-5 text-muted-foreground" />
             </Button>
+            <Button variant="ghost" className="w-full justify-between h-14 px-4">
+              <span>Redeem code</span>
+              <ArrowRight className="h-5 w-5 text-muted-foreground" />
+            </Button>
           </div>
 
           <Button variant="ghost" className="w-full h-14 text-primary">
