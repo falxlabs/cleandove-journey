@@ -12,7 +12,7 @@ const Navigation = () => {
   const isActive = (path: string) => location.pathname === path;
 
   const navItems = [
-    { icon: ShieldCheck, label: "Today", path: "/" },
+    { icon: ShieldCheck, label: "Quest", path: "/" },
     { icon: MessageSquare, label: "Chat", path: "/chat" },
     { icon: History, label: "History", path: "/history" },
     { icon: User, label: "Profile", path: "/profile" },
