@@ -20,23 +20,27 @@ const Chat = () => {
 
   return (
     <div className="min-h-screen pb-20 animate-fade-in">
-      <PageHeader
-        title="Chat"
-        emoji="🕊️"
-        description="Choose a topic to begin"
-      />
+      <div className="sticky top-0 z-10 bg-background">
+        <PageHeader
+          title="Chat"
+          emoji="🕊️"
+          description="Choose a topic to begin"
+        />
+
+        <div className="px-6 pb-6">
+          <Button
+            onClick={handleStartChat}
+            className="w-full p-6 bg-primary text-primary-foreground hover:bg-primary/90"
+          >
+            <div className="flex justify-between items-center w-full">
+              <span className="font-medium">Start New Chat</span>
+              <ChevronRight className="h-5 w-5" />
+            </div>
+          </Button>
+        </div>
+      </div>
 
       <section className="px-6 space-y-6">
-        <Button
-          onClick={handleStartChat}
-          className="w-full p-6 bg-primary text-primary-foreground hover:bg-primary/90"
-        >
-          <div className="flex justify-between items-center w-full">
-            <span className="font-medium">Start New Chat</span>
-            <ChevronRight className="h-5 w-5" />
-          </div>
-        </Button>
-
         <TopicCarousel
           title="I'm struggling with..."
           topics={temptations}
