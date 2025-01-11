@@ -20,7 +20,7 @@ const Chat = () => {
 
   return (
     <div className="min-h-screen pb-20">
-      <div className="sticky top-0 z-10 bg-background">
+      <div className="sticky top-0 z-10 bg-background border-b shadow-sm">
         <PageHeader
           title="Chat"
           emoji="🕊️"
