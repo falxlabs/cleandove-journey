@@ -3,6 +3,7 @@ import { Message } from "@/types/chat";
 import { useMessages } from "./useMessages";
 import { useMessageOperations } from "./useMessageOperations";
 import { useChatInitialization } from "./useChatInitialization";
+import { useChatTitle } from "./useChatTitle";
 
 interface UseChatProps {
   initialTopic?: string;
@@ -42,6 +43,8 @@ export const useChat = ({
     handleNewMessage
   } = useChatInitialization(messages, chatId);
 
+  const { chatTitle } = useChatTitle(initialTopic);
+
   const handleSendMessage = async () => {
     await sendMessage(messages, async (content) => {
       const assistantResponse = await handleNewMessage(input, content, messages);
@@ -59,6 +62,7 @@ export const useChat = ({
     setShowCreditAlert,
     sendMessage: handleSendMessage,
     initializeChat,
-    regenerateMessage
+    regenerateMessage,
+    chatTitle // Add this to the return object
   };
 };
