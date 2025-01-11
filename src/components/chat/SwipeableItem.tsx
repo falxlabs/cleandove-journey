@@ -3,7 +3,7 @@ import { useState, useRef, TouchEvent, MouseEvent, ReactNode } from "react";
 interface SwipeableItemProps {
   id: string;
   onSwipeComplete: () => Promise<void>;
-  onItemClick: () => void;
+  onItemClick?: () => void;
   children: ReactNode;
 }
 
@@ -60,7 +60,7 @@ export const SwipeableItem = ({ id, onSwipeComplete, onItemClick, children }: Sw
       await onSwipeComplete();
     } else {
       element.style.transform = 'translateX(0)';
-      if (!isSwiping.current) {
+      if (!isSwiping.current && onItemClick) {
         onItemClick();
       }
     }
