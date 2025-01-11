@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
 export const PerfectStreakCard = () => {
@@ -16,9 +15,6 @@ export const PerfectStreakCard = () => {
             </p>
           </div>
         </div>
-        <Button className="w-full mt-4" variant="secondary">
-          EXTEND STREAK
-        </Button>
       </CardContent>
     </Card>
   );
