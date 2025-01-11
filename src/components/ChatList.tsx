@@ -191,9 +191,15 @@ const ChatList = ({ chats, isLoading = false }: ChatListProps) => {
             <span>{chat.replies} replies</span>
           </div>
           <div 
-            className="absolute right-0 top-0 bottom-0 flex items-center justify-center bg-destructive w-[100px] transition-opacity"
+            className="absolute right-0 top-0 bottom-0 flex items-center justify-center bg-destructive w-[100px] transition-all duration-150"
             style={{ 
-              opacity: swipingId === chat.id ? Math.min(currentOffset.current / 50, 1) : 0 
+              transform: swipingId === chat.id ? 
+                `scale(${Math.min(currentOffset.current / 50, 1)})` : 
+                'scale(0)',
+              opacity: swipingId === chat.id ? 
+                Math.min(currentOffset.current / 50, 1) : 
+                0,
+              transformOrigin: 'center right'
             }}
           >
             <Trash2 className="text-white h-6 w-6" />
