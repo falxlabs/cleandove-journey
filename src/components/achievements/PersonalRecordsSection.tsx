@@ -1,4 +1,11 @@
 import PersonalRecord from "./PersonalRecord";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 const personalRecords = [
   {
@@ -28,11 +35,17 @@ const PersonalRecordsSection = () => {
   return (
     <section>
       <h2 className="text-xl font-bold mb-4">Personal Records</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {personalRecords.map((record, index) => (
-          <PersonalRecord key={index} {...record} />
-        ))}
-      </div>
+      <Carousel className="w-full">
+        <CarouselContent>
+          {personalRecords.map((record, index) => (
+            <CarouselItem key={index} className="basis-1/2 md:basis-1/3">
+              <PersonalRecord {...record} />
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        <CarouselPrevious />
+        <CarouselNext />
+      </Carousel>
     </section>
   );
 };
