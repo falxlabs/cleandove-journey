@@ -5,7 +5,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import StickyHeader from "@/components/StickyHeader";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -42,30 +41,37 @@ const Index = () => {
     },
   });
 
-  const streakButton = isStreakLoading ? (
-    <Skeleton className="h-10 w-20" />
-  ) : (
-    <Button 
-      variant="ghost" 
-      size="icon" 
-      className="px-4 pr-6 gap-0.5"
-      onClick={() => navigate('/streak')}
-    >
-      <span className="text-xl">🔥</span>
-      <span className="text-sm text-muted-foreground">{streak}</span>
-    </Button>
-  );
-
   return (
     <div className="min-h-screen flex flex-col animate-fade-in">
-      <StickyHeader
-        title="Today's Quest"
-        rightElement={streakButton}
-        emoji="🕊️"
-        description="Keep going strong! Your daily spiritual journey continues to inspire."
-      />
+      <div className="flex-none sticky top-0 z-10 bg-background border-b shadow-sm">
+        <header className="px-6 py-8 space-y-4">
+          <div className="flex items-center justify-between">
+            <h1 className="text-2xl font-semibold">Today's Quest</h1>
+            {isStreakLoading ? (
+              <Skeleton className="h-10 w-20" />
+            ) : (
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="px-4 pr-6 gap-0.5"
+                onClick={() => navigate('/streak')}
+              >
+                <span className="text-xl">🔥</span>
+                <span className="text-sm text-muted-foreground">{streak}</span>
+              </Button>
+            )}
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-muted">
+              <span className="text-2xl">🕊️</span>
+            </div>
+            <div className="flex-1 flex items-center bg-muted rounded-lg px-4 py-2">
+              <p className="text-sm text-muted-foreground">Keep going strong! Your daily spiritual journey continues to inspire.</p>
+            </div>
+          </div>
+        </header>
 
-      <section className="px-6 mb-8">
+        <section className="px-6 mb-8">
           <div className="flex justify-between mb-4">
             {weekDays.map((day, index) => (
               <div
@@ -92,7 +98,8 @@ const Index = () => {
               <p className="text-sm text-muted-foreground mt-2">{progress}% completed today</p>
             </>
           )}
-      </section>
+        </section>
+      </div>
 
       <ScrollArea className="flex-1 px-6 pt-4">
         <section className="space-y-4 pb-24">

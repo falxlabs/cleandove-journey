@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import PageHeader from "@/components/PageHeader";
 import SearchBar from "@/components/SearchBar";
 import FilterButtons from "@/components/FilterButtons";
 import ChatList from "@/components/ChatList";
 import { format } from "date-fns";
 import { useToast } from "@/components/ui/use-toast";
 import type { Database } from "@/integrations/supabase/types";
-import StickyHeader from "@/components/StickyHeader";
 
 type ChatHistory = Database['public']['Tables']['chat_histories']['Row'];
 
@@ -59,15 +59,17 @@ const History = () => {
 
   return (
     <div className="min-h-screen pb-20">
-      <StickyHeader
-        title="History"
-        emoji="🕊️"
-        description="Let's look back at our previous conversations"
-      />
+      <div className="sticky top-0 z-10 bg-background border-b shadow-sm">
+        <PageHeader
+          title="History"
+          emoji="🕊️"
+          description="Let's look back at our previous conversations"
+        />
 
-      <div className="px-6 space-y-4 pb-4">
-        <SearchBar value={searchQuery} onChange={setSearchQuery} isLoading={isLoading} />
-        <FilterButtons filter={filter} onFilterChange={setFilter} isLoading={isLoading} />
+        <div className="px-6 space-y-4 pb-4">
+          <SearchBar value={searchQuery} onChange={setSearchQuery} isLoading={isLoading} />
+          <FilterButtons filter={filter} onFilterChange={setFilter} isLoading={isLoading} />
+        </div>
       </div>
 
       <div className="px-6 pt-4">
