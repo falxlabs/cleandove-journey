@@ -163,7 +163,7 @@ const ChatList = ({ chats, isLoading = false }: ChatListProps) => {
         <div
           key={chat.id}
           id={`chat-${chat.id}`}
-          className="relative p-4 bg-card rounded-lg border shadow-sm hover:shadow-md transition-all touch-pan-y cursor-pointer select-none"
+          className="relative p-4 bg-card rounded-lg border shadow-sm hover:shadow-md transition-all touch-pan-y cursor-pointer select-none overflow-hidden"
           onTouchStart={(e) => handleTouchStart(e, chat.id)}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleDragEnd}
@@ -191,8 +191,9 @@ const ChatList = ({ chats, isLoading = false }: ChatListProps) => {
             <span>{chat.replies} replies</span>
           </div>
           <div 
-            className="absolute right-0 top-0 bottom-0 flex items-center justify-center bg-destructive w-[100px] transition-all duration-150"
+            className="absolute right-0 top-0 h-full bg-destructive transition-all duration-150 flex items-center"
             style={{ 
+              width: '100px',
               transform: swipingId === chat.id ? 
                 `scale(${Math.max(0.3, Math.min(currentOffset.current / 30, 1))})` : 
                 'scale(0)',
@@ -202,7 +203,9 @@ const ChatList = ({ chats, isLoading = false }: ChatListProps) => {
               transformOrigin: 'center right'
             }}
           >
-            <Trash2 className="text-white h-6 w-6" />
+            <div className="flex items-center justify-center w-full">
+              <Trash2 className="text-white h-6 w-6" />
+            </div>
           </div>
         </div>
       ))}
