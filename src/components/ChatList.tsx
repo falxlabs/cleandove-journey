@@ -113,9 +113,12 @@ const ChatList = ({ chats, isLoading = false }: ChatListProps) => {
           key={chat.id}
           id={chat.id}
           onSwipeComplete={() => handleDelete(chat.id)}
-          onItemClick={() => handleChatClick(chat)}
         >
-          <ChatItem {...chat} onFavorite={() => handleFavorite(chat.id, chat.favorite)} />
+          <ChatItem 
+            {...chat} 
+            onFavorite={() => handleFavorite(chat.id, chat.favorite)}
+            onClick={() => handleChatClick(chat)}
+          />
         </SwipeableItem>
       ))}
     </section>

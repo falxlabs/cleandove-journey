@@ -8,9 +8,19 @@ interface ChatItemProps {
   replies: number;
   favorite: boolean;
   onFavorite: () => void;
+  onClick: () => void;
 }
 
-export const ChatItem = ({ id, title, preview, date, replies, favorite, onFavorite }: ChatItemProps) => {
+export const ChatItem = ({ 
+  id, 
+  title, 
+  preview, 
+  date, 
+  replies, 
+  favorite, 
+  onFavorite,
+  onClick 
+}: ChatItemProps) => {
   const truncateText = (text: string, maxLength: number) => {
     if (text.length <= maxLength) return text;
     return text.slice(0, maxLength).trim() + '...';
@@ -22,9 +32,19 @@ export const ChatItem = ({ id, title, preview, date, replies, favorite, onFavori
     onFavorite();
   };
 
+  const handleItemClick = (e: React.MouseEvent) => {
+    // Only trigger onClick if the star wasn't clicked
+    if (!(e.target as HTMLElement).closest('button')) {
+      onClick();
+    }
+  };
+
   return (
     <>
-      <div className="p-4 bg-card rounded-lg border shadow-sm hover:shadow-md transition-all">
+      <div 
+        className="p-4 bg-card rounded-lg border shadow-sm hover:shadow-md transition-all cursor-pointer"
+        onClick={handleItemClick}
+      >
         <div className="flex justify-between items-start mb-2">
           <h3 className="font-medium">{title}</h3>
           <button
