@@ -9,7 +9,7 @@ const Achievements = () => {
   return (
     <div className="min-h-screen bg-background pb-32">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm border-b">
+      <div className="sticky top-0 z-10 bg-background border-b">
         <div className="flex items-center h-14 px-4">
           <button
             onClick={() => navigate(-1)}

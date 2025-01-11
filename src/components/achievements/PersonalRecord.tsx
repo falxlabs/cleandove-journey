@@ -10,17 +10,13 @@ interface PersonalRecordProps {
 
 const PersonalRecord = ({ title, value, date, icon, color }: PersonalRecordProps) => {
   return (
-    <Card className="p-4">
-      <div className="flex items-center gap-4">
-        <div className={`${color} w-12 h-12 rounded-full flex items-center justify-center text-2xl`}>
-          {icon}
-        </div>
-        <div>
-          <div className="text-2xl font-bold">{value}</div>
-          <div className="text-sm text-muted-foreground">{title}</div>
-          <div className="text-xs text-muted-foreground">{date}</div>
-        </div>
+    <Card className="p-4 flex flex-col items-center text-center">
+      <div className={`${color} w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-3`}>
+        {icon}
       </div>
+      <div className="text-2xl font-bold mb-1">{value}</div>
+      <div className="text-sm text-foreground mb-1">{title}</div>
+      <div className="text-xs text-muted-foreground">{date}</div>
     </Card>
   );
 };

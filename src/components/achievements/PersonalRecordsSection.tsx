@@ -34,11 +34,11 @@ const personalRecords = [
 const PersonalRecordsSection = () => {
   return (
     <section>
-      <h2 className="text-xl font-bold mb-4">Personal Records</h2>
+      <h2 className="text-2xl font-bold mb-6">Personal Records</h2>
       <Carousel className="w-full">
-        <CarouselContent>
+        <CarouselContent className="-ml-2 md:-ml-4">
           {personalRecords.map((record, index) => (
-            <CarouselItem key={index} className="basis-1/2 md:basis-1/3">
+            <CarouselItem key={index} className="pl-2 md:pl-4 basis-full sm:basis-1/2 md:basis-1/3">
               <PersonalRecord {...record} />
             </CarouselItem>
           ))}
