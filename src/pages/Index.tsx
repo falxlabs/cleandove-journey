@@ -66,7 +66,7 @@ const Index = () => {
               <span className="text-2xl">🕊️</span>
             </div>
             <div className="flex-1 flex items-center bg-muted rounded-lg px-4 py-2">
-              <p className="text-sm text-muted-foreground">Keep going strong! Your daily spiritual journey continues to inspire.</p>
+              <p className="text-sm text-muted-foreground">Keep going strong! Your daily journey continues to inspire.</p>
             </div>
           </div>
         </header>
