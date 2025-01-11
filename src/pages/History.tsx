@@ -42,7 +42,7 @@ const History = () => {
         title: chat.title,
         preview: chat.preview || "",
         date: format(new Date(chat.created_at), "PP"),
-        replies: chat.replies,
+        replies: chat.reply_count,
         favorite: chat.favorite,
       }));
     },
