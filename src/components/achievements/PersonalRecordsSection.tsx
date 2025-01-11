@@ -21,7 +21,7 @@ const personalRecords = [
     color: "bg-orange-500",
   },
   {
-    title: "Perfect Lessons",
+    title: "Perfect Days",
     value: "1",
     date: "Oct 18, 2024",
     icon: "✨",
