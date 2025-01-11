@@ -30,11 +30,11 @@ export const useTopicSelection = () => {
   ];
 
   const therapyTopics = [
-    { id: "physics", emoji: "⚛️", label: "Physics" },
-    { id: "chemistry", emoji: "🧪", label: "Chemistry" },
-    { id: "biology", emoji: "🧬", label: "Biology" },
-    { id: "astronomy", emoji: "🔭", label: "Astronomy" },
-    { id: "mathematics", emoji: "🔢", label: "Mathematics" },
+    { id: "cbt", emoji: "🧠", label: "CBT" },
+    { id: "mindfulness", emoji: "🧘", label: "Mindfulness" },
+    { id: "trauma", emoji: "❤️‍🩹", label: "Trauma" },
+    { id: "relationships", emoji: "🫂", label: "Relationships" },
+    { id: "self-esteem", emoji: "✨", label: "Self-Esteem" },
   ];
 
   return {
