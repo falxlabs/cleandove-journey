@@ -44,21 +44,6 @@ const Settings = () => {
         </Button>
       </div>
 
-      {/* Credits Section */}
-      <div className="px-6 py-6 space-y-3 bg-card rounded-lg mx-4 mt-4 shadow-sm">
-        <h2 className="text-sm font-medium text-muted-foreground">CREDITS</h2>
-        <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <span className="text-sm">Available Credits</span>
-            <span className="font-semibold">{credits}/{MAX_CREDITS}</span>
-          </div>
-          <Progress value={(credits / MAX_CREDITS) * 100} className="h-2" />
-          <p className="text-xs text-muted-foreground mt-2">
-            Credits are used for AI-powered features. You have {credits} credits remaining.
-          </p>
-        </div>
-      </div>
-
       {/* Account Section */}
       <div className="px-6 mt-8">
         <h2 className="text-xl font-semibold mb-4">Account</h2>
@@ -96,6 +81,22 @@ const Settings = () => {
               <ArrowRight className="h-5 w-5 text-muted-foreground" />
             </Button>
           </div>
+          
+          {/* Credits Section - Moved here */}
+          <div className="py-6 space-y-3 bg-card rounded-lg shadow-sm">
+            <h2 className="text-sm font-medium text-muted-foreground px-4">MESSAGES</h2>
+            <div className="space-y-2 px-4">
+              <div className="flex justify-between items-center">
+                <span className="text-sm">Available Messages</span>
+                <span className="font-semibold">{credits}/{MAX_CREDITS}</span>
+              </div>
+              <Progress value={(credits / MAX_CREDITS) * 100} className="h-2" />
+              <p className="text-xs text-muted-foreground mt-2">
+                Messages are used for AI-powered features. You have {credits} messages remaining.
+              </p>
+            </div>
+          </div>
+
           <Button variant="ghost" className="w-full h-14 text-primary">
             RESTORE SUBSCRIPTION
           </Button>
