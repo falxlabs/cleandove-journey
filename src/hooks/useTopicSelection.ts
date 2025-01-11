@@ -9,7 +9,7 @@ export const useTopicSelection = () => {
     { id: "wisdom", emoji: "📚", label: "Wisdom" },
     { id: "relationships", emoji: "🫂", label: "Relationships" },
     { id: "purpose", emoji: "🎯", label: "Purpose" },
-    { id: "peace", emoji: "☮️", label: "Peace" },
+    { id: "peace", emoji: "🕯️", label: "Peace" },
     { id: "joy", emoji: "✨", label: "Joy" },
     { id: "gratitude", emoji: "🙌", label: "Gratitude" },
   ];
