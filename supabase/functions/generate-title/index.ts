@@ -16,9 +16,10 @@ serve(async (req) => {
   try {
     const { messages } = await req.json();
     
-    // Get the first user message and AI response
-    const userMessage = messages.find((m: any) => m.sender === 'user')?.content || '';
-    const aiResponse = messages.find((m: any) => m.sender === 'assistant')?.content || '';
+    // Get only the first user message
+    const firstUserMessage = messages.find((m: any) => m.sender === 'user')?.content || '';
+
+    console.log('Generating title for first user message:', firstUserMessage);
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -31,17 +32,25 @@ serve(async (req) => {
         messages: [
           { 
             role: 'system', 
-            content: 'Generate a very short, engaging title (max 4-5 words) for a chat conversation based on the context provided. The title should capture the essence of what the user wants to discuss or improve.' 
+            content: 'Generate a very short, clear title (3-4 words maximum) that captures the main topic or question from the user\'s message. The title should be specific and descriptive, focusing on the key subject or request.' 
           },
           { 
             role: 'user', 
-            content: `User message: "${userMessage}"\nAI response: "${aiResponse}"\n\nGenerate a short, engaging title for this conversation.` 
+            content: `User message: "${firstUserMessage}"\n\nCreate a short, specific title that captures the main topic of this message.` 
           }
         ],
+        temperature: 0.7,
+        max_tokens: 50
       }),
     });
 
+    if (!response.ok) {
+      throw new Error(`OpenAI API error: ${response.statusText}`);
+    }
+
     const data = await response.json();
+    console.log('Generated title response:', data);
+
     const title = data.choices[0].message.content.replace(/["']/g, '');
 
     return new Response(JSON.stringify({ title }), {
