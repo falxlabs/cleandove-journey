@@ -5,6 +5,7 @@ import { StreakTabs } from "@/components/streak/StreakTabs";
 import { StreakDisplay } from "@/components/streak/StreakDisplay";
 import { StreakChallengeCard } from "@/components/streak/StreakChallengeCard";
 import { MonthlyStats } from "@/components/streak/MonthlyStats";
+import { FriendsContent } from "@/components/streak/FriendsContent";
 
 const Streak = () => {
   const [activeTab, setActiveTab] = useState<"personal" | "friends">("personal");
@@ -25,12 +26,18 @@ const Streak = () => {
     <div className="min-h-screen bg-background text-foreground p-4 animate-fade-in">
       <StreakHeader />
       <StreakTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-      <StreakDisplay 
-        currentStreak={streakData?.currentStreak} 
-        isLoading={isStreakLoading} 
-      />
-      <StreakChallengeCard />
-      <MonthlyStats daysCompleted={streakData?.daysCompleted} />
+      {activeTab === "personal" ? (
+        <>
+          <StreakDisplay 
+            currentStreak={streakData?.currentStreak} 
+            isLoading={isStreakLoading} 
+          />
+          <StreakChallengeCard />
+          <MonthlyStats daysCompleted={streakData?.daysCompleted} />
+        </>
+      ) : (
+        <FriendsContent />
+      )}
     </div>
   );
 };
