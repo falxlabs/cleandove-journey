@@ -1,13 +1,18 @@
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Switch } from "@/components/ui/switch"
 import { Progress } from "@/components/ui/progress"
-import { ArrowRight } from "lucide-react"
+import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
+import { ArrowLeft, User, Infinity, DollarSign, Gift, Share2, ThumbsUp, MessageSquareHeart, Contact, FileText, Settings as SettingsIcon, Clock } from "lucide-react"
+import { Link } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { supabase } from "@/integrations/supabase/client"
-import { useNavigate } from "react-router-dom"
 
 const Settings = () => {
   const [credits, setCredits] = useState<number>(0)
-  const navigate = useNavigate()
+  const [showCreditAlert, setShowCreditAlert] = useState(false)
   const MAX_CREDITS = 10
 
   useEffect(() => {
@@ -22,6 +27,9 @@ const Settings = () => {
         
         if (profile) {
           setCredits(profile.credits)
+          if (profile.credits <= 0) {
+            setShowCreditAlert(true)
+          }
         }
       }
     }
@@ -29,111 +37,179 @@ const Settings = () => {
     fetchCredits()
   }, [])
 
-  const handleSignOut = async () => {
-    await supabase.auth.signOut()
-    navigate('/auth')
-  }
-
   return (
-    <div className="min-h-screen pb-20 bg-background">
+    <div className="min-h-screen pb-20 animate-fade-in">
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b">
-        <h1 className="text-xl font-semibold">Settings</h1>
-        <Button variant="ghost" className="text-primary">
-          Done
-        </Button>
-      </div>
-
-      {/* Credits Section */}
-      <div className="px-6 py-6 space-y-3 bg-card rounded-lg mx-4 mt-4 shadow-sm">
-        <h2 className="text-sm font-medium text-muted-foreground">CREDITS</h2>
-        <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <span className="text-sm">Available Credits</span>
-            <span className="font-semibold">{credits}/{MAX_CREDITS}</span>
-          </div>
-          <Progress value={(credits / MAX_CREDITS) * 100} className="h-2" />
-          <p className="text-xs text-muted-foreground mt-2">
-            Credits are used for AI-powered features. You have {credits} credits remaining.
-          </p>
-        </div>
-      </div>
-
-      {/* Account Section */}
-      <div className="px-6 mt-8">
-        <h2 className="text-xl font-semibold mb-4">Account</h2>
-        <div className="space-y-px bg-card rounded-lg overflow-hidden shadow-sm">
-          <Button variant="ghost" className="w-full justify-between h-14 px-4">
-            <span>Preferences</span>
-            <ArrowRight className="h-5 w-5 text-muted-foreground" />
-          </Button>
-          <Button variant="ghost" className="w-full justify-between h-14 px-4">
-            <span>Profile</span>
-            <ArrowRight className="h-5 w-5 text-muted-foreground" />
-          </Button>
-          <Button variant="ghost" className="w-full justify-between h-14 px-4">
-            <span>Notifications</span>
-            <ArrowRight className="h-5 w-5 text-muted-foreground" />
-          </Button>
-          <Button variant="ghost" className="w-full justify-between h-14 px-4">
-            <span>Social accounts</span>
-            <ArrowRight className="h-5 w-5 text-muted-foreground" />
-          </Button>
-          <Button variant="ghost" className="w-full justify-between h-14 px-4">
-            <span>Privacy settings</span>
-            <ArrowRight className="h-5 w-5 text-muted-foreground" />
-          </Button>
-        </div>
-      </div>
-
-      {/* Subscription Section */}
-      <div className="px-6 mt-8">
-        <h2 className="text-xl font-semibold mb-4">Subscription</h2>
-        <div className="space-y-4">
-          <div className="bg-card rounded-lg overflow-hidden shadow-sm">
-            <Button variant="ghost" className="w-full justify-between h-14 px-4">
-              <span>Choose a plan</span>
-              <ArrowRight className="h-5 w-5 text-muted-foreground" />
-            </Button>
-          </div>
-          <Button variant="ghost" className="w-full h-14 text-primary">
-            RESTORE SUBSCRIPTION
-          </Button>
-        </div>
-      </div>
-
-      {/* Support Section */}
-      <div className="px-6 mt-8">
-        <h2 className="text-xl font-semibold mb-4">Support</h2>
-        <div className="space-y-px bg-card rounded-lg overflow-hidden shadow-sm">
-          <Button variant="ghost" className="w-full justify-between h-14 px-4">
-            <span>Help Center</span>
-            <ArrowRight className="h-5 w-5 text-muted-foreground" />
-          </Button>
-          <Button variant="ghost" className="w-full justify-between h-14 px-4">
-            <span>Feedback</span>
-            <ArrowRight className="h-5 w-5 text-muted-foreground" />
-          </Button>
-        </div>
-      </div>
-
-      {/* Sign Out Button */}
-      <div className="px-6 mt-8">
-        <Button 
-          variant="ghost" 
-          className="w-full h-14 text-primary"
-          onClick={handleSignOut}
+      <div className="flex items-center gap-2 px-4 py-3 border-b">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => window.history.back()}
+          className="mr-2"
         >
-          SIGN OUT
+          <ArrowLeft className="h-5 w-5" />
         </Button>
       </div>
 
-      {/* Footer Links */}
-      <div className="px-6 mt-8 space-y-4">
-        <Button variant="link" className="text-primary">TERMS</Button>
-        <Button variant="link" className="text-primary">PRIVACY POLICY</Button>
-        <Button variant="link" className="text-primary">ACKNOWLEDGEMENTS</Button>
+      {/* Profile Section */}
+      <div className="px-6 py-6 space-y-6">
+        <div className="flex flex-col items-center gap-4">
+          <Avatar className="h-24 w-24">
+            <AvatarImage src="" />
+            <AvatarFallback className="bg-primary/10">
+              <User className="h-12 w-12 text-primary" />
+            </AvatarFallback>
+          </Avatar>
+          <Input 
+            placeholder="Write your name..." 
+            className="max-w-[200px] text-center text-xl"
+          />
+        </div>
+
+        {/* Credits Section */}
+        <div className="space-y-3 bg-secondary/20 p-4 rounded-lg">
+          <h2 className="text-sm font-medium text-muted-foreground">CREDITS</h2>
+          <div className="space-y-2">
+            <div className="flex justify-between items-center">
+              <span className="text-sm">Available Credits</span>
+              <span className="font-semibold">{credits}/{MAX_CREDITS}</span>
+            </div>
+            <Progress value={(credits / MAX_CREDITS) * 100} className="h-2" />
+            <p className="text-xs text-muted-foreground mt-2">
+              Credits are used for AI-powered features. You have {credits} credits remaining.
+            </p>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <span className="text-sm">Age range</span>
+            <Select defaultValue="25-34">
+              <SelectTrigger className="w-32">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="13-17">13-17</SelectItem>
+                <SelectItem value="18-24">18-24</SelectItem>
+                <SelectItem value="25-34">25-34</SelectItem>
+                <SelectItem value="35-44">35-44</SelectItem>
+                <SelectItem value="45-54">45-54</SelectItem>
+                <SelectItem value="55+">55+</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex justify-between items-center">
+            <span className="text-sm">Religious content</span>
+            <Switch />
+          </div>
+        </div>
+
+          {/* Subscription Section */}
+          <div className="space-y-3">
+            <h2 className="text-sm font-medium text-muted-foreground">SUBSCRIPTION</h2>
+            <div className="space-y-1">
+              <Button variant="ghost" className="w-full justify-start gap-3 h-12">
+                <User className="h-5 w-5 text-primary" />
+                <span>Membership</span>
+                <span className="ml-auto text-muted-foreground">Trial</span>
+              </Button>
+              <Button variant="ghost" className="w-full justify-start gap-3 h-12">
+                <Infinity className="h-5 w-5 text-primary" />
+                <span>Change Premium Plan</span>
+              </Button>
+              <Button variant="ghost" className="w-full justify-start gap-3 h-12">
+                <DollarSign className="h-5 w-5 text-primary" />
+                <span>Redeem Promotional Code</span>
+              </Button>
+              <Button variant="ghost" className="w-full justify-start gap-3 h-12">
+                <DollarSign className="h-5 w-5 text-primary border rounded-full" />
+                <span>Restore purchases</span>
+              </Button>
+              <Button variant="ghost" className="w-full justify-start gap-3 h-12">
+                <Gift className="h-5 w-5 text-primary" />
+                <span>Gift Cleansed</span>
+              </Button>
+            </div>
+          </div>
+
+          {/* About Section */}
+          <div className="space-y-3">
+            <h2 className="text-sm font-medium text-muted-foreground">ABOUT</h2>
+            <div className="space-y-1">
+              <Button variant="ghost" className="w-full justify-start gap-3 h-12">
+                <Share2 className="h-5 w-5 text-primary" />
+                <span>Share Cleansed & Earn</span>
+              </Button>
+              <Button variant="ghost" className="w-full justify-start gap-3 h-12">
+                <ThumbsUp className="h-5 w-5 text-primary" />
+                <span>Rate us</span>
+              </Button>
+              <Button variant="ghost" className="w-full justify-start gap-3 h-12">
+                <MessageSquareHeart className="h-5 w-5 text-primary" />
+                <span>Help us improve Cleansed</span>
+              </Button>
+              <Button variant="ghost" className="w-full justify-start gap-3 h-12">
+                <Share2 className="h-5 w-5 text-primary" />
+                <span>Share with friends</span>
+              </Button>
+              <Button variant="ghost" className="w-full justify-start gap-3 h-12">
+                <Contact className="h-5 w-5 text-primary" />
+                <span>Contact us</span>
+              </Button>
+              <Button variant="ghost" className="w-full justify-start gap-3 h-12">
+                <FileText className="h-5 w-5 text-primary" />
+                <span>Terms of use</span>
+              </Button>
+              <Button variant="ghost" className="w-full justify-start gap-3 h-12">
+                <FileText className="h-5 w-5 text-primary" />
+                <span>Privacy policy</span>
+              </Button>
+            </div>
+          </div>
+
+          {/* Account Section */}
+          <div className="space-y-3">
+            <h2 className="text-sm font-medium text-muted-foreground">ACCOUNT</h2>
+            <div className="space-y-1">
+              <Button variant="ghost" className="w-full justify-start gap-3 h-12">
+                <FileText className="h-5 w-5 text-primary" />
+                <span>Login</span>
+              </Button>
+              <Button variant="ghost" className="w-full justify-start gap-3 h-12">
+                <SettingsIcon className="h-5 w-5 text-primary" />
+                <span>Personalize your conversations</span>
+              </Button>
+              <Button variant="ghost" className="w-full justify-start gap-3 h-12">
+                <Clock className="h-5 w-5 text-primary" />
+                <span>Manage your reminders</span>
+              </Button>
+            </div>
+          </div>
+
+          {/* App Version */}
+          <div className="pt-6 space-y-1">
+            <p className="text-sm text-muted-foreground">App Version: 1.0.0</p>
+            <p className="text-sm text-muted-foreground break-all">UID: mock-user-id-123456789</p>
+          </div>
       </div>
+
+      {/* Credits Alert Dialog */}
+      <AlertDialog open={showCreditAlert} onOpenChange={setShowCreditAlert}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Out of Credits</AlertDialogTitle>
+            <AlertDialogDescription>
+              You've reached your credit limit. To continue using AI features, please upgrade your plan or wait for your credits to refresh.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setShowCreditAlert(false)}>
+              Understood
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
