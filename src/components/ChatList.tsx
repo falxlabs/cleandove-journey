@@ -112,14 +112,18 @@ const ChatList = ({ chats, isLoading = false }: ChatListProps) => {
       // Reset position if not swiped far enough
       element.style.transform = 'translateX(0)';
       
-      // If it wasn't a significant swipe, treat it as a click
+      // If it wasn't a significant swipe, treat it as a click and navigate
       if (!isSwiping.current) {
-        navigate(`/chat/conversation`, { 
-          state: { 
-            chatId: swipingId,
-            topic: chats.find(chat => chat.id === swipingId)?.title 
-          } 
-        });
+        const chat = chats.find(chat => chat.id === swipingId);
+        if (chat) {
+          navigate(`/chat/conversation`, { 
+            state: { 
+              chatId: swipingId,
+              topic: chat.title,
+              isExistingChat: true // Add this flag to indicate it's an existing chat
+            } 
+          });
+        }
       }
     }
 
@@ -191,19 +195,13 @@ const ChatList = ({ chats, isLoading = false }: ChatListProps) => {
             <span>{chat.replies} replies</span>
           </div>
           <div 
-            className="absolute right-0 top-0 h-full bg-destructive transition-all duration-150 flex items-center"
+            className="absolute inset-0 bg-destructive flex items-center justify-end"
             style={{ 
-              width: '100px',
-              transform: swipingId === chat.id ? 
-                `scale(${Math.max(0.3, Math.min(currentOffset.current / 30, 1))})` : 
-                'scale(0)',
-              opacity: swipingId === chat.id ? 
-                Math.max(0.5, Math.min(currentOffset.current / 30, 1)) : 
-                0,
-              transformOrigin: 'center right'
+              transform: `translateX(${100 - (currentOffset.current)}%)`,
+              transition: swipingId === chat.id ? 'none' : 'transform 0.2s ease-out'
             }}
           >
-            <div className="flex items-center justify-center w-full">
+            <div className="px-4">
               <Trash2 className="text-white h-6 w-6" />
             </div>
           </div>
