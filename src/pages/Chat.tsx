@@ -20,6 +20,20 @@ const Chat = () => {
     });
   };
 
+  const handleTopicSelect = (topicId: string) => {
+    setSelectedTopic(topicId);
+    navigate("/chat/conversation", {
+      state: {
+        topic: topicId,
+        mascot: "🕊️",
+        context: `I want to improve my ${topicId}`,
+        improvement: improvements.find(i => i.id === topicId)?.label || 
+                    temptations.find(i => i.id === topicId)?.label ||
+                    therapyTopics.find(i => i.id === topicId)?.label
+      },
+    });
+  };
+
   return (
     <div className="min-h-screen pb-20">
       <div className="sticky top-0 z-10 bg-background border-b shadow-sm">
@@ -46,19 +60,19 @@ const Chat = () => {
         <TopicCarousel
           title="I want to improve..."
           topics={improvements}
-          onTopicSelect={setSelectedTopic}
+          onTopicSelect={handleTopicSelect}
         />
 
         <TopicCarousel
           title="I'm struggling with..."
           topics={temptations}
-          onTopicSelect={setSelectedTopic}
+          onTopicSelect={handleTopicSelect}
         />
 
         <TopicCarousel
           title="Ask about..."
           topics={therapyTopics}
-          onTopicSelect={setSelectedTopic}
+          onTopicSelect={handleTopicSelect}
         />
       </section>
     </div>
