@@ -82,7 +82,7 @@ const Profile = () => {
       {/* Action Buttons */}
       <div className="px-4 mt-6 flex gap-2 justify-center">
         <Button 
-          className="w-[140px] bg-primary text-primary-foreground hover:bg-primary/90"
+          className="bg-primary text-primary-foreground hover:bg-primary/90"
         >
           <UserPlus className="mr-2 h-5 w-5" />
           ADD FRIENDS
