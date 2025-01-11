@@ -116,12 +116,12 @@ const ChatList = ({ chats, isLoading = false }: ChatListProps) => {
       if (!isSwiping.current) {
         const chat = chats.find(chat => chat.id === swipingId);
         if (chat) {
-          navigate(`/chat/conversation`, { 
+          navigate(`/conversation`, { 
             state: { 
               chatId: swipingId,
               topic: chat.title,
               isExistingChat: true,
-              from: location.pathname // Add the current route to state
+              from: location.pathname
             } 
           });
         }

@@ -11,7 +11,7 @@ const Chat = () => {
   const { selectedTopic, setSelectedTopic, improvements, temptations, therapyTopics } = useTopicSelection();
 
   const handleStartChat = () => {
-    navigate("/chat/conversation", {
+    navigate("/conversation", {
       state: {
         topic: selectedTopic,
         mascot: "🕊️",
@@ -24,7 +24,7 @@ const Chat = () => {
 
   const handleTopicSelect = (topicId: string) => {
     setSelectedTopic(topicId);
-    navigate("/chat/conversation", {
+    navigate("/conversation", {
       state: {
         topic: topicId,
         mascot: "🕊️",
