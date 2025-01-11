@@ -31,11 +31,11 @@ const Index = () => {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       return [
-        { title: "Reflect with Pace", time: "10 min", completed: false },
-        { title: "Read and Be Inspired", time: "15 min", completed: false },
-        { title: "Move with Purpose", time: "30 min", completed: false },
-        { title: "Practice Gratitude", time: "5 min", completed: false },
-        { title: "Breathe to Reset", time: "5 min", completed: false },
+        { title: "Reflect with Pace", time: "2 min", completed: false },
+        { title: "Read and Be Inspired", time: "1 min", completed: false },
+        { title: "Move with Purpose", time: "15 min", completed: false },
+        { title: "Practice Gratitude", time: "2 min", completed: false },
+        { title: "Breathe to Reset", time: "3 min", completed: false },
       ];
     },
   });
