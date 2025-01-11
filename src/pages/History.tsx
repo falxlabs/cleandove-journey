@@ -59,7 +59,7 @@ const History = () => {
 
   return (
     <div className="min-h-screen pb-20">
-      <div className="sticky top-0 z-10 bg-background">
+      <div className="sticky top-0 z-10 bg-background border-b shadow-sm">
         <PageHeader
           title="History"
           emoji="🕊️"
@@ -72,7 +72,7 @@ const History = () => {
         </div>
       </div>
 
-      <div className="px-6">
+      <div className="px-6 pt-4">
         <ChatList chats={filteredChats} isLoading={isLoading} />
       </div>
     </div>

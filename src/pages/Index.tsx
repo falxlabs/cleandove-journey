@@ -43,7 +43,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col animate-fade-in">
-      <div className="flex-none sticky top-0 z-10 bg-background">
+      <div className="flex-none sticky top-0 z-10 bg-background border-b shadow-sm">
         <header className="px-6 py-8 space-y-4">
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-semibold">Today's Quest</h1>
@@ -101,7 +101,7 @@ const Index = () => {
         </section>
       </div>
 
-      <ScrollArea className="flex-1 px-6">
+      <ScrollArea className="flex-1 px-6 pt-4">
         <section className="space-y-4 pb-24">
           {isTasksLoading ? (
             <>

@@ -40,7 +40,7 @@ const Chat = () => {
         </div>
       </div>
 
-      <section className="px-6 space-y-6">
+      <section className="px-6 space-y-6 pt-4">
         <TopicCarousel
           title="I'm struggling with..."
           topics={temptations}
