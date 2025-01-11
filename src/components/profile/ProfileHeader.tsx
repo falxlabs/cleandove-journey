@@ -31,45 +31,43 @@ const ProfileHeader = ({ profile }: ProfileHeaderProps) => {
       </div>
         
       <div className="px-6">
-        <div className="p-6">
-          <div className="flex flex-col items-center space-y-4">
-            <Avatar className="h-24 w-24 border-4 border-background shadow-lg">
-              <AvatarImage src={profile?.avatar_url} />
-              <AvatarFallback className="text-2xl bg-muted">
-                {profile?.username?.[0]?.toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            <div className="text-center space-y-1">
-              <h2 className="text-xl font-semibold">{profile?.username || 'User'}</h2>
-              <p className="text-sm text-muted-foreground">
-                @{profile?.username?.toLowerCase() || 'user'}
-              </p>
-            </div>
+        <div className="flex flex-col items-center space-y-4 py-6">
+          <Avatar className="h-24 w-24 border-4 border-background shadow-lg">
+            <AvatarImage src={profile?.avatar_url} />
+            <AvatarFallback className="text-2xl bg-muted">
+              {profile?.username?.[0]?.toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          <div className="text-center space-y-1">
+            <h2 className="text-xl font-semibold">{profile?.username || 'User'}</h2>
+            <p className="text-sm text-muted-foreground">
+              @{profile?.username?.toLowerCase() || 'user'}
+            </p>
           </div>
+        </div>
 
-          <div className="mt-6 flex gap-2 justify-center w-full">
-            {isMobile ? (
-              <div className="flex w-full gap-2">
-                <Button className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90">
-                  <UserPlus className="mr-2 h-5 w-5" />
-                  Add Friends
-                </Button>
-                <Button variant="outline" size="icon">
-                  <Share2 className="h-5 w-5" />
-                </Button>
-              </div>
-            ) : (
-              <>
-                <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
-                  <UserPlus className="mr-2 h-5 w-5" />
-                  Add Friends
-                </Button>
-                <Button variant="outline" size="icon">
-                  <Share2 className="h-5 w-5" />
-                </Button>
-              </>
-            )}
-          </div>
+        <div className="flex gap-2 justify-center w-full pb-6">
+          {isMobile ? (
+            <div className="flex w-full gap-2">
+              <Button className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90">
+                <UserPlus className="mr-2 h-5 w-5" />
+                Add Friends
+              </Button>
+              <Button variant="outline" size="icon">
+                <Share2 className="h-5 w-5" />
+              </Button>
+            </div>
+          ) : (
+            <>
+              <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
+                <UserPlus className="mr-2 h-5 w-5" />
+                Add Friends
+              </Button>
+              <Button variant="outline" size="icon">
+                <Share2 className="h-5 w-5" />
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </>
