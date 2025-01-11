@@ -5,6 +5,7 @@ import { Settings, UserPlus, Share2, Trophy, Award, Flame } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
+import { Card } from "@/components/ui/card";
 
 const Profile = () => {
   const [profile, setProfile] = useState<any>(null);
@@ -54,7 +55,7 @@ const Profile = () => {
         
       {/* Profile Section */}
       <div className="px-6">
-        <div className="bg-card rounded-xl p-6 shadow-sm">
+        <Card className="p-6">
           <div className="flex flex-col items-center space-y-4">
             <Avatar className="h-24 w-24 border-4 border-background shadow-lg">
               <AvatarImage src={profile?.avatar_url} />
@@ -71,15 +72,19 @@ const Profile = () => {
           </div>
 
           {/* Stats */}
-          <div className="mt-6 grid grid-cols-2 gap-4 text-center">
-            <div className="bg-muted/50 rounded-lg p-4">
-              <div className="text-2xl font-bold">0</div>
-              <div className="text-sm text-muted-foreground">Following</div>
-            </div>
-            <div className="bg-muted/50 rounded-lg p-4">
-              <div className="text-2xl font-bold">0</div>
-              <div className="text-sm text-muted-foreground">Followers</div>
-            </div>
+          <div className="mt-6 grid grid-cols-2 gap-4">
+            <Card className="p-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold">0</div>
+                <div className="text-sm text-muted-foreground">Following</div>
+              </div>
+            </Card>
+            <Card className="p-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold">0</div>
+                <div className="text-sm text-muted-foreground">Followers</div>
+              </div>
+            </Card>
           </div>
 
           {/* Action Buttons */}
@@ -92,79 +97,75 @@ const Profile = () => {
               <Share2 className="h-5 w-5" />
             </Button>
           </div>
-        </div>
+        </Card>
       </div>
 
       {/* Overview Section */}
       <div className="px-6 mt-8">
-        <div className="flex items-center gap-3 mb-4">
+        <div className="flex items-center gap-3 mb-6">
           <Trophy className="h-6 w-6 text-primary" />
-          <h2 className="text-xl font-semibold">Overview</h2>
+          <h2 className="text-2xl font-bold">Overview</h2>
         </div>
         <div className="grid grid-cols-2 gap-4">
-          <div className="bg-card rounded-xl p-4 shadow-sm">
+          <Card className="p-4">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <Flame className="h-5 w-5 text-primary" />
+              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <Flame className="h-6 w-6 text-primary" />
               </div>
               <div>
                 <div className="text-2xl font-bold">0</div>
                 <div className="text-sm text-muted-foreground">Day streak</div>
               </div>
             </div>
-          </div>
-          <div className="bg-card rounded-xl p-4 shadow-sm">
+          </Card>
+          <Card className="p-4">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <Award className="h-5 w-5 text-primary" />
+              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <Award className="h-6 w-6 text-primary" />
               </div>
               <div>
                 <div className="text-2xl font-bold">0</div>
                 <div className="text-sm text-muted-foreground">Total XP</div>
               </div>
             </div>
-          </div>
+          </Card>
         </div>
       </div>
 
       {/* Achievements Preview */}
       <div className="px-6 mt-8">
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-3">
             <Award className="h-6 w-6 text-primary" />
-            <h2 className="text-xl font-semibold">Achievements</h2>
+            <h2 className="text-2xl font-bold">Achievements</h2>
           </div>
           <Button 
             variant="ghost" 
-            className="text-sm text-primary hover:text-primary/90"
+            className="text-primary hover:text-primary/90 font-medium"
             onClick={() => navigate('/achievements')}
           >
             View All
           </Button>
         </div>
         <div className="grid grid-cols-2 gap-4">
-          <div className="bg-card rounded-xl p-4 shadow-sm">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <Trophy className="h-5 w-5 text-primary" />
+          <Card className="p-4">
+            <div className="flex flex-col items-center text-center">
+              <div className="h-16 w-16 rounded-full bg-pink-500 flex items-center justify-center text-3xl mb-3">
+                🏃‍♂️
               </div>
-              <div>
-                <div className="font-semibold">First Win</div>
-                <div className="text-sm text-muted-foreground">Win your first game</div>
-              </div>
+              <div className="font-semibold mb-1">XP Olympian</div>
+              <div className="text-sm text-muted-foreground">3 of 10</div>
             </div>
-          </div>
-          <div className="bg-card rounded-xl p-4 shadow-sm">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <Award className="h-5 w-5 text-primary" />
+          </Card>
+          <Card className="p-4">
+            <div className="flex flex-col items-center text-center">
+              <div className="h-16 w-16 rounded-full bg-green-500 flex items-center justify-center text-3xl mb-3">
+                🎯
               </div>
-              <div>
-                <div className="font-semibold">Champion</div>
-                <div className="text-sm text-muted-foreground">Reach level 10</div>
-              </div>
+              <div className="font-semibold mb-1">Flawless Finisher</div>
+              <div className="text-sm text-muted-foreground">2 of 5</div>
             </div>
-          </div>
+          </Card>
         </div>
       </div>
     </div>
