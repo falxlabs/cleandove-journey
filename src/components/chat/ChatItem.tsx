@@ -17,6 +17,7 @@ export const ChatItem = ({ id, title, preview, date, replies, favorite, onFavori
   };
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
     onFavorite();
   };
