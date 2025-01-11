@@ -4,6 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useState, useRef, TouchEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 
 interface Chat {
   id: string;
@@ -21,10 +22,12 @@ interface ChatListProps {
 
 const ChatList = ({ chats, isLoading = false }: ChatListProps) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [swipingId, setSwipingId] = useState<string | null>(null);
   const touchStartX = useRef<number>(0);
   const currentOffset = useRef<number>(0);
+  const isSwiping = useRef(false);
 
   const truncateText = (text: string, maxLength: number) => {
     if (text.length <= maxLength) return text;
@@ -34,12 +37,16 @@ const ChatList = ({ chats, isLoading = false }: ChatListProps) => {
   const handleTouchStart = (e: TouchEvent, chatId: string) => {
     touchStartX.current = e.touches[0].clientX;
     setSwipingId(chatId);
+    isSwiping.current = false;
   };
 
   const handleTouchMove = (e: TouchEvent) => {
     if (!swipingId) return;
     const touchX = e.touches[0].clientX;
     const diff = touchStartX.current - touchX;
+    if (Math.abs(diff) > 5) {
+      isSwiping.current = true;
+    }
     currentOffset.current = Math.max(0, Math.min(diff, 100));
     
     const element = document.getElementById(`chat-${swipingId}`);
@@ -81,10 +88,21 @@ const ChatList = ({ chats, isLoading = false }: ChatListProps) => {
     } else {
       // Reset position if not swiped far enough
       element.style.transform = 'translateX(0)';
+      
+      // If it wasn't a significant swipe, treat it as a click
+      if (!isSwiping.current) {
+        navigate(`/chat/conversation`, { 
+          state: { 
+            chatId: swipingId,
+            topic: chats.find(chat => chat.id === swipingId)?.title 
+          } 
+        });
+      }
     }
 
     currentOffset.current = 0;
     setSwipingId(null);
+    isSwiping.current = false;
   };
 
   if (isLoading) {
@@ -116,7 +134,7 @@ const ChatList = ({ chats, isLoading = false }: ChatListProps) => {
         <div
           key={chat.id}
           id={`chat-${chat.id}`}
-          className="relative p-4 bg-card rounded-lg border shadow-sm hover:shadow-md transition-all touch-pan-y"
+          className="relative p-4 bg-card rounded-lg border shadow-sm hover:shadow-md transition-all touch-pan-y cursor-pointer"
           onTouchStart={(e) => handleTouchStart(e, chat.id)}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
