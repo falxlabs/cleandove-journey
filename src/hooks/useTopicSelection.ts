@@ -31,10 +31,10 @@ export const useTopicSelection = () => {
 
   const therapyTopics = [
     { id: "cbt", emoji: "🧠", label: "CBT" },
-    { id: "mindfulness", emoji: "🧘", label: "Mindfulness" },
-    { id: "trauma", emoji: "❤️‍🩹", label: "Trauma" },
-    { id: "relationships", emoji: "🫂", label: "Relationships" },
-    { id: "self-esteem", emoji: "✨", label: "Self-Esteem" },
+    { id: "breathing", emoji: "🫁", label: "Breathing" },
+    { id: "habits", emoji: "📝", label: "Healthy Habits" },
+    { id: "cold-shower", emoji: "🚿", label: "Cold Shower" },
+    { id: "brain", emoji: "🎯", label: "Brain Training" },
   ];
 
   return {
