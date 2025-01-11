@@ -7,7 +7,7 @@ import { useTopicSelection } from "@/hooks/useTopicSelection";
 
 const Chat = () => {
   const navigate = useNavigate();
-  const { selectedTopic, setSelectedTopic, temptations, therapyTopics } = useTopicSelection();
+  const { selectedTopic, setSelectedTopic, improvements, temptations, therapyTopics } = useTopicSelection();
 
   const handleStartChat = () => {
     navigate("/chat/conversation", {
@@ -41,6 +41,12 @@ const Chat = () => {
       </div>
 
       <section className="px-6 space-y-6 pt-4">
+        <TopicCarousel
+          title="I want to improve..."
+          topics={improvements}
+          onTopicSelect={setSelectedTopic}
+        />
+
         <TopicCarousel
           title="I'm struggling with..."
           topics={temptations}
