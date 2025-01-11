@@ -136,15 +136,15 @@ const Streak = () => {
                 <span className="text-2xl">✓</span>
                 <span className="text-2xl font-bold">{streakData?.daysCompleted}</span>
               </div>
-              <p className="text-sm text-muted-foreground">Days practiced</p>
+              <p className="text-sm text-muted-foreground">Days conquered</p>
             </div>
             
             <Calendar
               mode="single"
               selected={date}
               onSelect={(newDate) => newDate && setDate(newDate)}
+              defaultMonth={date}
               className="rounded-md border"
-              hideHead={true}
             />
           </div>
         </CardContent>
