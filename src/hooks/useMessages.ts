@@ -5,7 +5,7 @@ export const useMessages = (initialTopic?: string, context?: string, improvement
   const [messages, setMessages] = useState<Message[]>([]);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
 
-  const getInitialMessage = () => {
+  const getInitialMessage = (): string => {
     if (context && improvement) {
       return `Hello! I understand you want to improve your ${improvement}. I'm here to help you on this journey. What specific aspects would you like to work on?`;
     }

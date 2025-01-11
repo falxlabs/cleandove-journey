@@ -4,3 +4,17 @@ export interface Message {
   sender: "assistant" | "user";
   timestamp: Date;
 }
+
+export interface ChatMessage extends Message {
+  isLoading?: boolean;
+  error?: string;
+}
+
+export interface ChatHistoryEntry {
+  id: string;
+  title: string;
+  preview: string;
+  date: string;
+  replies: number;
+  favorite: boolean;
+}

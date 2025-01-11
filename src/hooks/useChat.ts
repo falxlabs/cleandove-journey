@@ -1,11 +1,10 @@
 import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import { checkCredits, deductCredit } from "@/utils/credits";
+import { Message } from "@/types/chat";
 import { useMessages } from "./useMessages";
 import { useChatHistory } from "./useChatHistory";
 import { useChatTitle } from "./useChatTitle";
-import { Message } from "@/types/chat";
+import { useCredits } from "./useCredits";
+import { useChatOperations } from "./useChatOperations";
 
 interface UseChatProps {
   initialTopic?: string;
@@ -14,10 +13,8 @@ interface UseChatProps {
 }
 
 export const useChat = ({ initialTopic, context, improvement }: UseChatProps = {}) => {
-  const { toast } = useToast();
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [showCreditAlert, setShowCreditAlert] = useState(false);
 
   const { messages, setMessages, isInitialLoading, initializeChat } = useMessages(
     initialTopic,
@@ -27,15 +24,14 @@ export const useChat = ({ initialTopic, context, improvement }: UseChatProps = {
   const { chatId, setChatId, createChatHistory, saveMessages, updateExistingChat } =
     useChatHistory();
   const { chatTitle, generateTitle } = useChatTitle(initialTopic);
+  const { showCreditAlert, setShowCreditAlert, handleCredits } = useCredits();
+  const { sendChatMessage } = useChatOperations();
 
   const sendMessage = async () => {
     if (!input.trim()) return;
 
-    const hasCredits = await checkCredits();
-    if (!hasCredits) {
-      setShowCreditAlert(true);
-      return;
-    }
+    const creditsAvailable = await handleCredits();
+    if (!creditsAvailable) return;
 
     setIsLoading(true);
     const newMessage: Message = {
@@ -49,44 +45,27 @@ export const useChat = ({ initialTopic, context, improvement }: UseChatProps = {
     setInput("");
 
     try {
-      const { data, error } = await supabase.functions.invoke('chat', {
-        body: { messages: [...messages, newMessage] }
-      });
-
-      if (error) throw error;
-
-      const creditDeducted = await deductCredit();
-      if (!creditDeducted) {
-        throw new Error("Failed to deduct credit");
-      }
+      const content = await sendChatMessage([...messages, newMessage]);
 
       const assistantResponse: Message = {
         id: (Date.now() + 1).toString(),
-        content: data.content,
+        content,
         sender: "assistant",
         timestamp: new Date(),
       };
 
       if (!chatId) {
-        const newChatId = await createChatHistory(input, data.content);
+        const newChatId = await createChatHistory(input, content);
         if (newChatId) {
           setChatId(newChatId);
-          await saveMessages(newChatId, messages, input, data.content);
+          await saveMessages(newChatId, messages, input, content);
           await generateTitle([...messages, newMessage, assistantResponse], newChatId);
         }
       } else {
-        await updateExistingChat(chatId, input, data.content, messages.length);
+        await updateExistingChat(chatId, input, content, messages.length);
       }
 
       setMessages(prev => [...prev, assistantResponse]);
-
-    } catch (error) {
-      console.error('Error:', error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to send message. Please try again.",
-      });
     } finally {
       setIsLoading(false);
     }
