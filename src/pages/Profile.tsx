@@ -16,16 +16,18 @@ const Profile = () => {
     const fetchUserData = async () => {
       const { data: { session } } = await supabase.auth.getSession()
       if (session?.user?.id) {
-        const { data: profile } = await supabase
+        const { data: profile, error } = await supabase
           .from('profiles')
           .select('credits, username, created_at')
           .eq('id', session.user.id)
-          .single()
+          .maybeSingle()
         
         if (profile) {
           setCredits(profile.credits)
           setUsername(profile.username || 'User')
           setJoinedDate(new Date(profile.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }))
+        } else if (error) {
+          console.error('Error fetching profile:', error)
         }
       }
     }
