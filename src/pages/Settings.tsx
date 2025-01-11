@@ -75,6 +75,15 @@ const Settings = () => {
       <div className="px-6 mt-8">
         <h2 className="text-xl font-semibold mb-4">Subscription</h2>
         <div className="space-y-4">
+          {/* Daily Messages Section */}
+          <div className="py-6 space-y-3 bg-card rounded-lg shadow-sm px-4">
+            <div className="flex justify-between items-center">
+              <span className="text-sm">Daily Messages</span>
+              <span className="font-semibold">{credits}/{MAX_CREDITS}</span>
+            </div>
+            <Progress value={(credits / MAX_CREDITS) * 100} className="h-2" />
+          </div>
+
           <div className="bg-card rounded-lg overflow-hidden shadow-sm">
             <Button variant="ghost" className="w-full justify-between h-14 px-4">
               <span>Choose a plan</span>
@@ -85,18 +94,6 @@ const Settings = () => {
           <Button variant="ghost" className="w-full h-14 text-primary">
             RESTORE SUBSCRIPTION
           </Button>
-
-          {/* Messages Section - Moved here */}
-          <div className="py-6 space-y-3 bg-card rounded-lg shadow-sm">
-            <h2 className="text-sm font-medium text-muted-foreground px-4">MESSAGES</h2>
-            <div className="space-y-2 px-4">
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Available Messages</span>
-                <span className="font-semibold">{credits}/{MAX_CREDITS}</span>
-              </div>
-              <Progress value={(credits / MAX_CREDITS) * 100} className="h-2" />
-            </div>
-          </div>
         </div>
       </div>
 
