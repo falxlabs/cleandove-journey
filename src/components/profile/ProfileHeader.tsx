@@ -13,7 +13,7 @@ const ProfileHeader = ({ profile }: ProfileHeaderProps) => {
   return (
     <>
       <div className="sticky top-0 z-10 bg-background border-b shadow-sm">
-        <header className="px-6 py-8">
+        <div className="px-6 py-8">
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-semibold">Profile</h1>
             <Button 
@@ -25,7 +25,7 @@ const ProfileHeader = ({ profile }: ProfileHeaderProps) => {
               <Settings className="h-5 w-5" />
             </Button>
           </div>
-        </header>
+        </div>
       </div>
         
       <div className="px-6">
