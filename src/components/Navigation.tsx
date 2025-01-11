@@ -1,10 +1,9 @@
-import { ShieldCheck, MessageSquare, History, Settings } from "lucide-react";
+import { ShieldCheck, MessageSquare, History, Settings, User } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 const Navigation = () => {
   const location = useLocation();
 
-  // Hide navigation on chat conversation page
   if (location.pathname === "/chat/conversation") {
     return null;
   }
@@ -15,6 +14,7 @@ const Navigation = () => {
     { icon: ShieldCheck, label: "Today", path: "/" },
     { icon: MessageSquare, label: "Chat", path: "/chat" },
     { icon: History, label: "History", path: "/history" },
+    { icon: User, label: "Profile", path: "/profile" },
     { icon: Settings, label: "Settings", path: "/settings" },
   ];
 
