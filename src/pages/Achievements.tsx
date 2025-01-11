@@ -7,7 +7,7 @@ const Achievements = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-background pb-32">
       {/* Header */}
       <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm">
         <div className="flex items-center p-4 gap-4">
@@ -21,7 +21,7 @@ const Achievements = () => {
         </div>
       </div>
 
-      <div className="px-4 space-y-8">
+      <div className="px-4 space-y-8 mb-8">
         <PersonalRecordsSection />
         <AwardsSection />
       </div>
