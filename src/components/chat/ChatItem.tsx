@@ -7,12 +7,18 @@ interface ChatItemProps {
   date: string;
   replies: number;
   favorite: boolean;
+  onFavorite: () => void;
 }
 
-export const ChatItem = ({ id, title, preview, date, replies, favorite }: ChatItemProps) => {
+export const ChatItem = ({ id, title, preview, date, replies, favorite, onFavorite }: ChatItemProps) => {
   const truncateText = (text: string, maxLength: number) => {
     if (text.length <= maxLength) return text;
     return text.slice(0, maxLength).trim() + '...';
+  };
+
+  const handleFavoriteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onFavorite();
   };
 
   return (
@@ -21,6 +27,7 @@ export const ChatItem = ({ id, title, preview, date, replies, favorite }: ChatIt
         <div className="flex justify-between items-start mb-2">
           <h3 className="font-medium">{title}</h3>
           <button
+            onClick={handleFavoriteClick}
             className={`p-1 rounded-full transition-colors ${
               favorite
                 ? "text-primary"

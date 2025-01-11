@@ -49,6 +49,29 @@ const ChatList = ({ chats, isLoading = false }: ChatListProps) => {
     }
   };
 
+  const handleFavorite = async (chatId: string, currentStatus: boolean) => {
+    try {
+      const { error } = await supabase
+        .from('chat_histories')
+        .update({ favorite: !currentStatus })
+        .eq('id', chatId);
+
+      if (error) throw error;
+
+      queryClient.invalidateQueries({ queryKey: ['chat-history'] });
+      
+      toast({
+        description: `Chat ${!currentStatus ? 'added to' : 'removed from'} favorites`,
+      });
+    } catch (error) {
+      console.error('Error updating favorite status:', error);
+      toast({
+        variant: "destructive",
+        description: "Failed to update favorite status",
+      });
+    }
+  };
+
   const handleChatClick = (chat: Chat) => {
     navigate(`/conversation`, { 
       state: { 
@@ -92,7 +115,7 @@ const ChatList = ({ chats, isLoading = false }: ChatListProps) => {
           onSwipeComplete={() => handleDelete(chat.id)}
           onItemClick={() => handleChatClick(chat)}
         >
-          <ChatItem {...chat} />
+          <ChatItem {...chat} onFavorite={() => handleFavorite(chat.id, chat.favorite)} />
         </SwipeableItem>
       ))}
     </section>
