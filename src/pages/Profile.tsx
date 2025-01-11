@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Settings, UserPlus, Share2, Flame, Zap } from "lucide-react";
+import { Settings, UserPlus, Share2, Flame, Zap, Trophy, Medal } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 
@@ -114,6 +114,53 @@ const Profile = () => {
                 <div className="text-2xl font-bold">0</div>
                 <div className="text-sm text-muted-foreground">Total XP</div>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Friend Streaks Section */}
+      <div className="px-4 mt-8">
+        <h2 className="text-xl font-bold mb-4">Friend Streaks</h2>
+        <div className="bg-card rounded-xl p-6">
+          <div className="flex justify-between items-center">
+            {[1, 2, 3, 4, 5].map((_, index) => (
+              <div key={index} className="flex flex-col items-center">
+                <div className="w-12 h-12 rounded-full border-2 border-dashed border-muted-foreground/30 flex items-center justify-center">
+                  <UserPlus className="h-5 w-5 text-muted-foreground/50" />
+                </div>
+                <span className="text-xs text-muted-foreground mt-2">0 days</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Achievements Section */}
+      <div className="px-4 mt-8">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold">Achievements</h2>
+          <Button variant="ghost" className="text-sm text-primary hover:text-primary/90">
+            View All
+          </Button>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="bg-card rounded-xl p-4 flex items-center gap-3">
+            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+              <Trophy className="h-6 w-6 text-primary" />
+            </div>
+            <div>
+              <div className="font-semibold">First Win</div>
+              <div className="text-sm text-muted-foreground">Win your first game</div>
+            </div>
+          </div>
+          <div className="bg-card rounded-xl p-4 flex items-center gap-3">
+            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+              <Medal className="h-6 w-6 text-primary" />
+            </div>
+            <div>
+              <div className="font-semibold">Champion</div>
+              <div className="text-sm text-muted-foreground">Reach level 10</div>
             </div>
           </div>
         </div>
