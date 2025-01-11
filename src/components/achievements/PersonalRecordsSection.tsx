@@ -44,7 +44,7 @@ const PersonalRecordsSection = () => {
       >
         <CarouselContent className="-ml-2 md:-ml-4">
           {personalRecords.map((record, index) => (
-            <CarouselItem key={index} className="pl-2 md:pl-4 basis-1/2 md:basis-1/3">
+            <CarouselItem key={index} className="pl-2 md:pl-4 basis-[45%] md:basis-[32%]">
               <PersonalRecord {...record} />
             </CarouselItem>
           ))}
