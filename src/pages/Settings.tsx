@@ -78,7 +78,7 @@ const Settings = () => {
           {/* Daily Messages Section */}
           <div className="py-6 space-y-3 bg-card rounded-lg shadow-sm px-4">
             <div className="flex justify-between items-center">
-              <span className="text-sm">Daily Messages</span>
+              <span className="text-sm">Daily Messages Remaining</span>
               <span className="font-semibold">{credits}/{MAX_CREDITS}</span>
             </div>
             <Progress value={(credits / MAX_CREDITS) * 100} className="h-2" />
