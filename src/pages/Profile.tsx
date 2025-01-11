@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Settings, UserPlus, Share2, Trophy, Award, Flame } from "lucide-react";
+import { Settings, UserPlus, Share2, Trophy, Award } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
@@ -39,19 +39,17 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Header Section */}
-      <header className="px-6 py-8">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold">Profile</h1>
-          <Button 
-            variant="ghost" 
-            size="icon"
-            className="text-muted-foreground hover:text-foreground"
-            onClick={() => navigate('/settings')}
-          >
-            <Settings className="h-6 w-6" />
-          </Button>
-        </div>
-      </header>
+      <div className="flex items-center justify-between px-6 py-4 border-b">
+        <h1 className="text-2xl font-semibold">Profile</h1>
+        <Button 
+          variant="ghost" 
+          size="icon"
+          className="text-muted-foreground hover:text-foreground"
+          onClick={() => navigate('/settings')}
+        >
+          <Settings className="h-6 w-6" />
+        </Button>
+      </div>
         
       {/* Profile Section */}
       <div className="px-6">
@@ -107,27 +105,21 @@ const Profile = () => {
           <h2 className="text-2xl font-bold">Overview</h2>
         </div>
         <div className="grid grid-cols-2 gap-4">
-          <Card className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <Flame className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <div className="text-2xl font-bold">0</div>
-                <div className="text-sm text-muted-foreground">Day streak</div>
-              </div>
+          <Card className="p-4 flex flex-col items-center text-center">
+            <div className="bg-orange-500 w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-3">
+              🔥
             </div>
+            <div className="text-2xl font-bold mb-1">0</div>
+            <div className="text-sm text-foreground mb-1">Day streak</div>
+            <div className="text-xs text-muted-foreground">Current</div>
           </Card>
-          <Card className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <Award className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <div className="text-2xl font-bold">0</div>
-                <div className="text-sm text-muted-foreground">Total XP</div>
-              </div>
+          <Card className="p-4 flex flex-col items-center text-center">
+            <div className="bg-green-500 w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-3">
+              ✨
             </div>
+            <div className="text-2xl font-bold mb-1">0</div>
+            <div className="text-sm text-foreground mb-1">Total XP</div>
+            <div className="text-xs text-muted-foreground">All time</div>
           </Card>
         </div>
       </div>
@@ -148,23 +140,19 @@ const Profile = () => {
           </Button>
         </div>
         <div className="grid grid-cols-2 gap-4">
-          <Card className="p-4">
-            <div className="flex flex-col items-center text-center">
-              <div className="h-16 w-16 rounded-full bg-pink-500 flex items-center justify-center text-3xl mb-3">
-                🏃‍♂️
-              </div>
-              <div className="font-semibold mb-1">XP Olympian</div>
-              <div className="text-sm text-muted-foreground">3 of 10</div>
+          <Card className="p-4 flex flex-col items-center text-center">
+            <div className="bg-pink-500 w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-3">
+              🏃‍♂️
             </div>
+            <div className="font-semibold mb-1">XP Olympian</div>
+            <div className="text-sm text-muted-foreground">3 of 10</div>
           </Card>
-          <Card className="p-4">
-            <div className="flex flex-col items-center text-center">
-              <div className="h-16 w-16 rounded-full bg-green-500 flex items-center justify-center text-3xl mb-3">
-                🎯
-              </div>
-              <div className="font-semibold mb-1">Flawless Finisher</div>
-              <div className="text-sm text-muted-foreground">2 of 5</div>
+          <Card className="p-4 flex flex-col items-center text-center">
+            <div className="bg-green-500 w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-3">
+              🎯
             </div>
+            <div className="font-semibold mb-1">Flawless Finisher</div>
+            <div className="text-sm text-muted-foreground">2 of 5</div>
           </Card>
         </div>
       </div>
