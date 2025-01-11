@@ -141,12 +141,12 @@ const ChatConversation = () => {
 
       if (assistantMessageError) throw assistantMessageError;
 
-      // Update chat history preview
+      // Update chat history preview - Fixed the column name from 'replies' to 'reply_count'
       const { error: updateError } = await supabase
         .from("chat_histories")
         .update({
           preview: data.content,
-          replies: messages.length + 2,
+          reply_count: messages.length + 2,
         })
         .eq("id", chatId);
 
