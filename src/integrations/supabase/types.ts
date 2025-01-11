@@ -42,6 +42,41 @@ export type Database = {
         }
         Relationships: []
       }
+      credits_log: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          operation_type: string
+          reason: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          operation_type: string
+          reason?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          operation_type?: string
+          reason?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credits_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       messages: {
         Row: {
           chat_id: string
@@ -119,8 +154,24 @@ export type Database = {
         }
         Returns: number
       }
+      add_credits_with_log: {
+        Args: {
+          p_user_id: string
+          p_amount: number
+          p_reason?: string
+        }
+        Returns: number
+      }
       decrement_credits: {
         Args: Record<PropertyKey, never>
+        Returns: number
+      }
+      subtract_credits_with_log: {
+        Args: {
+          p_user_id: string
+          p_amount: number
+          p_reason?: string
+        }
         Returns: number
       }
     }
