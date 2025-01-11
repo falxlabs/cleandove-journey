@@ -59,10 +59,6 @@ const ChatList = ({ chats, isLoading = false }: ChatListProps) => {
       if (error) throw error;
 
       queryClient.invalidateQueries({ queryKey: ['chat-history'] });
-      
-      toast({
-        description: `Chat ${!currentStatus ? 'added to' : 'removed from'} favorites`,
-      });
     } catch (error) {
       console.error('Error updating favorite status:', error);
       toast({

@@ -33,7 +33,6 @@ export const ChatItem = ({
   };
 
   const handleItemClick = (e: React.MouseEvent) => {
-    // Only trigger onClick if the star wasn't clicked
     if (!(e.target as HTMLElement).closest('button')) {
       onClick();
     }
@@ -55,7 +54,7 @@ export const ChatItem = ({
                 : "text-muted-foreground hover:text-primary"
             }`}
           >
-            <Star className="h-5 w-5" />
+            <Star className={`h-5 w-5 ${favorite ? "fill-current" : ""}`} />
           </button>
         </div>
         <p className="text-sm text-muted-foreground mb-3">
