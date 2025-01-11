@@ -1,12 +1,13 @@
 import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import PageHeader from "@/components/PageHeader";
 import TopicCarousel from "@/components/TopicCarousel";
 import { useTopicSelection } from "@/hooks/useTopicSelection";
 
 const Chat = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { selectedTopic, setSelectedTopic, improvements, temptations, therapyTopics } = useTopicSelection();
 
   const handleStartChat = () => {
@@ -15,7 +16,8 @@ const Chat = () => {
         topic: selectedTopic,
         mascot: "🕊️",
         context: selectedTopic ? `I want to improve my ${selectedTopic}` : undefined,
-        improvement: selectedTopic ? improvements.find(i => i.id === selectedTopic)?.label : undefined
+        improvement: selectedTopic ? improvements.find(i => i.id === selectedTopic)?.label : undefined,
+        from: location.pathname
       },
     });
   };
@@ -29,7 +31,8 @@ const Chat = () => {
         context: `I want to improve my ${topicId}`,
         improvement: improvements.find(i => i.id === topicId)?.label || 
                     temptations.find(i => i.id === topicId)?.label ||
-                    therapyTopics.find(i => i.id === topicId)?.label
+                    therapyTopics.find(i => i.id === topicId)?.label,
+        from: location.pathname
       },
     });
   };

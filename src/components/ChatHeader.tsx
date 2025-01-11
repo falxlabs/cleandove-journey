@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ArrowLeft } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 interface ChatHeaderProps {
   topic?: string;
@@ -10,13 +10,20 @@ interface ChatHeaderProps {
 
 export const ChatHeader = ({ topic, title }: ChatHeaderProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  const handleBack = () => {
+    // Get the previous route from state, default to /chat if not specified
+    const previousRoute = location.state?.from || "/chat";
+    navigate(previousRoute);
+  };
 
   return (
     <div className="flex items-center gap-2 px-4 py-3 border-b">
       <Button
         variant="ghost"
         size="icon"
-        onClick={() => navigate("/chat")}
+        onClick={handleBack}
         className="mr-2"
       >
         <ArrowLeft className="h-5 w-5" />

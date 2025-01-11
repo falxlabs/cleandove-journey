@@ -120,7 +120,8 @@ const ChatList = ({ chats, isLoading = false }: ChatListProps) => {
             state: { 
               chatId: swipingId,
               topic: chat.title,
-              isExistingChat: true // Add this flag to indicate it's an existing chat
+              isExistingChat: true,
+              from: location.pathname // Add the current route to state
             } 
           });
         }
