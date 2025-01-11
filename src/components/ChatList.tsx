@@ -194,10 +194,10 @@ const ChatList = ({ chats, isLoading = false }: ChatListProps) => {
             className="absolute right-0 top-0 bottom-0 flex items-center justify-center bg-destructive w-[100px] transition-all duration-150"
             style={{ 
               transform: swipingId === chat.id ? 
-                `scale(${Math.min(currentOffset.current / 50, 1)})` : 
+                `scale(${Math.max(0.3, Math.min(currentOffset.current / 30, 1))})` : 
                 'scale(0)',
               opacity: swipingId === chat.id ? 
-                Math.min(currentOffset.current / 50, 1) : 
+                Math.max(0.5, Math.min(currentOffset.current / 30, 1)) : 
                 0,
               transformOrigin: 'center right'
             }}
