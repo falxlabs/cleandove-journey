@@ -144,6 +144,7 @@ const Streak = () => {
               selected={date}
               onSelect={(newDate) => newDate && setDate(newDate)}
               className="rounded-md border"
+              hideHead={true}
             />
           </div>
         </CardContent>
