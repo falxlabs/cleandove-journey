@@ -18,12 +18,34 @@ export const useChat = ({ initialTopic, context, improvement }: UseChatProps = {
   const [chatId, setChatId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [showCreditAlert, setShowCreditAlert] = useState(false);
+  const [chatTitle, setChatTitle] = useState<string>(initialTopic || "New Chat");
 
   const getInitialMessage = () => {
     if (context && improvement) {
       return `Hello! I understand you want to improve your ${improvement}. I'm here to help you on this journey. What specific aspects would you like to work on?`;
     }
     return "Hello! How can I help you today?";
+  };
+
+  const generateTitle = async (messages: Message[]) => {
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-title', {
+        body: { messages }
+      });
+
+      if (error) throw error;
+      if (data.title) {
+        setChatTitle(data.title);
+        if (chatId) {
+          await supabase
+            .from("chat_histories")
+            .update({ title: data.title })
+            .eq("id", chatId);
+        }
+      }
+    } catch (error) {
+      console.error('Error generating title:', error);
+    }
   };
 
   const initializeChat = async () => {
@@ -128,6 +150,14 @@ export const useChat = ({ initialTopic, context, improvement }: UseChatProps = {
         timestamp: new Date(),
       };
 
+      const updatedMessages = [...messages, newMessage, assistantResponse];
+      setMessages(updatedMessages);
+
+      // Generate title after the first user message and AI response
+      if (messages.length <= 1) {
+        await generateTitle(updatedMessages);
+      }
+
       const { error: assistantMessageError } = await supabase
         .from("messages")
         .insert({
@@ -149,7 +179,6 @@ export const useChat = ({ initialTopic, context, improvement }: UseChatProps = {
 
       if (updateError) throw updateError;
 
-      setMessages((prev) => [...prev, assistantResponse]);
     } catch (error) {
       console.error('Error:', error);
       toast({
@@ -179,5 +208,6 @@ export const useChat = ({ initialTopic, context, improvement }: UseChatProps = {
     sendMessage,
     initializeChat,
     regenerateMessage,
+    chatTitle
   };
 };

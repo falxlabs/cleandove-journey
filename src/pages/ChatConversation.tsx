@@ -19,6 +19,7 @@ const ChatConversation = () => {
     sendMessage,
     initializeChat,
     regenerateMessage,
+    chatTitle
   } = useChat({
     initialTopic: location.state?.topic,
     context: location.state?.context,
@@ -38,7 +39,7 @@ const ChatConversation = () => {
 
   return (
     <div className="flex flex-col h-screen bg-background pb-0">
-      <ChatHeader topic={location.state?.topic} />
+      <ChatHeader topic={location.state?.topic} title={chatTitle} />
       <MessageList 
         messages={messages} 
         isLoading={isLoading || isInitialLoading} 

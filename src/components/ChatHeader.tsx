@@ -5,9 +5,10 @@ import { useNavigate } from "react-router-dom";
 
 interface ChatHeaderProps {
   topic?: string;
+  title?: string;
 }
 
-export const ChatHeader = ({ topic }: ChatHeaderProps) => {
+export const ChatHeader = ({ topic, title }: ChatHeaderProps) => {
   const navigate = useNavigate();
 
   return (
@@ -30,7 +31,7 @@ export const ChatHeader = ({ topic }: ChatHeaderProps) => {
       <div>
         <h2 className="font-semibold">Grace</h2>
         <p className="text-sm text-muted-foreground">
-          {topic ? `Topic: ${topic}` : "New Chat"}
+          {topic ? `Chat about ${topic}` : title || "New Chat"}
         </p>
       </div>
     </div>
