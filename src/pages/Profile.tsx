@@ -82,7 +82,7 @@ const Profile = () => {
       {/* Action Buttons */}
       <div className="px-4 mt-6 flex gap-2 justify-center">
         <Button 
-          className="bg-primary text-primary-foreground hover:bg-primary/90"
+          className="bg-primary text-primary-foreground hover:bg-primary/90 w-[140px]"
         >
           <UserPlus className="mr-2 h-5 w-5" />
           ADD FRIENDS
@@ -143,7 +143,11 @@ const Profile = () => {
       <div className="px-4 mt-8">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold">Achievements</h2>
-          <Button variant="ghost" className="text-sm text-primary hover:text-primary/90">
+          <Button 
+            variant="ghost" 
+            className="text-sm text-primary hover:text-primary/90"
+            onClick={() => navigate('/achievements')}
+          >
             View All
           </Button>
         </div>
