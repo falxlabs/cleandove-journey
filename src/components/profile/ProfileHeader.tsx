@@ -11,17 +11,19 @@ const ProfileHeader = ({ profile }: ProfileHeaderProps) => {
   const navigate = useNavigate();
 
   return (
-    <div className="divide-y">
-      <div className="sticky top-0 z-10 bg-background flex items-center justify-between px-6 py-4 border-b shadow-sm">
-        <h1 className="text-xl font-semibold">Profile</h1>
-        <Button 
-          variant="ghost" 
-          size="icon"
-          className="text-muted-foreground hover:text-foreground"
-          onClick={() => navigate('/settings')}
-        >
-          <Settings className="h-5 w-5" />
-        </Button>
+    <>
+      <div className="sticky top-0 z-10 bg-background border-b shadow-sm">
+        <div className="flex items-center justify-between h-14 px-6">
+          <h1 className="text-xl font-semibold">Profile</h1>
+          <Button 
+            variant="ghost" 
+            size="icon"
+            className="text-muted-foreground hover:text-foreground"
+            onClick={() => navigate('/settings')}
+          >
+            <Settings className="h-5 w-5" />
+          </Button>
+        </div>
       </div>
         
       <div className="px-6">
@@ -52,7 +54,7 @@ const ProfileHeader = ({ profile }: ProfileHeaderProps) => {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
