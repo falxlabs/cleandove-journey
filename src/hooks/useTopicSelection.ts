@@ -35,6 +35,11 @@ export const useTopicSelection = () => {
     { id: "habits", emoji: "📝", label: "Healthy Habits" },
     { id: "cold-shower", emoji: "🚿", label: "Cold Shower" },
     { id: "brain", emoji: "🎯", label: "Brain Training" },
+    { id: "meditation", emoji: "🧘", label: "Meditation" },
+    { id: "nutrition", emoji: "🥗", label: "Nutrition" },
+    { id: "sleep-hygiene", emoji: "🌙", label: "Sleep Hygiene" },
+    { id: "exercise", emoji: "💪", label: "Exercise" },
+    { id: "mindfulness", emoji: "🎐", label: "Mindfulness" },
   ];
 
   return {
