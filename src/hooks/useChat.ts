@@ -50,36 +50,7 @@ export const useChat = ({ initialTopic, context, improvement }: UseChatProps = {
 
   const initializeChat = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
       const initialMessage = getInitialMessage();
-
-      const { data: chatHistory, error: chatError } = await supabase
-        .from("chat_histories")
-        .insert({
-          title: initialTopic || "New Chat",
-          preview: initialMessage,
-          user_id: user.id,
-        })
-        .select()
-        .single();
-
-      if (chatError) throw chatError;
-
-      setChatId(chatHistory.id);
-
-      const { error: messageError } = await supabase
-        .from("messages")
-        .insert({
-          chat_id: chatHistory.id,
-          content: initialMessage,
-          sender: "assistant",
-          sequence_number: 1,
-        });
-
-      if (messageError) throw messageError;
-
       setMessages([
         {
           id: "1",
@@ -89,7 +60,7 @@ export const useChat = ({ initialTopic, context, improvement }: UseChatProps = {
         },
       ]);
     } catch (error) {
-      console.error("Error creating chat:", error);
+      console.error("Error initializing chat:", error);
       toast({
         variant: "destructive",
         title: "Error",
@@ -100,8 +71,26 @@ export const useChat = ({ initialTopic, context, improvement }: UseChatProps = {
     }
   };
 
+  const createChatHistory = async (userMessage: string, assistantMessage: string) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return null;
+
+    const { data: chatHistory, error: chatError } = await supabase
+      .from("chat_histories")
+      .insert({
+        title: initialTopic || "New Chat",
+        preview: assistantMessage,
+        user_id: user.id,
+      })
+      .select()
+      .single();
+
+    if (chatError) throw chatError;
+    return chatHistory.id;
+  };
+
   const sendMessage = async () => {
-    if (!input.trim() || !chatId) return;
+    if (!input.trim()) return;
 
     const hasCredits = await checkCredits();
     if (!hasCredits) {
@@ -121,17 +110,6 @@ export const useChat = ({ initialTopic, context, improvement }: UseChatProps = {
     setInput("");
 
     try {
-      const { error: messageError } = await supabase
-        .from("messages")
-        .insert({
-          chat_id: chatId,
-          content: input,
-          sender: "user",
-          sequence_number: messages.length + 1,
-        });
-
-      if (messageError) throw messageError;
-
       const { data, error } = await supabase.functions.invoke('chat', {
         body: { messages: [...messages, newMessage] }
       });
@@ -150,34 +128,75 @@ export const useChat = ({ initialTopic, context, improvement }: UseChatProps = {
         timestamp: new Date(),
       };
 
-      const updatedMessages = [...messages, newMessage, assistantResponse];
-      setMessages(updatedMessages);
+      // Create chat history only after first user message
+      if (!chatId) {
+        const newChatId = await createChatHistory(input, data.content);
+        if (newChatId) {
+          setChatId(newChatId);
+          
+          // Insert initial assistant message
+          await supabase
+            .from("messages")
+            .insert({
+              chat_id: newChatId,
+              content: messages[0].content,
+              sender: "assistant",
+              sequence_number: 1,
+            });
 
-      // Generate title after the first user message and AI response
-      if (messages.length <= 1) {
-        await generateTitle(updatedMessages);
+          // Insert user message
+          await supabase
+            .from("messages")
+            .insert({
+              chat_id: newChatId,
+              content: input,
+              sender: "user",
+              sequence_number: 2,
+            });
+
+          // Insert assistant response
+          await supabase
+            .from("messages")
+            .insert({
+              chat_id: newChatId,
+              content: data.content,
+              sender: "assistant",
+              sequence_number: 3,
+            });
+
+          // Generate title after chat creation
+          await generateTitle([...messages, newMessage, assistantResponse]);
+        }
+      } else {
+        // Regular message flow for existing chat
+        await supabase
+          .from("messages")
+          .insert({
+            chat_id: chatId,
+            content: input,
+            sender: "user",
+            sequence_number: messages.length + 1,
+          });
+
+        await supabase
+          .from("messages")
+          .insert({
+            chat_id: chatId,
+            content: data.content,
+            sender: "assistant",
+            sequence_number: messages.length + 2,
+          });
+
+        await supabase
+          .from("chat_histories")
+          .update({
+            preview: data.content,
+            reply_count: messages.length + 2,
+          })
+          .eq("id", chatId);
       }
 
-      const { error: assistantMessageError } = await supabase
-        .from("messages")
-        .insert({
-          chat_id: chatId,
-          content: data.content,
-          sender: "assistant",
-          sequence_number: messages.length + 2,
-        });
-
-      if (assistantMessageError) throw assistantMessageError;
-
-      const { error: updateError } = await supabase
-        .from("chat_histories")
-        .update({
-          preview: data.content,
-          reply_count: messages.length + 2,
-        })
-        .eq("id", chatId);
-
-      if (updateError) throw updateError;
+      setMessages(prev => [...prev, assistantResponse]);
 
     } catch (error) {
       console.error('Error:', error);
