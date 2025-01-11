@@ -1,43 +1,67 @@
-import { ShieldCheck, MessageSquare, History, Settings } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom"
+import { Button } from "@/components/ui/button"
+import { Home, MessageSquare, History, User } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 const Navigation = () => {
-  const location = useLocation();
-
-  // Hide navigation on chat conversation page
-  if (location.pathname === "/chat/conversation") {
-    return null;
-  }
-
-  const isActive = (path: string) => location.pathname === path;
-
-  const navItems = [
-    { icon: ShieldCheck, label: "Today", path: "/" },
-    { icon: MessageSquare, label: "Chat", path: "/chat" },
-    { icon: History, label: "History", path: "/history" },
-    { icon: Settings, label: "Settings", path: "/settings" },
-  ];
+  const location = useLocation()
+  
+  const isActive = (path: string) => location.pathname === path
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-background border-t border-border px-6 py-2">
-      <div className="flex justify-between items-center max-w-screen-xl mx-auto">
-        {navItems.map(({ icon: Icon, label, path }) => (
-          <Link
-            key={path}
-            to={path}
-            className={`flex flex-col items-center p-2 transition-colors duration-200 ${
-              isActive(path)
-                ? "text-primary"
-                : "text-muted-foreground hover:text-primary"
-            }`}
+    <div className="fixed bottom-0 left-0 right-0 border-t bg-background">
+      <nav className="container flex justify-around py-2">
+        <Link to="/">
+          <Button
+            variant="ghost"
+            size="icon"
+            className={cn(
+              "flex flex-col items-center justify-center gap-1",
+              isActive("/") && "text-primary"
+            )}
           >
-            <Icon className="h-6 w-6" />
-            <span className="text-xs mt-1">{label}</span>
-          </Link>
-        ))}
-      </div>
-    </nav>
-  );
-};
+            <Home className="h-5 w-5" />
+          </Button>
+        </Link>
+        <Link to="/chat">
+          <Button
+            variant="ghost"
+            size="icon"
+            className={cn(
+              "flex flex-col items-center justify-center gap-1",
+              isActive("/chat") && "text-primary"
+            )}
+          >
+            <MessageSquare className="h-5 w-5" />
+          </Button>
+        </Link>
+        <Link to="/history">
+          <Button
+            variant="ghost"
+            size="icon"
+            className={cn(
+              "flex flex-col items-center justify-center gap-1",
+              isActive("/history") && "text-primary"
+            )}
+          >
+            <History className="h-5 w-5" />
+          </Button>
+        </Link>
+        <Link to="/profile">
+          <Button
+            variant="ghost"
+            size="icon"
+            className={cn(
+              "flex flex-col items-center justify-center gap-1",
+              isActive("/profile") && "text-primary"
+            )}
+          >
+            <User className="h-5 w-5" />
+          </Button>
+        </Link>
+      </nav>
+    </div>
+  )
+}
 
-export default Navigation;
+export default Navigation

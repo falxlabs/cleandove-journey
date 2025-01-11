@@ -1,21 +1,20 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import Navigation from "./components/Navigation";
-import Index from "./pages/Index";
-import Chat from "./pages/Chat";
-import ChatConversation from "./pages/ChatConversation";
-import History from "./pages/History";
-import Settings from "./pages/Settings";
-import Auth from "./pages/Auth";
+import { Toaster } from "@/components/ui/toaster"
+import { Toaster as Sonner } from "@/components/ui/sonner"
+import { TooltipProvider } from "@/components/ui/tooltip"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
+import { useEffect, useState } from "react"
+import { supabase } from "@/integrations/supabase/client"
+import Navigation from "./components/Navigation"
+import Index from "./pages/Index"
+import Chat from "./pages/Chat"
+import ChatConversation from "./pages/ChatConversation"
+import History from "./pages/History"
+import Profile from "./pages/Profile"
+import Auth from "./pages/Auth"
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient()
 
-// Protected Route wrapper component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
@@ -91,10 +90,10 @@ const App = () => (
               }
             />
             <Route
-              path="/settings"
+              path="/profile"
               element={
                 <ProtectedRoute>
-                  <Settings />
+                  <Profile />
                 </ProtectedRoute>
               }
             />
@@ -106,6 +105,6 @@ const App = () => (
       <Sonner />
     </BrowserRouter>
   </QueryClientProvider>
-);
+)
 
-export default App;
+export default App
