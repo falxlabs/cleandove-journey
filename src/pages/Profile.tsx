@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Settings, UserPlus, Share2, Trophy, Award } from "lucide-react";
+import { Settings, UserPlus, Share2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
@@ -101,7 +101,6 @@ const Profile = () => {
       {/* Overview Section */}
       <div className="px-6 mt-8">
         <div className="flex items-center gap-3 mb-6">
-          <Trophy className="h-6 w-6 text-primary" />
           <h2 className="text-2xl font-bold">Overview</h2>
         </div>
         <div className="grid grid-cols-2 gap-4">
@@ -128,7 +127,6 @@ const Profile = () => {
       <div className="px-6 mt-8">
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-3">
-            <Award className="h-6 w-6 text-primary" />
             <h2 className="text-2xl font-bold">Achievements</h2>
           </div>
           <Button 
