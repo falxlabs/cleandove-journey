@@ -21,10 +21,16 @@ const TopicCarousel = ({ title, topics, onTopicSelect }: TopicCarouselProps) => 
   return (
     <div className="space-y-4">
       <h2 className="text-lg font-medium">{title}</h2>
-      <Carousel className="w-full">
-        <CarouselContent>
+      <Carousel
+        opts={{
+          align: "start",
+          slidesToScroll: 2,
+        }}
+        className="w-full"
+      >
+        <CarouselContent className="-ml-2 md:-ml-4">
           {topics.map((item) => (
-            <CarouselItem key={item.id} className="basis-1/3">
+            <CarouselItem key={item.id} className="pl-2 md:pl-4 basis-[45%] md:basis-[32%]">
               <Button
                 variant="outline"
                 className="w-full h-24 flex flex-col items-center justify-center gap-2"
