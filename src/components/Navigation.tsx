@@ -1,4 +1,4 @@
-import { ShieldCheck, MessageSquare, History, Settings, User } from "lucide-react";
+import { ShieldCheck, MessageSquare, History, User } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 const Navigation = () => {
@@ -15,7 +15,6 @@ const Navigation = () => {
     { icon: MessageSquare, label: "Chat", path: "/chat" },
     { icon: History, label: "History", path: "/history" },
     { icon: User, label: "Profile", path: "/profile" },
-    { icon: Settings, label: "Settings", path: "/settings" },
   ];
 
   return (

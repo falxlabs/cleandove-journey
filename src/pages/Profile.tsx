@@ -4,10 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Settings, UserPlus, Share2, Flame, Zap, Trophy, Medal } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getProfile = async () => {
@@ -36,28 +38,29 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Header with Settings */}
-      <div className="relative h-48 bg-gradient-to-b from-muted/50 to-background">
+      <div className="p-4 flex justify-end">
         <Button 
           variant="ghost" 
-          size="icon" 
-          className="absolute top-4 right-4 text-muted-foreground hover:text-foreground"
+          size="icon"
+          className="text-muted-foreground hover:text-foreground"
+          onClick={() => navigate('/settings')}
         >
           <Settings className="h-6 w-6" />
         </Button>
+      </div>
         
-        {/* Avatar */}
-        <div className="absolute -bottom-16 left-1/2 -translate-x-1/2">
-          <Avatar className="h-32 w-32 border-4 border-background shadow-lg">
-            <AvatarImage src={profile?.avatar_url} />
-            <AvatarFallback className="text-2xl bg-muted">
-              {profile?.username?.[0]?.toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-        </div>
+      {/* Avatar */}
+      <div className="flex justify-center -mt-4">
+        <Avatar className="h-32 w-32 border-4 border-background shadow-lg">
+          <AvatarImage src={profile?.avatar_url} />
+          <AvatarFallback className="text-2xl bg-muted">
+            {profile?.username?.[0]?.toUpperCase()}
+          </AvatarFallback>
+        </Avatar>
       </div>
 
       {/* Profile Info */}
-      <div className="mt-20 text-center space-y-2">
+      <div className="mt-6 text-center space-y-2">
         <h1 className="text-2xl font-bold">{profile?.username || 'User'}</h1>
         <p className="text-sm text-muted-foreground">
           @{profile?.username?.toLowerCase() || 'user'} • Joined {profile?.created_at ? format(new Date(profile.created_at), 'MMMM yyyy') : ''}
