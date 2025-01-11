@@ -64,7 +64,7 @@ const ChatList = ({ chats, isLoading = false }: ChatListProps) => {
             </button>
           </div>
           <p className="text-sm text-muted-foreground mb-3">
-            {truncateText(chat.preview, 70)}
+            {truncateText(chat.preview, 150)}
           </p>
           <div className="flex items-center text-sm text-muted-foreground">
             <Calendar className="h-4 w-4 mr-1" />
