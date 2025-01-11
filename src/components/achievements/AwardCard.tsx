@@ -12,24 +12,20 @@ interface AwardCardProps {
 
 const AwardCard = ({ title, value, progress, icon, color, locked }: AwardCardProps) => {
   return (
-    <Card className={`p-4 ${locked ? 'opacity-50' : ''}`}>
-      <div className="flex items-center gap-4">
-        <div className={`${color} w-12 h-12 rounded-full flex items-center justify-center text-2xl`}>
-          {icon}
-        </div>
-        <div className="flex-1">
-          <div className="flex items-center gap-2">
-            <div className="text-xl font-bold">{value}</div>
-            {locked && (
-              <Badge variant="secondary" className="text-xs">
-                Locked
-              </Badge>
-            )}
-          </div>
-          <div className="text-sm font-medium">{title}</div>
-          <div className="text-xs text-muted-foreground">{progress}</div>
-        </div>
+    <Card className={`p-4 flex flex-col items-center text-center ${locked ? 'opacity-50' : ''}`}>
+      <div className={`${color} w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-3`}>
+        {icon}
       </div>
+      <div className="flex items-center gap-2 mb-1">
+        <div className="text-2xl font-bold">{value}</div>
+        {locked && (
+          <Badge variant="secondary" className="text-xs">
+            Locked
+          </Badge>
+        )}
+      </div>
+      <div className="text-sm text-foreground mb-1">{title}</div>
+      <div className="text-xs text-muted-foreground">{progress}</div>
     </Card>
   );
 };
