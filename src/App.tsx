@@ -14,6 +14,7 @@ import Settings from "./pages/Settings";
 import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
 import Achievements from "./pages/Achievements";
+import Streak from "./pages/Streak";
 
 const queryClient = new QueryClient();
 
@@ -112,6 +113,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Achievements />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/streak"
+              element={
+                <ProtectedRoute>
+                  <Streak />
                 </ProtectedRoute>
               }
             />

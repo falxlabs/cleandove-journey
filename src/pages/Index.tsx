@@ -3,8 +3,10 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
+  const navigate = useNavigate();
   const weekDays = ["M", "T", "W", "T", "F", "S", "S"];
   
   const { data: streak, isLoading: isStreakLoading } = useQuery({
@@ -46,7 +48,12 @@ const Index = () => {
           {isStreakLoading ? (
             <Skeleton className="h-10 w-20" />
           ) : (
-            <Button variant="ghost" size="icon" className="px-4 pr-6 gap-0.5">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="px-4 pr-6 gap-0.5"
+              onClick={() => navigate('/streak')}
+            >
               <span className="text-xl">🔥</span>
               <span className="text-sm text-muted-foreground">{streak}</span>
             </Button>
