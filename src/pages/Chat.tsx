@@ -14,6 +14,8 @@ const Chat = () => {
       state: {
         topic: selectedTopic,
         mascot: "🕊️",
+        context: selectedTopic ? `I want to improve my ${selectedTopic}` : undefined,
+        improvement: selectedTopic ? improvements.find(i => i.id === selectedTopic)?.label : undefined
       },
     });
   };

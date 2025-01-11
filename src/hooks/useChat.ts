@@ -4,7 +4,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { checkCredits, deductCredit } from "@/utils/credits";
 
-export const useChat = (initialTopic?: string) => {
+interface UseChatProps {
+  initialTopic?: string;
+  context?: string;
+  improvement?: string;
+}
+
+export const useChat = ({ initialTopic, context, improvement }: UseChatProps = {}) => {
   const { toast } = useToast();
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -13,16 +19,25 @@ export const useChat = (initialTopic?: string) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [showCreditAlert, setShowCreditAlert] = useState(false);
 
+  const getInitialMessage = () => {
+    if (context && improvement) {
+      return `Hello! I understand you want to improve your ${improvement}. I'm here to help you on this journey. What specific aspects would you like to work on?`;
+    }
+    return "Hello! How can I help you today?";
+  };
+
   const initializeChat = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
+      const initialMessage = getInitialMessage();
+
       const { data: chatHistory, error: chatError } = await supabase
         .from("chat_histories")
         .insert({
           title: initialTopic || "New Chat",
-          preview: "Hello! How can I help you today?",
+          preview: initialMessage,
           user_id: user.id,
         })
         .select()
@@ -36,7 +51,7 @@ export const useChat = (initialTopic?: string) => {
         .from("messages")
         .insert({
           chat_id: chatHistory.id,
-          content: "Hello! How can I help you today?",
+          content: initialMessage,
           sender: "assistant",
           sequence_number: 1,
         });
@@ -46,7 +61,7 @@ export const useChat = (initialTopic?: string) => {
       setMessages([
         {
           id: "1",
-          content: "Hello! How can I help you today?",
+          content: initialMessage,
           sender: "assistant",
           timestamp: new Date(),
         },
@@ -147,6 +162,12 @@ export const useChat = (initialTopic?: string) => {
     }
   };
 
+  const regenerateMessage = async (messageId: string) => {
+    // Implementation for message regeneration
+    // This will be implemented in a future update
+    console.log("Regenerate message:", messageId);
+  };
+
   return {
     input,
     setInput,
@@ -157,5 +178,6 @@ export const useChat = (initialTopic?: string) => {
     setShowCreditAlert,
     sendMessage,
     initializeChat,
+    regenerateMessage,
   };
 };

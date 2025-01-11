@@ -18,7 +18,12 @@ const ChatConversation = () => {
     setShowCreditAlert,
     sendMessage,
     initializeChat,
-  } = useChat(location.state?.topic);
+    regenerateMessage,
+  } = useChat({
+    initialTopic: location.state?.topic,
+    context: location.state?.context,
+    improvement: location.state?.improvement,
+  });
 
   useEffect(() => {
     initializeChat();
@@ -34,7 +39,11 @@ const ChatConversation = () => {
   return (
     <div className="flex flex-col h-screen bg-background pb-0">
       <ChatHeader topic={location.state?.topic} />
-      <MessageList messages={messages} isLoading={isLoading || isInitialLoading} />
+      <MessageList 
+        messages={messages} 
+        isLoading={isLoading || isInitialLoading} 
+        onRegenerate={regenerateMessage}
+      />
       <ChatInput
         input={input}
         isLoading={isLoading}
