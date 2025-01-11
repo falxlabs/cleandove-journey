@@ -4,12 +4,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { X, Share2, ChevronLeft, ChevronRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Calendar } from "@/components/ui/calendar";
 
 const Streak = () => {
   const [activeTab, setActiveTab] = useState<"personal" | "friends">("personal");
-  const currentDate = new Date();
-  const currentMonth = currentDate.toLocaleString('default', { month: 'long' });
-  const currentYear = currentDate.getFullYear();
+  const [date, setDate] = useState<Date>(new Date());
+  const currentMonth = date.toLocaleString('default', { month: 'long' });
+  const currentYear = date.getFullYear();
 
   const { data: streakData, isLoading: isStreakLoading } = useQuery({
     queryKey: ['streak-data'],
@@ -19,10 +20,21 @@ const Streak = () => {
       return {
         currentStreak: 0,
         daysCompleted: 0,
-        freezesUsed: 0
       };
     },
   });
+
+  const onPreviousMonth = () => {
+    const newDate = new Date(date);
+    newDate.setMonth(date.getMonth() - 1);
+    setDate(newDate);
+  };
+
+  const onNextMonth = () => {
+    const newDate = new Date(date);
+    newDate.setMonth(date.getMonth() + 1);
+    setDate(newDate);
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground p-4 animate-fade-in">
@@ -103,18 +115,22 @@ const Streak = () => {
         </CardContent>
       </Card>
 
-      {/* Monthly Stats */}
+      {/* Monthly Stats with Calendar */}
       <Card>
         <CardContent className="p-6">
           <div className="flex justify-between items-center mb-6">
-            <ChevronLeft className="w-6 h-6" />
+            <button onClick={onPreviousMonth}>
+              <ChevronLeft className="w-6 h-6" />
+            </button>
             <h2 className="text-xl font-semibold">
               {currentMonth} {currentYear}
             </h2>
-            <ChevronRight className="w-6 h-6" />
+            <button onClick={onNextMonth}>
+              <ChevronRight className="w-6 h-6" />
+            </button>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid gap-4">
             <div className="text-center p-4 bg-secondary rounded-lg">
               <div className="flex items-center justify-center gap-2">
                 <span className="text-2xl">✓</span>
@@ -122,13 +138,13 @@ const Streak = () => {
               </div>
               <p className="text-sm text-muted-foreground">Days practiced</p>
             </div>
-            <div className="text-center p-4 bg-secondary rounded-lg">
-              <div className="flex items-center justify-center gap-2">
-                <span className="text-2xl">❄️</span>
-                <span className="text-2xl font-bold">{streakData?.freezesUsed}</span>
-              </div>
-              <p className="text-sm text-muted-foreground">Freezes used</p>
-            </div>
+            
+            <Calendar
+              mode="single"
+              selected={date}
+              onSelect={(newDate) => newDate && setDate(newDate)}
+              className="rounded-md border"
+            />
           </div>
         </CardContent>
       </Card>
