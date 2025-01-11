@@ -2,6 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Settings, UserPlus, Share2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ProfileHeaderProps {
   profile: any;
@@ -9,6 +10,7 @@ interface ProfileHeaderProps {
 
 const ProfileHeader = ({ profile }: ProfileHeaderProps) => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   return (
     <>
@@ -45,14 +47,28 @@ const ProfileHeader = ({ profile }: ProfileHeaderProps) => {
             </div>
           </div>
 
-          <div className="mt-6 flex gap-2 justify-center">
-            <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
-              <UserPlus className="mr-2 h-5 w-5" />
-              Add Friends
-            </Button>
-            <Button variant="outline" size="icon">
-              <Share2 className="h-5 w-5" />
-            </Button>
+          <div className="mt-6 flex gap-2 justify-center w-full">
+            {isMobile ? (
+              <div className="flex w-full gap-2">
+                <Button className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90">
+                  <UserPlus className="mr-2 h-5 w-5" />
+                  Add Friends
+                </Button>
+                <Button variant="outline" size="icon">
+                  <Share2 className="h-5 w-5" />
+                </Button>
+              </div>
+            ) : (
+              <>
+                <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
+                  <UserPlus className="mr-2 h-5 w-5" />
+                  Add Friends
+                </Button>
+                <Button variant="outline" size="icon">
+                  <Share2 className="h-5 w-5" />
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </div>
