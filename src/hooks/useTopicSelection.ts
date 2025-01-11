@@ -12,6 +12,7 @@ export const useTopicSelection = () => {
     { id: "peace", emoji: "🕯️", label: "Peace" },
     { id: "joy", emoji: "✨", label: "Joy" },
     { id: "gratitude", emoji: "🙌", label: "Gratitude" },
+    { id: "health", emoji: "❤️", label: "Health" },
   ];
 
   const temptations = [
@@ -33,7 +34,7 @@ export const useTopicSelection = () => {
   const therapyTopics = [
     { id: "cbt", emoji: "🧠", label: "CBT" },
     { id: "breathing", emoji: "🫁", label: "Breathing" },
-    { id: "habits", emoji: "📝", label: "Healthy Habits" },
+    { id: "habits", emoji: "📝", label: "Habits" },
     { id: "cold-shower", emoji: "🚿", label: "Cold Shower" },
     { id: "brain", emoji: "🎯", label: "Brain Training" },
     { id: "meditation", emoji: "🧘", label: "Meditation" },
