@@ -53,7 +53,7 @@ const Profile = () => {
         
       {/* Profile Section */}
       <div className="px-6">
-        <Card className="p-6">
+        <div className="p-6 bg-background rounded-lg border shadow-sm">
           <div className="flex flex-col items-center space-y-4">
             <Avatar className="h-24 w-24 border-4 border-background shadow-lg">
               <AvatarImage src={profile?.avatar_url} />
@@ -95,7 +95,7 @@ const Profile = () => {
               <Share2 className="h-5 w-5" />
             </Button>
           </div>
-        </Card>
+        </div>
       </div>
 
       {/* Overview Section */}
