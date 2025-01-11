@@ -1,4 +1,4 @@
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, HeartPulse } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "@/components/PageHeader";
@@ -13,7 +13,7 @@ const Chat = () => {
     navigate("/chat/conversation", {
       state: {
         topic: selectedTopic,
-        mascot: "🕊️",
+        mascot: <HeartPulse className="text-primary" />,
       },
     });
   };
@@ -23,7 +23,7 @@ const Chat = () => {
       <div className="sticky top-0 z-10 bg-background border-b shadow-sm">
         <PageHeader
           title="Chat"
-          emoji="🕊️"
+          emoji={<HeartPulse className="text-primary" />}
           description="Choose a topic to begin"
         />
 
