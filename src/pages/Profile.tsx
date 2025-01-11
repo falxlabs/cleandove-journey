@@ -1,16 +1,13 @@
 import { useEffect, useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Settings, UserPlus, Share2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { format } from "date-fns";
-import { useNavigate } from "react-router-dom";
-import { Card } from "@/components/ui/card";
+import ProfileHeader from "@/components/profile/ProfileHeader";
+import ProfileStats from "@/components/profile/ProfileStats";
+import ProfileOverview from "@/components/profile/ProfileOverview";
+import ProfileAchievements from "@/components/profile/ProfileAchievements";
 
 const Profile = () => {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const getProfile = async () => {
@@ -36,124 +33,34 @@ const Profile = () => {
     );
   }
 
+  const mockStats = {
+    following: 0,
+    followers: 0,
+    streak: 0,
+    xp: 0,
+  };
+
+  const mockAchievements = [
+    {
+      icon: "🏃‍♂️",
+      color: "bg-pink-500",
+      title: "XP Olympian",
+      progress: "3 of 10",
+    },
+    {
+      icon: "🎯",
+      color: "bg-green-500",
+      title: "Flawless Finisher",
+      progress: "2 of 5",
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-background pb-20">
-      {/* Header Section */}
-      <div className="flex items-center justify-between px-6 py-4 border-b">
-        <h1 className="text-2xl font-semibold">Profile</h1>
-        <Button 
-          variant="ghost" 
-          size="icon"
-          className="text-muted-foreground hover:text-foreground"
-          onClick={() => navigate('/settings')}
-        >
-          <Settings className="h-6 w-6" />
-        </Button>
-      </div>
-        
-      {/* Profile Section */}
-      <div className="px-6">
-        <div className="p-6">
-          <div className="flex flex-col items-center space-y-4">
-            <Avatar className="h-24 w-24 border-4 border-background shadow-lg">
-              <AvatarImage src={profile?.avatar_url} />
-              <AvatarFallback className="text-2xl bg-muted">
-                {profile?.username?.[0]?.toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            <div className="text-center space-y-1">
-              <h2 className="text-xl font-semibold">{profile?.username || 'User'}</h2>
-              <p className="text-sm text-muted-foreground">
-                @{profile?.username?.toLowerCase() || 'user'} • Joined {profile?.created_at ? format(new Date(profile.created_at), 'MMMM yyyy') : ''}
-              </p>
-            </div>
-          </div>
-
-          {/* Stats */}
-          <div className="mt-6 grid grid-cols-2 gap-4">
-            <Card className="p-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold">0</div>
-                <div className="text-sm text-muted-foreground">Following</div>
-              </div>
-            </Card>
-            <Card className="p-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold">0</div>
-                <div className="text-sm text-muted-foreground">Followers</div>
-              </div>
-            </Card>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="mt-6 flex gap-2 justify-center">
-            <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
-              <UserPlus className="mr-2 h-5 w-5" />
-              Add Friends
-            </Button>
-            <Button variant="outline" size="icon">
-              <Share2 className="h-5 w-5" />
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      {/* Overview Section */}
-      <div className="px-6 mt-8">
-        <div className="flex items-center gap-3 mb-6">
-          <h2 className="text-2xl font-bold">Overview</h2>
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          <Card className="p-4 flex flex-col items-center text-center">
-            <div className="bg-orange-500 w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-3">
-              🔥
-            </div>
-            <div className="text-2xl font-bold mb-1">0</div>
-            <div className="text-sm text-foreground mb-1">Day streak</div>
-            <div className="text-xs text-muted-foreground">Current</div>
-          </Card>
-          <Card className="p-4 flex flex-col items-center text-center">
-            <div className="bg-green-500 w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-3">
-              ✨
-            </div>
-            <div className="text-2xl font-bold mb-1">0</div>
-            <div className="text-sm text-foreground mb-1">Total XP</div>
-            <div className="text-xs text-muted-foreground">All time</div>
-          </Card>
-        </div>
-      </div>
-
-      {/* Achievements Preview */}
-      <div className="px-6 mt-8">
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center gap-3">
-            <h2 className="text-2xl font-bold">Achievements</h2>
-          </div>
-          <Button 
-            variant="ghost" 
-            className="text-primary hover:text-primary/90 font-medium"
-            onClick={() => navigate('/achievements')}
-          >
-            View All
-          </Button>
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          <Card className="p-4 flex flex-col items-center text-center">
-            <div className="bg-pink-500 w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-3">
-              🏃‍♂️
-            </div>
-            <div className="font-semibold mb-1">XP Olympian</div>
-            <div className="text-sm text-muted-foreground">3 of 10</div>
-          </Card>
-          <Card className="p-4 flex flex-col items-center text-center">
-            <div className="bg-green-500 w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-3">
-              🎯
-            </div>
-            <div className="font-semibold mb-1">Flawless Finisher</div>
-            <div className="text-sm text-muted-foreground">2 of 5</div>
-          </Card>
-        </div>
-      </div>
+      <ProfileHeader profile={profile} />
+      <ProfileStats stats={mockStats} />
+      <ProfileOverview stats={mockStats} />
+      <ProfileAchievements achievements={mockAchievements} />
     </div>
   );
 };
