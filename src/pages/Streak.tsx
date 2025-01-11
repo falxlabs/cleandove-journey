@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { StreakHeader } from "@/components/streak/StreakHeader";
 import { StreakTabs } from "@/components/streak/StreakTabs";
 import { StreakDisplay } from "@/components/streak/StreakDisplay";
-import { PerfectStreakCard } from "@/components/streak/PerfectStreakCard";
 import { StreakChallengeCard } from "@/components/streak/StreakChallengeCard";
 import { MonthlyStats } from "@/components/streak/MonthlyStats";
 
@@ -30,7 +29,6 @@ const Streak = () => {
         currentStreak={streakData?.currentStreak} 
         isLoading={isStreakLoading} 
       />
-      <PerfectStreakCard />
       <StreakChallengeCard />
       <MonthlyStats daysCompleted={streakData?.daysCompleted} />
     </div>
