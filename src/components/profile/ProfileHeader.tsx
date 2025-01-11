@@ -11,8 +11,8 @@ const ProfileHeader = ({ profile }: ProfileHeaderProps) => {
   const navigate = useNavigate();
 
   return (
-    <>
-      <div className="flex items-center justify-between px-6 py-4 border-b">
+    <div className="sticky top-0 z-10 bg-background border-b shadow-sm">
+      <div className="flex items-center justify-between px-6 py-4">
         <h1 className="text-2xl font-semibold">Profile</h1>
         <Button 
           variant="ghost" 
@@ -52,7 +52,7 @@ const ProfileHeader = ({ profile }: ProfileHeaderProps) => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
