@@ -2,6 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate, useLocation } from "react-router-dom";
+import { Message } from "@/types/chat";
 
 export const useChatOperations = () => {
   const { toast } = useToast();
@@ -62,9 +63,24 @@ export const useChatOperations = () => {
     });
   };
 
+  const sendChatMessage = async (messages: Message[]): Promise<string> => {
+    try {
+      const { data, error } = await supabase.functions.invoke('chat', {
+        body: { messages }
+      });
+
+      if (error) throw error;
+      return data.content;
+    } catch (error) {
+      console.error('Error sending chat message:', error);
+      throw error;
+    }
+  };
+
   return {
     handleDelete,
     handleFavorite,
     handleChatClick,
+    sendChatMessage,
   };
 };
