@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { Message } from "@/types/chat";
 import { useMessages } from "./useMessages";
-import { useChatHistory } from "./useChatHistory";
-import { useChatTitle } from "./useChatTitle";
-import { useCredits } from "./useCredits";
-import { useChatOperations } from "./useChatOperations";
+import { useMessageOperations } from "./useMessageOperations";
+import { useChatInitialization } from "./useChatInitialization";
 
 interface UseChatProps {
   initialTopic?: string;
@@ -21,68 +19,34 @@ export const useChat = ({
   chatId,
   isExistingChat 
 }: UseChatProps = {}) => {
-  const [input, setInput] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-
-  const { messages, setMessages, isInitialLoading, initializeChat } = useMessages({
+  const [messages, setMessages] = useState<Message[]>([]);
+  const { isInitialLoading, initializeChat } = useMessages({
     initialTopic,
     context,
     improvement,
     chatId,
     isExistingChat
   });
-  const { chatId: currentChatId, setChatId, createChatHistory, saveMessages, updateExistingChat } =
-    useChatHistory();
-  const { chatTitle, generateTitle } = useChatTitle(initialTopic);
-  const { showCreditAlert, setShowCreditAlert, handleCredits } = useCredits();
-  const { sendChatMessage } = useChatOperations();
 
-  const sendMessage = async () => {
-    if (!input.trim()) return;
+  const {
+    input,
+    setInput,
+    isLoading,
+    sendMessage,
+    regenerateMessage
+  } = useMessageOperations(chatId);
 
-    const creditsAvailable = await handleCredits();
-    if (!creditsAvailable) return;
+  const {
+    showCreditAlert,
+    setShowCreditAlert,
+    handleNewMessage
+  } = useChatInitialization(messages, chatId);
 
-    setIsLoading(true);
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      content: input,
-      sender: "user",
-      timestamp: new Date(),
-    };
-
-    setMessages((prev) => [...prev, newMessage]);
-    setInput("");
-
-    try {
-      const content = await sendChatMessage([...messages, newMessage]);
-
-      const assistantResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        content,
-        sender: "assistant",
-        timestamp: new Date(),
-      };
-
-      if (!chatId) {
-        const newChatId = await createChatHistory(input, content);
-        if (newChatId) {
-          setChatId(newChatId);
-          await saveMessages(newChatId, messages, input, content);
-          await generateTitle([...messages, newMessage, assistantResponse], newChatId);
-        }
-      } else {
-        await updateExistingChat(chatId, input, content, messages.length);
-      }
-
+  const handleSendMessage = async () => {
+    await sendMessage(messages, async (content) => {
+      const assistantResponse = await handleNewMessage(input, content, messages);
       setMessages(prev => [...prev, assistantResponse]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const regenerateMessage = async (messageId: string) => {
-    console.log("Regenerate message:", messageId);
+    });
   };
 
   return {
@@ -93,9 +57,8 @@ export const useChat = ({
     messages,
     showCreditAlert,
     setShowCreditAlert,
-    sendMessage,
+    sendMessage: handleSendMessage,
     initializeChat,
-    regenerateMessage,
-    chatTitle
+    regenerateMessage
   };
 };
