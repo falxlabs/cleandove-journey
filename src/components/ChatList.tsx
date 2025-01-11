@@ -1,7 +1,7 @@
 import { Star, MessageSquare, Calendar, Trash2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
-import { useState, useRef, TouchEvent } from "react";
+import { useState, useRef, TouchEvent, MouseEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
@@ -28,6 +28,7 @@ const ChatList = ({ chats, isLoading = false }: ChatListProps) => {
   const touchStartX = useRef<number>(0);
   const currentOffset = useRef<number>(0);
   const isSwiping = useRef(false);
+  const isDragging = useRef(false);
 
   const truncateText = (text: string, maxLength: number) => {
     if (text.length <= maxLength) return text;
@@ -38,6 +39,13 @@ const ChatList = ({ chats, isLoading = false }: ChatListProps) => {
     touchStartX.current = e.touches[0].clientX;
     setSwipingId(chatId);
     isSwiping.current = false;
+  };
+
+  const handleMouseDown = (e: MouseEvent, chatId: string) => {
+    touchStartX.current = e.clientX;
+    setSwipingId(chatId);
+    isSwiping.current = false;
+    isDragging.current = true;
   };
 
   const handleTouchMove = (e: TouchEvent) => {
@@ -55,7 +63,22 @@ const ChatList = ({ chats, isLoading = false }: ChatListProps) => {
     }
   };
 
-  const handleTouchEnd = async () => {
+  const handleMouseMove = (e: MouseEvent) => {
+    if (!swipingId || !isDragging.current) return;
+    const touchX = e.clientX;
+    const diff = touchStartX.current - touchX;
+    if (Math.abs(diff) > 5) {
+      isSwiping.current = true;
+    }
+    currentOffset.current = Math.max(0, Math.min(diff, 100));
+    
+    const element = document.getElementById(`chat-${swipingId}`);
+    if (element) {
+      element.style.transform = `translateX(-${currentOffset.current}px)`;
+    }
+  };
+
+  const handleDragEnd = async () => {
     if (!swipingId) return;
     
     const element = document.getElementById(`chat-${swipingId}`);
@@ -103,6 +126,7 @@ const ChatList = ({ chats, isLoading = false }: ChatListProps) => {
     currentOffset.current = 0;
     setSwipingId(null);
     isSwiping.current = false;
+    isDragging.current = false;
   };
 
   if (isLoading) {
@@ -129,15 +153,21 @@ const ChatList = ({ chats, isLoading = false }: ChatListProps) => {
   }
 
   return (
-    <section className="space-y-4">
+    <section 
+      className="space-y-4"
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleDragEnd}
+      onMouseLeave={handleDragEnd}
+    >
       {chats.map((chat) => (
         <div
           key={chat.id}
           id={`chat-${chat.id}`}
-          className="relative p-4 bg-card rounded-lg border shadow-sm hover:shadow-md transition-all touch-pan-y cursor-pointer"
+          className="relative p-4 bg-card rounded-lg border shadow-sm hover:shadow-md transition-all touch-pan-y cursor-pointer select-none"
           onTouchStart={(e) => handleTouchStart(e, chat.id)}
           onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
+          onTouchEnd={handleDragEnd}
+          onMouseDown={(e) => handleMouseDown(e, chat.id)}
         >
           <div className="flex justify-between items-start mb-2">
             <h3 className="font-medium">{chat.title}</h3>
