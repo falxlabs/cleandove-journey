@@ -24,6 +24,8 @@ const ChatConversation = () => {
     initialTopic: location.state?.topic,
     context: location.state?.context,
     improvement: location.state?.improvement,
+    chatId: location.state?.chatId,
+    isExistingChat: location.state?.isExistingChat
   });
 
   useEffect(() => {

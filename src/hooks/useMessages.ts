@@ -1,7 +1,22 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Message } from "@/types/chat";
+import { supabase } from "@/integrations/supabase/client";
 
-export const useMessages = (initialTopic?: string, context?: string, improvement?: string) => {
+interface UseMessagesProps {
+  initialTopic?: string;
+  context?: string;
+  improvement?: string;
+  chatId?: string;
+  isExistingChat?: boolean;
+}
+
+export const useMessages = ({ 
+  initialTopic, 
+  context, 
+  improvement,
+  chatId,
+  isExistingChat 
+}: UseMessagesProps = {}) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
 
@@ -12,19 +27,58 @@ export const useMessages = (initialTopic?: string, context?: string, improvement
     return "Hello! How can I help you today?";
   };
 
-  const initializeChat = async () => {
+  const loadExistingMessages = async () => {
+    if (!chatId) return;
+
     try {
-      const initialMessage: Message = {
-        id: "1",
-        content: getInitialMessage(),
-        sender: "assistant",
-        timestamp: new Date(),
-      };
-      setMessages([initialMessage]);
+      const { data: existingMessages, error } = await supabase
+        .from('messages')
+        .select('*')
+        .eq('chat_id', chatId)
+        .order('sequence_number', { ascending: true });
+
+      if (error) {
+        console.error('Error loading messages:', error);
+        return;
+      }
+
+      if (existingMessages) {
+        const formattedMessages: Message[] = existingMessages.map(msg => ({
+          id: msg.id,
+          content: msg.content,
+          sender: msg.sender as "assistant" | "user",
+          timestamp: new Date(msg.created_at)
+        }));
+        setMessages(formattedMessages);
+      }
     } finally {
       setIsInitialLoading(false);
     }
   };
+
+  const initializeChat = async () => {
+    try {
+      if (isExistingChat) {
+        await loadExistingMessages();
+      } else {
+        const initialMessage: Message = {
+          id: "1",
+          content: getInitialMessage(),
+          sender: "assistant",
+          timestamp: new Date(),
+        };
+        setMessages([initialMessage]);
+      }
+    } finally {
+      setIsInitialLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isExistingChat && chatId) {
+      loadExistingMessages();
+    }
+  }, [chatId, isExistingChat]);
 
   return {
     messages,

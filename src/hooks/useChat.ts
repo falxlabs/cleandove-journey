@@ -10,18 +10,28 @@ interface UseChatProps {
   initialTopic?: string;
   context?: string;
   improvement?: string;
+  chatId?: string;
+  isExistingChat?: boolean;
 }
 
-export const useChat = ({ initialTopic, context, improvement }: UseChatProps = {}) => {
+export const useChat = ({ 
+  initialTopic, 
+  context, 
+  improvement,
+  chatId,
+  isExistingChat 
+}: UseChatProps = {}) => {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const { messages, setMessages, isInitialLoading, initializeChat } = useMessages(
+  const { messages, setMessages, isInitialLoading, initializeChat } = useMessages({
     initialTopic,
     context,
-    improvement
-  );
-  const { chatId, setChatId, createChatHistory, saveMessages, updateExistingChat } =
+    improvement,
+    chatId,
+    isExistingChat
+  });
+  const { chatId: currentChatId, setChatId, createChatHistory, saveMessages, updateExistingChat } =
     useChatHistory();
   const { chatTitle, generateTitle } = useChatTitle(initialTopic);
   const { showCreditAlert, setShowCreditAlert, handleCredits } = useCredits();
@@ -72,8 +82,6 @@ export const useChat = ({ initialTopic, context, improvement }: UseChatProps = {
   };
 
   const regenerateMessage = async (messageId: string) => {
-    // Implementation for message regeneration
-    // This will be implemented in a future update
     console.log("Regenerate message:", messageId);
   };
 
