@@ -191,19 +191,19 @@ const ChatList = ({ chats, isLoading = false }: ChatListProps) => {
             <span>{chat.replies} replies</span>
           </div>
           <div 
-            className="absolute inset-0 bg-destructive flex items-center justify-end"
+            className="absolute right-0 top-0 h-full bg-destructive transition-all duration-150 flex items-center"
             style={{ 
-              clipPath: 'inset(0 0 0 100%)',
+              width: '100px',
               transform: swipingId === chat.id ? 
-                `translateX(-${currentOffset.current}px)` : 
-                'translateX(0)',
+                `scale(${Math.max(0.3, Math.min(currentOffset.current / 30, 1))})` : 
+                'scale(0)',
               opacity: swipingId === chat.id ? 
-                Math.max(0.5, Math.min(currentOffset.current / 50, 1)) : 
+                Math.max(0.5, Math.min(currentOffset.current / 30, 1)) : 
                 0,
-              transition: 'transform 150ms ease-out, opacity 150ms ease-out'
+              transformOrigin: 'center right'
             }}
           >
-            <div className="flex items-center justify-center w-[100px] h-full">
+            <div className="flex items-center justify-center w-full">
               <Trash2 className="text-white h-6 w-6" />
             </div>
           </div>
