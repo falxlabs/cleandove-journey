@@ -119,13 +119,13 @@ const Streak = () => {
       <Card>
         <CardContent className="p-6">
           <div className="flex justify-between items-center mb-6">
-            <button onClick={onPreviousMonth}>
+            <button onClick={onPreviousMonth} className="p-2 hover:bg-secondary rounded-full transition-colors">
               <ChevronLeft className="w-6 h-6" />
             </button>
             <h2 className="text-xl font-semibold">
               {currentMonth} {currentYear}
             </h2>
-            <button onClick={onNextMonth}>
+            <button onClick={onNextMonth} className="p-2 hover:bg-secondary rounded-full transition-colors">
               <ChevronRight className="w-6 h-6" />
             </button>
           </div>
