@@ -14,11 +14,15 @@ const Settings = () => {
     navigate('/auth');
   };
 
+  const handleDone = () => {
+    navigate(-1); // This will navigate back to the previous page
+  };
+
   return (
     <div className="min-h-screen pb-20 bg-background">
       <div className="flex items-center justify-between px-6 py-4 border-b">
         <h1 className="text-xl font-semibold">Settings</h1>
-        <Button variant="ghost" className="text-primary">
+        <Button variant="ghost" className="text-primary" onClick={handleDone}>
           Done
         </Button>
       </div>
