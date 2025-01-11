@@ -16,6 +16,11 @@ interface ChatListProps {
 }
 
 const ChatList = ({ chats, isLoading = false }: ChatListProps) => {
+  const truncateText = (text: string, maxLength: number) => {
+    if (text.length <= maxLength) return text;
+    return text.slice(0, maxLength).trim() + '...';
+  };
+
   if (isLoading) {
     return (
       <section className="space-y-4">
@@ -58,7 +63,9 @@ const ChatList = ({ chats, isLoading = false }: ChatListProps) => {
               <Star className="h-5 w-5" />
             </button>
           </div>
-          <p className="text-sm text-muted-foreground mb-3">{chat.preview}</p>
+          <p className="text-sm text-muted-foreground mb-3">
+            {truncateText(chat.preview, 70)}
+          </p>
           <div className="flex items-center text-sm text-muted-foreground">
             <Calendar className="h-4 w-4 mr-1" />
             <span className="mr-4">{chat.date}</span>
