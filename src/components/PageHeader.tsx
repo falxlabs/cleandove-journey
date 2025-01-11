@@ -1,5 +1,4 @@
 import { ReactNode } from "react";
-import SettingsButton from "./SettingsButton";
 
 interface PageHeaderProps {
   title: string;
@@ -12,7 +11,6 @@ const PageHeader = ({ title, emoji, description }: PageHeaderProps) => {
     <header className="px-6 py-8 space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">{title}</h1>
-        <SettingsButton />
       </div>
       <div className="flex items-center gap-3">
         <div className="flex items-center justify-center w-10 h-10 rounded-full bg-muted">
