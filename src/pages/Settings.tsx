@@ -15,16 +15,24 @@ const Settings = () => {
   };
 
   const handleDone = () => {
-    navigate(-1); // This will navigate back to the previous page
+    navigate(-1);
   };
 
   return (
-    <div className="min-h-screen pb-20 bg-background">
-      <div className="flex items-center justify-between px-6 py-4 border-b">
-        <h1 className="text-xl font-semibold">Settings</h1>
-        <Button variant="ghost" className="text-primary" onClick={handleDone}>
-          Done
-        </Button>
+    <div className="min-h-screen bg-background pb-20">
+      <div className="sticky top-0 z-10 bg-background border-b shadow-sm">
+        <div className="px-6 py-8">
+          <div className="flex items-center justify-between">
+            <h1 className="text-2xl font-semibold">Settings</h1>
+            <Button 
+              variant="ghost" 
+              className="text-primary"
+              onClick={handleDone}
+            >
+              Done
+            </Button>
+          </div>
+        </div>
       </div>
 
       <AccountSection />
