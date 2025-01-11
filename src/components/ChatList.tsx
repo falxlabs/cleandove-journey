@@ -191,9 +191,9 @@ const ChatList = ({ chats, isLoading = false }: ChatListProps) => {
             <span>{chat.replies} replies</span>
           </div>
           <div 
-            className="absolute right-0 top-0 bottom-0 flex items-center justify-center bg-destructive w-[100px] transition-opacity"
+            className="absolute right-0 top-0 bottom-0 flex items-center justify-center bg-destructive w-[100px] transition-transform duration-150"
             style={{ 
-              opacity: swipingId === chat.id ? Math.min(currentOffset.current / 50, 1) : 0 
+              transform: `translateX(${100 - (swipingId === chat.id ? currentOffset.current : 0)}px)`
             }}
           >
             <Trash2 className="text-white h-6 w-6" />
