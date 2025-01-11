@@ -58,16 +58,21 @@ const History = () => {
     );
 
   return (
-    <div className="min-h-screen pb-20 animate-fade-in">
-      <PageHeader
-        title="History"
-        emoji="🕊️"
-        description="Let's look back at our previous conversations"
-      />
+    <div className="min-h-screen pb-20">
+      <div className="sticky top-0 z-10 bg-background">
+        <PageHeader
+          title="History"
+          emoji="🕊️"
+          description="Let's look back at our previous conversations"
+        />
 
-      <div className="px-6 space-y-4">
-        <SearchBar value={searchQuery} onChange={setSearchQuery} isLoading={isLoading} />
-        <FilterButtons filter={filter} onFilterChange={setFilter} isLoading={isLoading} />
+        <div className="px-6 space-y-4 pb-4">
+          <SearchBar value={searchQuery} onChange={setSearchQuery} isLoading={isLoading} />
+          <FilterButtons filter={filter} onFilterChange={setFilter} isLoading={isLoading} />
+        </div>
+      </div>
+
+      <div className="px-6">
         <ChatList chats={filteredChats} isLoading={isLoading} />
       </div>
     </div>
