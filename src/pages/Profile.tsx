@@ -5,7 +5,6 @@ import { Settings, UserPlus, Share2, Trophy, Award, Flame } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
-import PageHeader from "@/components/PageHeader";
 
 const Profile = () => {
   const [profile, setProfile] = useState<any>(null);
@@ -38,23 +37,20 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      <PageHeader
-        title="Profile"
-        emoji="👤"
-        description="View and manage your profile"
-      />
-      
-      {/* Settings Button */}
-      <div className="absolute top-4 right-4">
-        <Button 
-          variant="ghost" 
-          size="icon"
-          className="text-muted-foreground hover:text-foreground"
-          onClick={() => navigate('/settings')}
-        >
-          <Settings className="h-6 w-6" />
-        </Button>
-      </div>
+      {/* Header Section */}
+      <header className="px-6 py-8">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-semibold">Profile</h1>
+          <Button 
+            variant="ghost" 
+            size="icon"
+            className="text-muted-foreground hover:text-foreground"
+            onClick={() => navigate('/settings')}
+          >
+            <Settings className="h-6 w-6" />
+          </Button>
+        </div>
+      </header>
         
       {/* Profile Section */}
       <div className="px-6">
