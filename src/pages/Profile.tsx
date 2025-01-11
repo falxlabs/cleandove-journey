@@ -58,11 +58,9 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-background pb-20">
       <ProfileHeader profile={profile} />
-      <div className="pt-4">
-        <ProfileStats stats={mockStats} />
-        <ProfileOverview stats={mockStats} />
-        <ProfileAchievements achievements={mockAchievements} />
-      </div>
+      <ProfileStats stats={mockStats} />
+      <ProfileOverview stats={mockStats} />
+      <ProfileAchievements achievements={mockAchievements} />
     </div>
   );
 };
