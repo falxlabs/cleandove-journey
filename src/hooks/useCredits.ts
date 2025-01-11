@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { checkCredits, deductCredit } from "@/utils/credits";
 import { supabase } from "@/integrations/supabase/client";
 
-export const MAX_CREDITS = 10;
+export const MAX_CREDITS = 5;
 
 export const useCredits = () => {
   const [showCreditAlert, setShowCreditAlert] = useState(false);
