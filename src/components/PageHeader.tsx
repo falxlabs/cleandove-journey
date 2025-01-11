@@ -8,9 +8,9 @@ interface PageHeaderProps {
 
 const PageHeader = ({ title, emoji, description }: PageHeaderProps) => {
   return (
-    <header className="px-6 py-8 space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">{title}</h1>
+    <header className="px-6 py-8">
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-2xl font-semibold leading-none">{title}</h1>
       </div>
       <div className="flex items-center gap-3">
         <div className="flex items-center justify-center w-10 h-10 rounded-full bg-muted">
