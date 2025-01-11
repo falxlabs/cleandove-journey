@@ -5,7 +5,6 @@ import { Settings, UserPlus, Share2, Trophy, Award } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
-import { Card } from "@/components/ui/card";
 
 const Profile = () => {
   const [profile, setProfile] = useState<any>(null);
@@ -53,7 +52,7 @@ const Profile = () => {
         
       {/* Profile Section */}
       <div className="px-6">
-        <Card className="p-6">
+        <div className="p-6 bg-background">
           <div className="flex flex-col items-center space-y-4">
             <Avatar className="h-24 w-24 border-4 border-background shadow-lg">
               <AvatarImage src={profile?.avatar_url} />
@@ -71,18 +70,18 @@ const Profile = () => {
 
           {/* Stats */}
           <div className="mt-6 grid grid-cols-2 gap-4">
-            <Card className="p-4">
+            <div className="p-4 bg-muted/10 rounded-lg">
               <div className="text-center">
                 <div className="text-2xl font-bold">0</div>
                 <div className="text-sm text-muted-foreground">Following</div>
               </div>
-            </Card>
-            <Card className="p-4">
+            </div>
+            <div className="p-4 bg-muted/10 rounded-lg">
               <div className="text-center">
                 <div className="text-2xl font-bold">0</div>
                 <div className="text-sm text-muted-foreground">Followers</div>
               </div>
-            </Card>
+            </div>
           </div>
 
           {/* Action Buttons */}
@@ -95,7 +94,7 @@ const Profile = () => {
               <Share2 className="h-5 w-5" />
             </Button>
           </div>
-        </Card>
+        </div>
       </div>
 
       {/* Overview Section */}
@@ -105,22 +104,22 @@ const Profile = () => {
           <h2 className="text-2xl font-bold">Overview</h2>
         </div>
         <div className="grid grid-cols-2 gap-4">
-          <Card className="p-4 flex flex-col items-center text-center">
+          <div className="p-4 bg-muted/10 rounded-lg flex flex-col items-center text-center">
             <div className="bg-orange-500 w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-3">
               🔥
             </div>
             <div className="text-2xl font-bold mb-1">0</div>
             <div className="text-sm text-foreground mb-1">Day streak</div>
             <div className="text-xs text-muted-foreground">Current</div>
-          </Card>
-          <Card className="p-4 flex flex-col items-center text-center">
+          </div>
+          <div className="p-4 bg-muted/10 rounded-lg flex flex-col items-center text-center">
             <div className="bg-green-500 w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-3">
               ✨
             </div>
             <div className="text-2xl font-bold mb-1">0</div>
             <div className="text-sm text-foreground mb-1">Total XP</div>
             <div className="text-xs text-muted-foreground">All time</div>
-          </Card>
+          </div>
         </div>
       </div>
 
@@ -140,20 +139,20 @@ const Profile = () => {
           </Button>
         </div>
         <div className="grid grid-cols-2 gap-4">
-          <Card className="p-4 flex flex-col items-center text-center">
+          <div className="p-4 bg-muted/10 rounded-lg flex flex-col items-center text-center">
             <div className="bg-pink-500 w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-3">
               🏃‍♂️
             </div>
             <div className="font-semibold mb-1">XP Olympian</div>
             <div className="text-sm text-muted-foreground">3 of 10</div>
-          </Card>
-          <Card className="p-4 flex flex-col items-center text-center">
+          </div>
+          <div className="p-4 bg-muted/10 rounded-lg flex flex-col items-center text-center">
             <div className="bg-green-500 w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-3">
               🎯
             </div>
             <div className="font-semibold mb-1">Flawless Finisher</div>
             <div className="text-sm text-muted-foreground">2 of 5</div>
-          </Card>
+          </div>
         </div>
       </div>
     </div>
