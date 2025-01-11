@@ -5,6 +5,7 @@ import { checkCredits, deductCredit } from "@/utils/credits";
 import { useMessages } from "./useMessages";
 import { useChatHistory } from "./useChatHistory";
 import { useChatTitle } from "./useChatTitle";
+import { Message } from "@/types/chat";
 
 interface UseChatProps {
   initialTopic?: string;
@@ -37,7 +38,7 @@ export const useChat = ({ initialTopic, context, improvement }: UseChatProps = {
     }
 
     setIsLoading(true);
-    const newMessage = {
+    const newMessage: Message = {
       id: Date.now().toString(),
       content: input,
       sender: "user",
@@ -59,7 +60,7 @@ export const useChat = ({ initialTopic, context, improvement }: UseChatProps = {
         throw new Error("Failed to deduct credit");
       }
 
-      const assistantResponse = {
+      const assistantResponse: Message = {
         id: (Date.now() + 1).toString(),
         content: data.content,
         sender: "assistant",

@@ -14,15 +14,13 @@ export const useMessages = (initialTopic?: string, context?: string, improvement
 
   const initializeChat = async () => {
     try {
-      const initialMessage = getInitialMessage();
-      setMessages([
-        {
-          id: "1",
-          content: initialMessage,
-          sender: "assistant",
-          timestamp: new Date(),
-        },
-      ]);
+      const initialMessage: Message = {
+        id: "1",
+        content: getInitialMessage(),
+        sender: "assistant",
+        timestamp: new Date(),
+      };
+      setMessages([initialMessage]);
     } finally {
       setIsInitialLoading(false);
     }
