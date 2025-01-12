@@ -120,7 +120,7 @@ export const useMessages = ({
             learn: `Hi ${username}! I'd be happy to help you learn about ${improvement.toLowerCase()}. What specific aspects would you like to understand better?`
           };
           return {
-            id: "initial-message",
+            id: "1",
             content: messages[topicContext.category as keyof typeof messages] || messages.improvement,
             sender: "assistant",
             timestamp: new Date(),
@@ -138,7 +138,7 @@ export const useMessages = ({
           };
 
           return {
-            id: "initial-message",
+            id: "1",
             content: messages[topicContext.category as keyof typeof messages],
             sender: "assistant",
             timestamp: new Date(),
@@ -147,7 +147,7 @@ export const useMessages = ({
       }
 
       return {
-        id: "initial-message",
+        id: "1",
         content: `Hi ${username}! What's on your mind today?`,
         sender: "assistant",
         timestamp: new Date(),
@@ -155,7 +155,7 @@ export const useMessages = ({
     } catch (error) {
       console.error('Error fetching username:', error);
       return {
-        id: "initial-message",
+        id: "1",
         content: "Hi there! What's on your mind today?",
         sender: "assistant",
         timestamp: new Date(),
@@ -193,10 +193,7 @@ export const useMessages = ({
           sender: msg.sender as "assistant" | "user",
           timestamp: new Date(msg.created_at)
         }));
-
-        // Always get and prepend the initial message
-        const initialMessage = await getInitialMessage();
-        setMessages([initialMessage, ...formattedMessages]);
+        setMessages(formattedMessages);
       }
     } catch (error) {
       console.error('Error in loadExistingMessages:', error);
@@ -208,8 +205,10 @@ export const useMessages = ({
   const initializeChat = async () => {
     try {
       if (chatId) {
+        // Only load existing messages if we have a chatId
         await loadExistingMessages();
       } else {
+        // Only add initial message for completely new chats
         const initialMessage = await getInitialMessage();
         setMessages([initialMessage]);
       }
