@@ -107,6 +107,27 @@ export type Database = {
         }
         Relationships: []
       }
+      user_plans: {
+        Row: {
+          created_at: string
+          id: string
+          plan: Database["public"]["Enums"]["subscription_plan"] | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          plan?: Database["public"]["Enums"]["subscription_plan"] | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          plan?: Database["public"]["Enums"]["subscription_plan"] | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       user_preferences: {
         Row: {
           created_at: string
@@ -147,9 +168,16 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: number
       }
+      set_user_plan: {
+        Args: {
+          target_user_id: string
+          new_plan: Database["public"]["Enums"]["subscription_plan"]
+        }
+        Returns: undefined
+      }
     }
     Enums: {
-      [_ in never]: never
+      subscription_plan: "free" | "premium" | "dev"
     }
     CompositeTypes: {
       [_ in never]: never
