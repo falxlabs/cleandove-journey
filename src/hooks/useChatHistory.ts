@@ -28,33 +28,38 @@ export const useChatHistory = () => {
     }
 
     try {
-      const initialTitle = generateInitialTitle(userMessage);
+      // Only create a new chat if there isn't an existing chatId
+      if (!chatId) {
+        const initialTitle = generateInitialTitle(userMessage);
 
-      const { data: chatHistory, error: chatError } = await supabase
-        .from("chat_histories")
-        .insert({
-          title: initialTitle,
-          preview: assistantMessage,
-          user_id: user.id,
-          reply_count: 0
-        })
-        .select()
-        .single();
+        const { data: chatHistory, error: chatError } = await supabase
+          .from("chat_histories")
+          .insert({
+            title: initialTitle,
+            preview: assistantMessage,
+            user_id: user.id,
+            reply_count: 0
+          })
+          .select()
+          .single();
 
-      if (chatError) {
-        console.error("Error creating chat history:", chatError);
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Failed to create new chat. Please try again.",
-        });
-        return null;
+        if (chatError) {
+          console.error("Error creating chat history:", chatError);
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Failed to create new chat. Please try again.",
+          });
+          return null;
+        }
+
+        // Set the chatId for future messages in this conversation
+        setChatId(chatHistory.id);
+        queryClient.invalidateQueries({ queryKey: ["chat-history"] });
+        return chatHistory.id;
       }
 
-      // Invalidate the chat history query to trigger a refetch
-      queryClient.invalidateQueries({ queryKey: ["chat-history"] });
-
-      return chatHistory.id;
+      return chatId;
     } catch (error) {
       console.error("Error in createChatHistory:", error);
       toast({
@@ -111,7 +116,6 @@ export const useChatHistory = () => {
         });
       }
 
-      // Invalidate the chat history query after saving messages
       queryClient.invalidateQueries({ queryKey: ["chat-history"] });
     } catch (error) {
       console.error("Error in saveMessages:", error);
@@ -124,7 +128,7 @@ export const useChatHistory = () => {
   };
 
   const updateExistingChat = async (
-    chatId: string,
+    existingChatId: string,
     input: string,
     assistantResponse: string,
     messageCount: number
@@ -132,13 +136,13 @@ export const useChatHistory = () => {
     try {
       const messagesToInsert = [
         {
-          chat_id: chatId,
+          chat_id: existingChatId,
           content: input,
           sender: "user",
           sequence_number: messageCount + 1,
         },
         {
-          chat_id: chatId,
+          chat_id: existingChatId,
           content: assistantResponse,
           sender: "assistant",
           sequence_number: messageCount + 2,
@@ -165,7 +169,7 @@ export const useChatHistory = () => {
           preview: assistantResponse,
           reply_count: messageCount + 2,
         })
-        .eq("id", chatId);
+        .eq("id", existingChatId);
 
       if (chatError) {
         console.error("Error updating chat history:", chatError);
@@ -176,7 +180,6 @@ export const useChatHistory = () => {
         });
       }
 
-      // Invalidate the chat history query after updating
       queryClient.invalidateQueries({ queryKey: ["chat-history"] });
     } catch (error) {
       console.error("Error in updateExistingChat:", error);
