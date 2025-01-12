@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ThumbsUp, ThumbsDown, Copy, Share2, RefreshCw } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
+import { format } from "date-fns";
 
 interface MessageListProps {
   messages: Message[];
@@ -56,6 +57,11 @@ export const MessageList = ({ messages, isLoading, onRegenerate }: MessageListPr
             }`}
           >
             <p className="text-sm">{message.content}</p>
+            <div className="flex justify-end mt-1">
+              <span className="text-xs text-muted-foreground">
+                {format(message.timestamp, "HH:mm")}
+              </span>
+            </div>
             {message.sender === "assistant" && (
               <div className="flex items-center gap-2 mt-2 text-muted-foreground">
                 <Button variant="ghost" size="icon" className="h-8 w-8">

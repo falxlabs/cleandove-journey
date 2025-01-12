@@ -46,6 +46,23 @@ export const useChat = ({
 
   const { chatTitle } = useChatTitle(initialTopic);
 
+  const addMessageWithDelay = async (content: string, delay: number = 500) => {
+    const assistantResponse: Message = {
+      id: Date.now().toString(),
+      content,
+      sender: "assistant",
+      timestamp: new Date(),
+    };
+    
+    await new Promise(resolve => setTimeout(resolve, delay));
+    setMessages(prev => [...prev, assistantResponse]);
+    return assistantResponse;
+  };
+
+  const splitMessage = (content: string): string[] => {
+    return content.split("[NEXT]").map(part => part.trim()).filter(Boolean);
+  };
+
   const handleSendMessage = async () => {
     if (!input.trim()) return;
     
@@ -61,8 +78,16 @@ export const useChat = ({
     try {
       const content = await sendMessage([...messages, newMessage]);
       if (content) {
-        const assistantResponse = await handleNewMessage(input, content, messages);
-        setMessages(prev => [...prev, assistantResponse]);
+        const messageParts = splitMessage(content);
+        let lastMessage: Message | undefined;
+        
+        for (const [index, part] of messageParts.entries()) {
+          lastMessage = await addMessageWithDelay(part, index * 1000);
+        }
+        
+        if (lastMessage) {
+          await handleNewMessage(input, content, messages);
+        }
       }
     } catch (error) {
       console.error('Error sending message:', error);
