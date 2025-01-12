@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
+import { Message } from "@/types/chat";
 
 export const useChatOperations = () => {
   const navigate = useNavigate();
@@ -66,9 +67,30 @@ export const useChatOperations = () => {
     navigate(`/chat/${chatId}`, { state: { title } });
   };
 
+  const sendChatMessage = async (messages: Message[]): Promise<string> => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('No active session');
+
+      const { data, error } = await supabase.functions.invoke('chat', {
+        body: { messages },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`
+        }
+      });
+
+      if (error) throw error;
+      return data.content;
+    } catch (error) {
+      console.error('Error sending chat message:', error);
+      throw error;
+    }
+  };
+
   return {
     handleDelete,
     handleFavorite,
     handleChatClick,
+    sendChatMessage,
   };
 };
