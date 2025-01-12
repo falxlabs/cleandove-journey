@@ -21,6 +21,7 @@ const SubscriptionSection = () => {
   }
 
   const progressValue = (credits / planDetails.daily_credits) * 100;
+  const planName = planDetails.plan.charAt(0).toUpperCase() + planDetails.plan.slice(1);
 
   return (
     <div className="px-6 mt-8">
@@ -32,7 +33,10 @@ const SubscriptionSection = () => {
             <span className="font-semibold">{credits}/{planDetails.daily_credits}</span>
           </div>
           <Progress value={progressValue} className="h-2" />
-          <p className="text-sm text-muted-foreground">{planDetails.description}</p>
+          <div className="space-y-1">
+            <p className="text-sm font-medium">{planName} Plan</p>
+            <p className="text-sm text-muted-foreground">{planDetails.description}</p>
+          </div>
         </div>
 
         <div className="bg-card rounded-lg overflow-hidden shadow-sm">
