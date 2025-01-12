@@ -6,14 +6,20 @@ const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    if (!openAIApiKey) {
+      throw new Error('OpenAI API key is not configured');
+    }
+
     const { messages } = await req.json();
     
     // Get only the first user message
@@ -28,7 +34,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4',
         messages: [
           { 
             role: 'system', 
@@ -45,7 +51,9 @@ serve(async (req) => {
     });
 
     if (!response.ok) {
-      throw new Error(`OpenAI API error: ${response.statusText}`);
+      const error = await response.json();
+      console.error('OpenAI API error:', error);
+      throw new Error(`OpenAI API error: ${error.error?.message || response.statusText}`);
     }
 
     const data = await response.json();
@@ -58,9 +66,14 @@ serve(async (req) => {
     });
   } catch (error) {
     console.error('Error in generate-title function:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return new Response(
+      JSON.stringify({ 
+        error: error.message,
+        details: error.stack 
+      }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    );
   }
 });
