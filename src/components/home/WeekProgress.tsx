@@ -37,6 +37,8 @@ const WeekProgress = ({
               className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
                 !isWeekLoading && hasCompletedTasks && (!isToday || progress === 100)
                   ? "bg-[#9b87f5] text-primary-foreground"
+                  : isToday && progress && progress > 0 && progress < 100
+                  ? "bg-secondary text-secondary-foreground"
                   : "bg-secondary text-secondary-foreground"
               }`}
             >
