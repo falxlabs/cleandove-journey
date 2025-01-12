@@ -29,7 +29,7 @@ const ChatConversation = () => {
     context: location.state?.context,
     improvement: location.state?.improvement,
     chatId: location.state?.chatId,
-    isExistingChat: location.state?.isExistingChat
+    isExistingChat: !!location.state?.chatId // Explicitly set based on chatId presence
   });
 
   useEffect(() => {

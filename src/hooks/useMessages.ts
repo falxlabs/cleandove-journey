@@ -178,7 +178,8 @@ export const useMessages = ({
         .from('messages')
         .select('*')
         .eq('chat_id', chatId)
-        .order('sequence_number', { ascending: true });
+        .order('sequence_number', { ascending: true })
+        .order('created_at', { ascending: true });
 
       if (error) {
         console.error('Error loading messages:', error);
@@ -204,8 +205,10 @@ export const useMessages = ({
   const initializeChat = async () => {
     try {
       if (isExistingChat) {
+        // Only load existing messages for existing chats
         await loadExistingMessages();
-      } else if (!chatId && !isExistingChat) { // Only add initial message for completely new chats
+      } else if (!chatId) {
+        // Only add initial message for completely new chats
         const initialMessage = await getInitialMessage();
         setMessages([initialMessage]);
       }
