@@ -14,23 +14,7 @@ const Settings = () => {
 
   const handleSignOut = async () => {
     try {
-      // First check if we have a session
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      
-      if (sessionError) {
-        console.error('Session error:', sessionError);
-        // If we can't get the session, just redirect to auth
-        navigate('/auth');
-        return;
-      }
-
-      if (!session) {
-        // If no session, just redirect to auth
-        navigate('/auth');
-        return;
-      }
-
-      // Attempt to sign out
+      // First attempt to sign out without checking session
       const { error } = await supabase.auth.signOut();
 
       if (error) {
@@ -48,7 +32,7 @@ const Settings = () => {
         return;
       }
 
-      // Only navigate after successful logout
+      // If successful, navigate to auth page
       navigate('/auth');
     } catch (error) {
       console.error('Logout error:', error);
