@@ -1,4 +1,4 @@
-import { ChristianContentToggle } from "./ChristianContentToggle";
+import { ChristFocusedToggle } from "./ChristFocusedToggle";
 import { ContentTypePreference } from "./ContentTypePreference";
 
 const PreferencesSection = () => {
@@ -6,7 +6,7 @@ const PreferencesSection = () => {
     <div className="px-6 mt-8">
       <h2 className="text-xl font-semibold mb-4">Preferences</h2>
       <div className="space-y-6 bg-card rounded-lg p-6 shadow-sm">
-        <ChristianContentToggle />
+        <ChristFocusedToggle />
         <ContentTypePreference />
       </div>
     </div>

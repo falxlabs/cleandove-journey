@@ -110,18 +110,21 @@ export type Database = {
       user_preferences: {
         Row: {
           created_at: string
+          reading_type: string
           religious_content: boolean
           updated_at: string
           user_id: string
         }
         Insert: {
           created_at?: string
+          reading_type?: string
           religious_content?: boolean
           updated_at?: string
           user_id: string
         }
         Update: {
           created_at?: string
+          reading_type?: string
           religious_content?: boolean
           updated_at?: string
           user_id?: string
