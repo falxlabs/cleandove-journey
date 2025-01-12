@@ -9,7 +9,6 @@ import { useSession } from "@supabase/auth-helpers-react";
 
 const SubscriptionSection = () => {
   const session = useSession();
-  const { credits } = useCredits();
   const { data: planDetails, isLoading, error } = useSubscriptionDetails();
 
   if (!session) {
@@ -45,7 +44,7 @@ const SubscriptionSection = () => {
     );
   }
 
-  const progressValue = (credits / planDetails.daily_credits) * 100;
+  const progressValue = (planDetails.credits / planDetails.daily_credits) * 100;
   const planName = planDetails.plan.charAt(0).toUpperCase() + planDetails.plan.slice(1);
 
   return (
@@ -55,7 +54,7 @@ const SubscriptionSection = () => {
         <div className="py-6 space-y-3 bg-card rounded-lg shadow-sm px-4">
           <div className="flex justify-between items-center">
             <span className="text-sm">Daily Messages Remaining</span>
-            <span className="font-semibold">{credits}/{planDetails.daily_credits}</span>
+            <span className="font-semibold">{planDetails.credits}/{planDetails.daily_credits}</span>
           </div>
           <Progress value={progressValue} className="h-2" />
           <div className="space-y-1">
