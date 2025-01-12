@@ -27,7 +27,7 @@ const ProfileOverview = ({ stats }: ProfileOverviewProps) => {
             ✨
           </div>
           <div className="text-2xl font-bold mb-1">{stats.xp}</div>
-          <div className="text-sm text-foreground mb-1">Total XP</div>
+          <div className="text-sm text-foreground mb-1">Perfect Days</div>
           <div className="text-xs text-muted-foreground">All time</div>
         </Card>
       </div>
