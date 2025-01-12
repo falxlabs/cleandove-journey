@@ -7,27 +7,8 @@ import { supabase } from "@/integrations/supabase/client";
 export const useMessageOperations = (chatId: string | undefined) => {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const { sendChatMessage } = useChatOperations();
   const { handleCredits } = useCredits();
-
-  const sendChatMessage = async (messages: Message[]): Promise<string> => {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error('No active session');
-
-      const { data, error } = await supabase.functions.invoke('chat', {
-        body: { messages },
-        headers: {
-          Authorization: `Bearer ${session.access_token}`
-        }
-      });
-
-      if (error) throw error;
-      return data.content;
-    } catch (error) {
-      console.error('Error sending chat message:', error);
-      throw error;
-    }
-  };
 
   const sendMessage = async (messages: Message[]): Promise<string | undefined> => {
     const { data: { session } } = await supabase.auth.getSession();
