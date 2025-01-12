@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 interface PlanConfiguration {
   plan: string;
   daily_credits: number;
-  description: string;
+  description: string | null;
 }
 
 export const useSubscriptionDetails = () => {
@@ -18,7 +18,7 @@ export const useSubscriptionDetails = () => {
         .from("user_plans")
         .select("plan")
         .eq("user_id", session.user.id)
-        .single();
+        .maybeSingle();
 
       return data?.plan || "free";
     },
@@ -31,7 +31,7 @@ export const useSubscriptionDetails = () => {
         .from("plan_configurations")
         .select("*")
         .eq("plan", currentPlan)
-        .single();
+        .maybeSingle();
 
       return data as PlanConfiguration;
     },
