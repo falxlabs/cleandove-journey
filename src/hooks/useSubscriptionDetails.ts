@@ -18,11 +18,11 @@ export const useSubscriptionDetails = () => {
         throw new Error("No authenticated user");
       }
 
-      // First get the user's plan - no need to filter by user_id, RLS will handle that
+      // Get the user's plan
       const { data: userPlan, error: userPlanError } = await supabase
         .from("user_plans")
         .select("plan, credits")
-        .maybeSingle();
+        .single();
 
       if (userPlanError) {
         console.error("Error fetching user plan:", userPlanError);
@@ -39,7 +39,7 @@ export const useSubscriptionDetails = () => {
         };
       }
 
-      // Then get the plan configuration
+      // Get the plan configuration
       const { data: planConfig, error: planConfigError } = await supabase
         .from("plan_configurations")
         .select("daily_credits, description")
