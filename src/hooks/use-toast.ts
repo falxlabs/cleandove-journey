@@ -90,8 +90,6 @@ export const reducer = (state: State, action: Action): State => {
     case "DISMISS_TOAST": {
       const { toastId } = action
 
-      // ! Side effects ! - This could be extracted into a dismissToast() action,
-      // but I'll keep it here for simplicity
       if (toastId) {
         addToRemoveQueue(toastId)
       } else {
@@ -172,12 +170,23 @@ function useToast() {
   const [state, setState] = React.useState<State>(memoryState)
 
   React.useEffect(() => {
+    // Safely add listener
     listeners.push(setState)
+    
+    // Cleanup function that safely removes the listener
     return () => {
       const index = listeners.indexOf(setState)
       if (index > -1) {
         listeners.splice(index, 1)
       }
+      
+      // Clear any remaining timeouts
+      toastTimeouts.forEach((timeout) => {
+        if (timeout) {
+          clearTimeout(timeout)
+        }
+      })
+      toastTimeouts.clear()
     }
   }, [state])
 
