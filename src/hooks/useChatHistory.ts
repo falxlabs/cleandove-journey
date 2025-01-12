@@ -29,15 +29,18 @@ export const useChatHistory = () => {
     input: string,
     assistantResponse: string
   ) => {
-    // Insert initial assistant message
-    await supabase
-      .from("messages")
-      .insert({
-        chat_id: newChatId,
-        content: messages[0].content,
-        sender: "assistant",
-        sequence_number: 1,
-      });
+    // Check if we have an initial assistant message
+    if (messages && messages.length > 0) {
+      // Insert initial assistant message
+      await supabase
+        .from("messages")
+        .insert({
+          chat_id: newChatId,
+          content: messages[0].content,
+          sender: "assistant",
+          sequence_number: 1,
+        });
+    }
 
     // Insert user message
     await supabase
@@ -46,7 +49,7 @@ export const useChatHistory = () => {
         chat_id: newChatId,
         content: input,
         sender: "user",
-        sequence_number: 2,
+        sequence_number: messages.length > 0 ? 2 : 1,
       });
 
     // Insert assistant response
@@ -56,7 +59,7 @@ export const useChatHistory = () => {
         chat_id: newChatId,
         content: assistantResponse,
         sender: "assistant",
-        sequence_number: 3,
+        sequence_number: messages.length > 0 ? 3 : 2,
       });
   };
 
