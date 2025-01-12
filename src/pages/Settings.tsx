@@ -5,7 +5,7 @@ import AccountSection from "@/components/settings/AccountSection";
 import SubscriptionSection from "@/components/settings/SubscriptionSection";
 import SupportSection from "@/components/settings/SupportSection";
 import FooterLinks from "@/components/settings/FooterLinks";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { AuthError } from "@supabase/supabase-js";
 
 const Settings = () => {
@@ -14,8 +14,19 @@ const Settings = () => {
 
   const handleSignOut = async () => {
     try {
-      // First attempt to sign out without checking session
-      const { error } = await supabase.auth.signOut();
+      // Get current session first
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        // If no session exists, just redirect to auth page
+        navigate('/auth');
+        return;
+      }
+
+      // Attempt to sign out with the current session
+      const { error } = await supabase.auth.signOut({
+        scope: 'local'  // Only clear the current tab's session
+      });
 
       if (error) {
         console.error('Logout error:', error);
