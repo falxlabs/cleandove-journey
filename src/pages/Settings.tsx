@@ -14,23 +14,10 @@ const Settings = () => {
 
   const handleSignOut = async () => {
     try {
-      // Get current session first
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        // If no session exists, just redirect to auth page
-        navigate('/auth');
-        return;
-      }
-
-      // Attempt to sign out with the current session
-      const { error } = await supabase.auth.signOut({
-        scope: 'local'  // Only clear the current tab's session
-      });
+      const { error } = await supabase.auth.signOut();
 
       if (error) {
         console.error('Logout error:', error);
-        // Check if it's an AuthError and handle accordingly
         const message = error instanceof AuthError 
           ? error.message
           : "Please try again later";
