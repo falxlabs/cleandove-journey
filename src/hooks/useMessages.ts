@@ -193,6 +193,14 @@ export const useMessages = ({
           sender: msg.sender as "assistant" | "user",
           timestamp: new Date(msg.created_at)
         }));
+
+        // If there are no messages or the first message is not from the assistant,
+        // prepend the initial message
+        if (formattedMessages.length === 0 || formattedMessages[0].sender !== "assistant") {
+          const initialMessage = await getInitialMessage();
+          formattedMessages.unshift(initialMessage);
+        }
+
         setMessages(formattedMessages);
       }
     } catch (error) {
@@ -205,10 +213,8 @@ export const useMessages = ({
   const initializeChat = async () => {
     try {
       if (chatId) {
-        // Only load existing messages if we have a chatId
         await loadExistingMessages();
       } else {
-        // Only add initial message for completely new chats
         const initialMessage = await getInitialMessage();
         setMessages([initialMessage]);
       }
