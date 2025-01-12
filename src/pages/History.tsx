@@ -5,6 +5,7 @@ import PageHeader from "@/components/PageHeader";
 import SearchBar from "@/components/SearchBar";
 import FilterButtons from "@/components/FilterButtons";
 import ChatList from "@/components/ChatList";
+import { PearlIndicator } from "@/components/PearlIndicator";
 import { format } from "date-fns";
 import { useToast } from "@/components/ui/use-toast";
 import type { Database } from "@/integrations/supabase/types";
@@ -72,11 +73,12 @@ const History = () => {
   return (
     <div className="min-h-screen pb-20">
       <div className="sticky top-0 z-10 bg-background border-b shadow-sm">
-        <PageHeader
-          title="History"
-          emoji="🕊️"
-          description="Let's look back at our previous conversations"
-        />
+        <div className="flex items-center justify-between px-6 pt-6">
+          <h1 className="text-2xl font-semibold">History</h1>
+          <div className="flex items-center">
+            <PearlIndicator />
+          </div>
+        </div>
 
         <div className="px-6 space-y-4 pb-4">
           <SearchBar 
