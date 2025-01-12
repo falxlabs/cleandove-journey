@@ -2,13 +2,14 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Message } from "@/types/chat";
 import { useToast } from "@/hooks/use-toast";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const useChatHistory = () => {
   const [chatId, setChatId] = useState<string | null>(null);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const generateInitialTitle = (message: string) => {
-    // Truncate and clean the message to create a title
     const cleanedMessage = message.replace(/[^\w\s]/gi, '').trim();
     return cleanedMessage.length > 50 
       ? `${cleanedMessage.substring(0, 47)}...` 
@@ -50,6 +51,9 @@ export const useChatHistory = () => {
         return null;
       }
 
+      // Invalidate the chat history query to trigger a refetch
+      queryClient.invalidateQueries({ queryKey: ["chat-history"] });
+
       return chatHistory.id;
     } catch (error) {
       console.error("Error in createChatHistory:", error);
@@ -71,7 +75,6 @@ export const useChatHistory = () => {
     try {
       const messagesToInsert = [];
 
-      // Add initial assistant message if it exists
       if (messages && messages.length > 0) {
         messagesToInsert.push({
           chat_id: newChatId,
@@ -81,7 +84,6 @@ export const useChatHistory = () => {
         });
       }
 
-      // Add user message
       messagesToInsert.push({
         chat_id: newChatId,
         content: input,
@@ -89,7 +91,6 @@ export const useChatHistory = () => {
         sequence_number: messages.length > 0 ? 2 : 1,
       });
 
-      // Add assistant response
       messagesToInsert.push({
         chat_id: newChatId,
         content: assistantResponse,
@@ -109,6 +110,9 @@ export const useChatHistory = () => {
           description: "Failed to save messages. Please try again.",
         });
       }
+
+      // Invalidate the chat history query after saving messages
+      queryClient.invalidateQueries({ queryKey: ["chat-history"] });
     } catch (error) {
       console.error("Error in saveMessages:", error);
       toast({
@@ -171,6 +175,9 @@ export const useChatHistory = () => {
           description: "Failed to update chat history. Please try again.",
         });
       }
+
+      // Invalidate the chat history query after updating
+      queryClient.invalidateQueries({ queryKey: ["chat-history"] });
     } catch (error) {
       console.error("Error in updateExistingChat:", error);
       toast({

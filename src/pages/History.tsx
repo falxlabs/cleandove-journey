@@ -46,6 +46,8 @@ const History = () => {
         favorite: chat.favorite,
       }));
     },
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
 
   const filteredChats = chats
