@@ -18,11 +18,10 @@ export const useSubscriptionDetails = () => {
         throw new Error("No authenticated user");
       }
 
-      // First get the user's plan
+      // First get the user's plan - no need to filter by user_id, RLS will handle that
       const { data: userPlan, error: userPlanError } = await supabase
         .from("user_plans")
         .select("plan, credits")
-        .eq("user_id", session.user.id)
         .maybeSingle();
 
       if (userPlanError) {
