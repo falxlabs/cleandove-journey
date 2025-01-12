@@ -112,7 +112,7 @@ export const useMessages = ({
         const messages = {
           improvement: `Let's work on improving your ${topicContext.label.toLowerCase()}. What specific aspects would you like to focus on developing?`,
           temptation: `I hear you're facing challenges with ${topicContext.label.toLowerCase()}. You're not alone in this. Would you like to share what you're experiencing?`,
-          learn: `Let's explore ${topicContext.label} together. What would you like to learn about this approach?`
+          learn: `What aspects of ${topicContext.label} would you like to learn more about? I can explain the concepts, techniques, and practical applications.`
         };
 
         return {
