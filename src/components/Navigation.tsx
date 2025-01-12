@@ -4,8 +4,13 @@ import { Link, useLocation } from "react-router-dom";
 const Navigation = () => {
   const location = useLocation();
 
-  // Hide navigation on conversation, settings, and streak pages
-  if (location.pathname === "/conversation" || location.pathname === "/settings" || location.pathname === "/streak") {
+  // Hide navigation on conversation, settings, streak pages and preferences
+  if (
+    location.pathname === "/conversation" || 
+    location.pathname === "/settings" || 
+    location.pathname === "/streak" ||
+    location.pathname === "/settings/preferences"
+  ) {
     return null;
   }
 
