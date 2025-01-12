@@ -111,6 +111,7 @@ export const useMessages = ({
 
       const username = profile?.username || 'there';
 
+      let content = '';
       if (context && improvement) {
         const topicContext = getTopicContext(initialTopic || '');
         if (topicContext) {
@@ -119,16 +120,9 @@ export const useMessages = ({
             temptation: `Hi ${username}! I understand you're facing challenges with ${improvement.toLowerCase()}. You're not alone, and I'm here to support you. What would you like to discuss?`,
             learn: `Hi ${username}! I'd be happy to help you learn about ${improvement.toLowerCase()}. What specific aspects would you like to understand better?`
           };
-          return {
-            id: "1",
-            content: messages[topicContext.category as keyof typeof messages] || messages.improvement,
-            sender: "assistant",
-            timestamp: new Date(),
-          };
+          content = messages[topicContext.category as keyof typeof messages] || messages.improvement;
         }
-      }
-
-      if (initialTopic) {
+      } else if (initialTopic) {
         const topicContext = getTopicContext(initialTopic);
         if (topicContext) {
           const messages = {
@@ -136,21 +130,20 @@ export const useMessages = ({
             temptation: `Hi ${username}! I understand you're facing challenges with ${topicContext.label.toLowerCase()}. You're not alone, and I'm here to support you. What would you like to discuss?`,
             learn: `Hi ${username}! I'd be happy to help you learn about ${topicContext.label}. What specific aspects would you like to understand better?`
           };
-
-          return {
-            id: "1",
-            content: messages[topicContext.category as keyof typeof messages],
-            sender: "assistant",
-            timestamp: new Date(),
-          };
+          content = messages[topicContext.category as keyof typeof messages];
         }
+      }
+
+      if (!content) {
+        content = `Hi ${username}! What's on your mind today?`;
       }
 
       return {
         id: "1",
-        content: `Hi ${username}! What's on your mind today?`,
+        content,
         sender: "assistant",
         timestamp: new Date(),
+        isInitialMessage: true
       };
     } catch (error) {
       console.error('Error fetching username:', error);
@@ -159,6 +152,7 @@ export const useMessages = ({
         content: "Hi there! What's on your mind today?",
         sender: "assistant",
         timestamp: new Date(),
+        isInitialMessage: true
       };
     }
   };
@@ -191,7 +185,8 @@ export const useMessages = ({
           id: msg.id,
           content: msg.content,
           sender: msg.sender as "assistant" | "user",
-          timestamp: new Date(msg.created_at)
+          timestamp: new Date(msg.created_at),
+          isInitialMessage: msg.is_initial_message || false
         }));
         setMessages(formattedMessages);
       }
@@ -205,10 +200,8 @@ export const useMessages = ({
   const initializeChat = async () => {
     try {
       if (chatId) {
-        // Only load existing messages if we have a chatId
         await loadExistingMessages();
       } else {
-        // Only add initial message for completely new chats
         const initialMessage = await getInitialMessage();
         setMessages([initialMessage]);
       }

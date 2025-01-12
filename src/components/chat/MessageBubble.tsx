@@ -36,7 +36,7 @@ export const MessageBubble = ({
             </span>
           </div>
         )}
-        {message.sender === "assistant" && (
+        {message.sender === "assistant" && !message.isInitialMessage && (
           <div className="flex items-center justify-between mt-2">
             <MessageActions
               content={message.content}

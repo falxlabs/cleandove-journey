@@ -48,6 +48,7 @@ export type Database = {
           content: string
           created_at: string
           id: string
+          is_initial_message: boolean | null
           sender: string
           sequence_number: number
           updated_at: string
@@ -57,6 +58,7 @@ export type Database = {
           content: string
           created_at?: string
           id?: string
+          is_initial_message?: boolean | null
           sender: string
           sequence_number: number
           updated_at?: string
@@ -66,6 +68,7 @@ export type Database = {
           content?: string
           created_at?: string
           id?: string
+          is_initial_message?: boolean | null
           sender?: string
           sequence_number?: number
           updated_at?: string

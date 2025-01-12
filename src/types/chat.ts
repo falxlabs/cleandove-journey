@@ -3,6 +3,7 @@ export interface Message {
   content: string;
   sender: "assistant" | "user";
   timestamp: Date;
+  isInitialMessage?: boolean;
 }
 
 export interface ChatMessage extends Message {
