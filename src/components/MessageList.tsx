@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { ThumbsUp, ThumbsDown, Copy, Share2, RefreshCw } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
-import { useEffect, useRef } from "react";
 
 interface MessageListProps {
   messages: Message[];
@@ -13,15 +12,6 @@ interface MessageListProps {
 
 export const MessageList = ({ messages, isLoading, onRegenerate }: MessageListProps) => {
   const { toast } = useToast();
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
 
   const handleCopy = async (content: string) => {
     await navigator.clipboard.writeText(content);
@@ -110,7 +100,6 @@ export const MessageList = ({ messages, isLoading, onRegenerate }: MessageListPr
           <Skeleton className="h-20 w-3/4" />
         </div>
       )}
-      <div ref={messagesEndRef} />
     </div>
   );
 };

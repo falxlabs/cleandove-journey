@@ -4,7 +4,6 @@ import { useMessages } from "./useMessages";
 import { useMessageOperations } from "./useMessageOperations";
 import { useChatInitialization } from "./useChatInitialization";
 import { useChatTitle } from "./useChatTitle";
-import { splitMessage } from "@/utils/messageUtils";
 
 interface UseChatProps {
   initialTopic?: string;
@@ -47,21 +46,6 @@ export const useChat = ({
 
   const { chatTitle } = useChatTitle(initialTopic);
 
-  const addMessageWithDelay = async (content: string, index: number, totalParts: number) => {
-    const delay = index * 1000; // 1 second delay between messages
-    await new Promise(resolve => setTimeout(resolve, delay));
-
-    const assistantResponse: Message = {
-      id: `${Date.now()}-${index}`,
-      content,
-      sender: "assistant",
-      timestamp: new Date(),
-    };
-
-    setMessages(prev => [...prev, assistantResponse]);
-    return assistantResponse;
-  };
-
   const handleSendMessage = async () => {
     if (!input.trim()) return;
     
@@ -77,13 +61,8 @@ export const useChat = ({
     try {
       const content = await sendMessage([...messages, newMessage]);
       if (content) {
-        // Split the AI response into multiple parts
-        const messageParts = splitMessage(content);
-        
-        // Add each part as a separate message with a delay
-        for (let i = 0; i < messageParts.length; i++) {
-          await addMessageWithDelay(messageParts[i], i, messageParts.length);
-        }
+        const assistantResponse = await handleNewMessage(input, content, messages);
+        setMessages(prev => [...prev, assistantResponse]);
       }
     } catch (error) {
       console.error('Error sending message:', error);
