@@ -18,12 +18,12 @@ export const useSubscriptionDetails = () => {
         throw new Error("No authenticated user");
       }
 
-      // First get the user's plan and credits
+      // First get the user's plan
       const { data: userPlan, error: userPlanError } = await supabase
         .from("user_plans")
-        .select("plan, credits")
+        .select("*")
         .eq("user_id", session.user.id)
-        .single();
+        .maybeSingle();
 
       if (userPlanError) {
         console.error("Error fetching user plan:", userPlanError);
@@ -34,8 +34,7 @@ export const useSubscriptionDetails = () => {
         return {
           plan: "free",
           daily_credits: 5,
-          description: "Free tier with limited features",
-          credits: 5
+          description: "Free tier with limited features"
         };
       }
 
@@ -54,8 +53,7 @@ export const useSubscriptionDetails = () => {
       return {
         plan: userPlan.plan,
         daily_credits: planConfig.daily_credits,
-        description: planConfig.description || `${userPlan.plan} plan`,
-        credits: userPlan.credits
+        description: planConfig.description || `${userPlan.plan} plan`
       };
     },
     enabled: !!session?.user?.id,
