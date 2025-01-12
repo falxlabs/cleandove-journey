@@ -34,7 +34,7 @@ const WeekProgress = ({
               key={`${day}-${index}`}
               className={`w-10 h-10 rounded-full flex items-center justify-center ${
                 !isWeekLoading && hasCompletedTasks
-                  ? "bg-primary text-primary-foreground"
+                  ? "bg-[#9b87f5] text-primary-foreground"
                   : "bg-secondary text-secondary-foreground"
               }`}
             >
@@ -53,7 +53,10 @@ const WeekProgress = ({
         <>
           <Progress 
             value={progress} 
-            className={`h-2 ${progress === 100 ? "bg-[#9b87f5]" : ""}`}
+            className="h-2"
+            style={{
+              backgroundColor: progress === 100 ? '#9b87f5' : undefined,
+            }}
           />
           <p className="text-sm text-muted-foreground mt-2">Today's Progress: {progress}% completed</p>
         </>
