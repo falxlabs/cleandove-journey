@@ -43,13 +43,13 @@ const History = () => {
         title: chat.title,
         preview: chat.preview || "",
         date: format(new Date(chat.created_at), "PP"),
-        replies: chat.reply_count || 0,
+        replies: Number(chat.reply_count) || 0,
         favorite: chat.favorite || false,
       }));
     },
     refetchOnMount: true,
     refetchOnWindowFocus: true,
-    staleTime: 0, // Consider data stale immediately
+    staleTime: 0,
   });
 
   const filteredChats = chats
