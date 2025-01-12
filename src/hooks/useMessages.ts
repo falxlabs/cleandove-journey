@@ -120,7 +120,7 @@ export const useMessages = ({
             learn: `Hi ${username}! I'd be happy to help you learn about ${improvement.toLowerCase()}. What specific aspects would you like to understand better?`
           };
           return {
-            id: "1",
+            id: "initial-message",
             content: messages[topicContext.category as keyof typeof messages] || messages.improvement,
             sender: "assistant",
             timestamp: new Date(),
@@ -138,7 +138,7 @@ export const useMessages = ({
           };
 
           return {
-            id: "1",
+            id: "initial-message",
             content: messages[topicContext.category as keyof typeof messages],
             sender: "assistant",
             timestamp: new Date(),
@@ -147,7 +147,7 @@ export const useMessages = ({
       }
 
       return {
-        id: "1",
+        id: "initial-message",
         content: `Hi ${username}! What's on your mind today?`,
         sender: "assistant",
         timestamp: new Date(),
@@ -155,7 +155,7 @@ export const useMessages = ({
     } catch (error) {
       console.error('Error fetching username:', error);
       return {
-        id: "1",
+        id: "initial-message",
         content: "Hi there! What's on your mind today?",
         sender: "assistant",
         timestamp: new Date(),
@@ -194,14 +194,9 @@ export const useMessages = ({
           timestamp: new Date(msg.created_at)
         }));
 
-        // If there are no messages or the first message is not from the assistant,
-        // prepend the initial message
-        if (formattedMessages.length === 0 || formattedMessages[0].sender !== "assistant") {
-          const initialMessage = await getInitialMessage();
-          formattedMessages.unshift(initialMessage);
-        }
-
-        setMessages(formattedMessages);
+        // Always get and prepend the initial message
+        const initialMessage = await getInitialMessage();
+        setMessages([initialMessage, ...formattedMessages]);
       }
     } catch (error) {
       console.error('Error in loadExistingMessages:', error);
