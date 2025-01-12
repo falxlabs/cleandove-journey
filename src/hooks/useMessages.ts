@@ -204,10 +204,10 @@ export const useMessages = ({
 
   const initializeChat = async () => {
     try {
-      if (isExistingChat) {
-        // Only load existing messages for existing chats
+      if (chatId) {
+        // Only load existing messages if we have a chatId
         await loadExistingMessages();
-      } else if (!chatId) {
+      } else {
         // Only add initial message for completely new chats
         const initialMessage = await getInitialMessage();
         setMessages([initialMessage]);
@@ -219,7 +219,7 @@ export const useMessages = ({
 
   useEffect(() => {
     initializeChat();
-  }, [chatId, isExistingChat]);
+  }, [chatId]);
 
   return {
     isInitialLoading,
