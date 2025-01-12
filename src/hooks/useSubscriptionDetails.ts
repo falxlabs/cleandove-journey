@@ -18,7 +18,7 @@ export const useSubscriptionDetails = () => {
         throw new Error("No authenticated user");
       }
 
-      // Get the user's plan
+      // Get the user's plan with explicit user_id filter
       const { data: userPlan, error: userPlanError } = await supabase
         .from("user_plans")
         .select("plan, credits")
@@ -30,8 +30,9 @@ export const useSubscriptionDetails = () => {
         throw userPlanError;
       }
 
-      // If no plan exists, return default free plan
+      // If no plan exists, this shouldn't happen due to our trigger, but just in case
       if (!userPlan) {
+        console.warn("No user plan found, this shouldn't happen due to our trigger");
         return {
           plan: "free",
           daily_credits: 5,
