@@ -15,6 +15,7 @@ import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
 import Achievements from "./pages/Achievements";
 import Streak from "./pages/Streak";
+import PreferencesSection from "./components/settings/PreferencesSection";
 
 const queryClient = new QueryClient();
 
@@ -97,6 +98,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Settings />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/settings/preferences"
+              element={
+                <ProtectedRoute>
+                  <PreferencesSection />
                 </ProtectedRoute>
               }
             />
