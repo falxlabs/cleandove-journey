@@ -36,7 +36,7 @@ export const useChatInitialization = (
           .select("id")
           .eq("chat_id", newChatId)
           .eq("is_initial_message", true)
-          .single();
+          .maybeSingle();
 
         // Only include initial message if one doesn't exist yet
         const messagesToSave = [];
