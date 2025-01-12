@@ -35,6 +35,15 @@ export const useSubscriptionDetails = () => {
         .eq("plan", currentPlan)
         .maybeSingle();
 
+      if (!data) {
+        // Return default free plan configuration if no configuration is found
+        return {
+          plan: "free",
+          daily_credits: 10,
+          description: "Free plan with limited daily messages"
+        } as PlanConfiguration;
+      }
+
       return data as PlanConfiguration;
     },
     enabled: !!currentPlan,
