@@ -5,6 +5,7 @@ import PageHeader from "@/components/PageHeader";
 import SearchBar from "@/components/SearchBar";
 import FilterButtons from "@/components/FilterButtons";
 import ChatList from "@/components/ChatList";
+import { format } from "date-fns";
 import { useToast } from "@/components/ui/use-toast";
 import type { Database } from "@/integrations/supabase/types";
 import { useDebounce } from "@/hooks/useDebounce";
