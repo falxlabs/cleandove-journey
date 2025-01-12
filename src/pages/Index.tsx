@@ -5,11 +5,43 @@ import DailyHeader from "@/components/home/DailyHeader";
 import WeekProgress from "@/components/home/WeekProgress";
 import TaskList from "@/components/home/TaskList";
 import { useEffect, useState } from "react";
+import { startOfWeek, addDays, format } from "date-fns";
 
 const Index = () => {
   const weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const [completedTasks, setCompletedTasks] = useState<string[]>([]);
   
+  // Get the start of the current week (Monday)
+  const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 });
+  
+  // Fetch completed tasks for the current week
+  const { data: weekCompletions, isLoading: isWeekLoading } = useQuery({
+    queryKey: ['week-completions'],
+    queryFn: async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return [];
+
+      const weekDates = Array.from({ length: 7 }, (_, i) => 
+        format(addDays(weekStart, i), 'yyyy-MM-dd')
+      );
+
+      const { data, error } = await supabase
+        .from('daily_tasks')
+        .select('date')
+        .eq('user_id', session.user.id)
+        .in('date', weekDates)
+        .not('completed_at', 'is', null);
+
+      if (error) throw error;
+      
+      // Create a map of dates with completed tasks
+      return data.reduce((acc: { [key: string]: boolean }, task) => {
+        acc[task.date] = true;
+        return acc;
+      }, {});
+    },
+  });
+
   const { data: streak, isLoading: isStreakLoading } = useQuery({
     queryKey: ['streak'],
     queryFn: async () => {
@@ -93,10 +125,11 @@ const Index = () => {
         <section className="px-6 mb-8">
           <WeekProgress
             weekDays={weekDays}
-            streak={streak}
+            weekCompletions={weekCompletions}
             progress={progress}
             isStreakLoading={isStreakLoading}
             isProgressLoading={isTasksLoading}
+            isWeekLoading={isWeekLoading}
           />
         </section>
       </div>
