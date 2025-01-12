@@ -1,92 +1,74 @@
-import { useQueryClient } from "@tanstack/react-query";
-import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Message } from "@/types/chat";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const useChatOperations = () => {
-  const { toast } = useToast();
   const navigate = useNavigate();
-  const location = useLocation();
+  const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const handleDelete = async (chatId: string) => {
     try {
       const { error } = await supabase
-        .from('chat_histories')
+        .from("chat_histories")
         .delete()
-        .eq('id', chatId);
+        .eq("id", chatId);
 
       if (error) throw error;
 
-      queryClient.invalidateQueries({ queryKey: ['chat-history'] });
-      
+      // Invalidate and refetch chat history
+      queryClient.invalidateQueries({ queryKey: ["chat-history"] });
+
       toast({
-        description: "Chat deleted successfully",
+        title: "Chat deleted",
+        description: "The chat has been successfully deleted.",
       });
     } catch (error) {
-      console.error('Error deleting chat:', error);
+      console.error("Error deleting chat:", error);
       toast({
         variant: "destructive",
-        description: "Failed to delete chat",
+        title: "Error",
+        description: "Failed to delete chat. Please try again.",
       });
     }
   };
 
-  const handleFavorite = async (chatId: string, currentStatus: boolean) => {
+  const handleFavorite = async (chatId: string, currentFavorite: boolean) => {
     try {
       const { error } = await supabase
-        .from('chat_histories')
-        .update({ favorite: !currentStatus })
-        .eq('id', chatId);
+        .from("chat_histories")
+        .update({ favorite: !currentFavorite })
+        .eq("id", chatId);
 
       if (error) throw error;
 
-      queryClient.invalidateQueries({ queryKey: ['chat-history'] });
+      // Invalidate and refetch chat history
+      queryClient.invalidateQueries({ queryKey: ["chat-history"] });
+
+      toast({
+        title: currentFavorite ? "Removed from favorites" : "Added to favorites",
+        description: currentFavorite
+          ? "The chat has been removed from your favorites."
+          : "The chat has been added to your favorites.",
+      });
     } catch (error) {
-      console.error('Error updating favorite status:', error);
+      console.error("Error updating favorite status:", error);
       toast({
         variant: "destructive",
-        description: "Failed to update favorite status",
+        title: "Error",
+        description: "Failed to update favorite status. Please try again.",
       });
     }
   };
 
   const handleChatClick = (chatId: string, title: string) => {
-    navigate(`/conversation`, { 
-      state: { 
-        chatId,
-        topic: title,
-        isExistingChat: true,
-        from: location.pathname
-      } 
-    });
-  };
-
-  const sendChatMessage = async (messages: Message[]): Promise<string> => {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error('No active session');
-
-      const { data, error } = await supabase.functions.invoke('chat', {
-        body: { messages },
-        headers: {
-          Authorization: `Bearer ${session.access_token}`
-        }
-      });
-
-      if (error) throw error;
-      return data.content;
-    } catch (error) {
-      console.error('Error sending chat message:', error);
-      throw error;
-    }
+    navigate(`/chat/${chatId}`, { state: { title } });
   };
 
   return {
     handleDelete,
     handleFavorite,
     handleChatClick,
-    sendChatMessage,
   };
 };

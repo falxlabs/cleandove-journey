@@ -29,6 +29,7 @@ const History = () => {
         .order("updated_at", { ascending: false });
 
       if (error) {
+        console.error("Error fetching chat histories:", error);
         toast({
           variant: "destructive",
           title: "Error",
@@ -42,12 +43,13 @@ const History = () => {
         title: chat.title,
         preview: chat.preview || "",
         date: format(new Date(chat.created_at), "PP"),
-        replies: chat.reply_count,
-        favorite: chat.favorite,
+        replies: chat.reply_count || 0,
+        favorite: chat.favorite || false,
       }));
     },
     refetchOnMount: true,
     refetchOnWindowFocus: true,
+    staleTime: 0, // Consider data stale immediately
   });
 
   const filteredChats = chats
