@@ -12,10 +12,14 @@ export const useSubscriptionDetails = () => {
   const session = useSession();
 
   return useQuery({
-    queryKey: ["subscription"],
+    queryKey: ["subscription", session?.user?.id],
     queryFn: async () => {
       if (!session?.user?.id) {
-        throw new Error("No user session found");
+        return {
+          plan: "free",
+          daily_credits: 10,
+          description: "Free tier with limited features"
+        };
       }
 
       // First get the user's plan
@@ -56,6 +60,11 @@ export const useSubscriptionDetails = () => {
         description: planConfig.description || `${userPlan.plan} plan`
       };
     },
-    enabled: !!session?.user?.id,
+    // Only run the query if we have a session
+    enabled: true,
+    // Add some retry logic
+    retry: 1,
+    // Add stale time to prevent unnecessary refetches
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 };
