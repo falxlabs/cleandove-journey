@@ -43,7 +43,7 @@ export const ChatHeader = ({ topic, title }: ChatHeaderProps) => {
       <div>
         <h2 className="font-semibold">Pace</h2>
         <p className="text-sm text-muted-foreground">
-          {topic ? `Chat about ${topic}` : title || "New Chat"}
+          {topic ? `Chat about ${topic}` : title}
         </p>
       </div>
     </div>
