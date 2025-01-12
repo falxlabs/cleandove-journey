@@ -14,47 +14,27 @@ const Settings = () => {
 
   const handleSignOut = async () => {
     try {
-      // First check if we have a session
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      const { error } = await supabase.auth.signOut({ scope: 'local' });
       
-      if (sessionError) {
-        console.error('Session error:', sessionError);
-        // If there's a session error, we'll just redirect to auth
-        navigate('/auth');
-        return;
-      }
-
-      if (!session) {
-        // If no session exists, just redirect to auth page
-        navigate('/auth');
-        return;
-      }
-
-      // Now we know we have a valid session, try to sign out
-      const { error } = await supabase.auth.signOut();
-
       if (error) {
         console.error('Logout error:', error);
-        const message = error instanceof AuthError 
-          ? error.message
-          : "Please try again later";
-          
         toast({
           variant: "destructive",
           title: "Error signing out",
-          description: message,
+          description: error.message
         });
         return;
       }
 
       // If successful, navigate to auth page
-      navigate('/auth');
+      navigate('/auth', { replace: true });
+      
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error('Unexpected error during logout:', error);
       toast({
         variant: "destructive",
         title: "Error signing out",
-        description: "An unexpected error occurred. Please try again later",
+        description: "An unexpected error occurred. Please try again."
       });
     }
   };
