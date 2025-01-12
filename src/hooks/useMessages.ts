@@ -107,7 +107,7 @@ export const useMessages = ({
         .from('profiles')
         .select('username')
         .eq('id', session.user.id)
-        .single();
+        .maybeSingle();
 
       const username = profile?.username || 'there';
 
@@ -205,7 +205,7 @@ export const useMessages = ({
     try {
       if (isExistingChat) {
         await loadExistingMessages();
-      } else if (!chatId) { // Only add initial message for new chats
+      } else if (!chatId && !isExistingChat) { // Only add initial message for completely new chats
         const initialMessage = await getInitialMessage();
         setMessages([initialMessage]);
       }

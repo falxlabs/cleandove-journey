@@ -74,6 +74,7 @@ export const useChat = ({
     };
 
     setMessages(prev => [...prev, newMessage]);
+    setInput("");
 
     try {
       const content = await sendMessage([...messages, newMessage]);
