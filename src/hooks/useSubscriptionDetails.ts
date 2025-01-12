@@ -14,9 +14,7 @@ export const useSubscriptionDetails = () => {
   return useQuery({
     queryKey: ["subscription", session?.user?.id],
     queryFn: async () => {
-      const { data: { session: currentSession } } = await supabase.auth.getSession();
-      
-      if (!currentSession?.user?.id) {
+      if (!session?.user?.id) {
         throw new Error("No authenticated user");
       }
 
@@ -24,7 +22,7 @@ export const useSubscriptionDetails = () => {
       const { data: userPlan, error: userPlanError } = await supabase
         .from("user_plans")
         .select("*")
-        .eq("user_id", currentSession.user.id)
+        .eq("user_id", session.user.id)
         .maybeSingle();
 
       if (userPlanError) {
@@ -35,7 +33,7 @@ export const useSubscriptionDetails = () => {
       if (!userPlan) {
         return {
           plan: "free",
-          daily_credits: 5, // Updated to match our new configuration
+          daily_credits: 5,
           description: "Free tier with limited features"
         };
       }
