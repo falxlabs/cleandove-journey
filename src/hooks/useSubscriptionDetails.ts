@@ -18,7 +18,7 @@ export const useSubscriptionDetails = () => {
         .from("user_plans")
         .select("plan")
         .eq("user_id", session.user.id)
-        .single();
+        .maybeSingle();
 
       return data?.plan || "free";
     },
@@ -33,14 +33,16 @@ export const useSubscriptionDetails = () => {
         .from("plan_configurations")
         .select("*")
         .eq("plan", currentPlan)
-        .single();
+        .maybeSingle();
 
       if (!data) {
-        // Return default free plan configuration if no configuration is found
+        // Return default configuration based on current plan
         return {
           plan: currentPlan,
-          daily_credits: 10,
-          description: "Free plan with limited daily messages"
+          daily_credits: currentPlan === "dev" ? 100 : 10,
+          description: currentPlan === "dev" 
+            ? "Developer plan with extended daily messages" 
+            : "Free plan with limited daily messages"
         } as PlanConfiguration;
       }
 
