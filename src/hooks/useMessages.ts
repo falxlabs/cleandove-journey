@@ -8,17 +8,15 @@ interface UseMessagesProps {
   improvement?: string;
   chatId?: string;
   isExistingChat?: boolean;
+  setMessages: (messages: Message[]) => void;
 }
 
 export const useMessages = ({ 
-  initialTopic, 
-  context, 
-  improvement,
   chatId,
-  isExistingChat 
-}: UseMessagesProps = {}) => {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  isExistingChat,
+  setMessages 
+}: UseMessagesProps) => {
+  const [isInitialLoading, setIsInitialLoading] = useState(false);
 
   const getInitialMessage = (): Message => ({
     id: "1",
@@ -37,6 +35,7 @@ export const useMessages = ({
         return;
       }
 
+      setIsInitialLoading(true);
       const { data: existingMessages, error } = await supabase
         .from('messages')
         .select('*')
@@ -66,12 +65,6 @@ export const useMessages = ({
 
   const initializeChat = async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        console.error('No active session');
-        return;
-      }
-
       if (isExistingChat) {
         await loadExistingMessages();
       } else {
@@ -80,8 +73,6 @@ export const useMessages = ({
       }
     } catch (error) {
       console.error('Error in initializeChat:', error);
-    } finally {
-      setIsInitialLoading(false);
     }
   };
 
@@ -90,8 +81,6 @@ export const useMessages = ({
   }, [chatId, isExistingChat]);
 
   return {
-    messages,
-    setMessages,
     isInitialLoading,
     initializeChat,
   };

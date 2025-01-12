@@ -10,9 +10,7 @@ export const useMessageOperations = (chatId: string | undefined) => {
   const { sendChatMessage } = useChatOperations();
   const { handleCredits } = useCredits();
 
-  const sendMessage = async (messages: Message[], onSuccess: (content: string) => void) => {
-    if (!input.trim()) return;
-
+  const sendMessage = async (messages: Message[]): Promise<string | undefined> => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
       console.error('No active session');
@@ -23,17 +21,12 @@ export const useMessageOperations = (chatId: string | undefined) => {
     if (!creditsAvailable) return;
 
     setIsLoading(true);
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      content: input,
-      sender: "user",
-      timestamp: new Date(),
-    };
-
     try {
-      const content = await sendChatMessage([...messages, newMessage]);
-      onSuccess(content);
-      setInput("");
+      const content = await sendChatMessage(messages);
+      return content;
+    } catch (error) {
+      console.error('Error sending chat message:', error);
+      throw error;
     } finally {
       setIsLoading(false);
     }

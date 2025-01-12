@@ -26,7 +26,8 @@ export const useChat = ({
     context,
     improvement,
     chatId,
-    isExistingChat
+    isExistingChat,
+    setMessages
   });
 
   const {
@@ -46,10 +47,28 @@ export const useChat = ({
   const { chatTitle } = useChatTitle(initialTopic);
 
   const handleSendMessage = async () => {
-    await sendMessage(messages, async (content) => {
-      const assistantResponse = await handleNewMessage(input, content, messages);
-      setMessages(prev => [...prev, assistantResponse]);
-    });
+    if (!input.trim()) return;
+    
+    const newMessage: Message = {
+      id: Date.now().toString(),
+      content: input,
+      sender: "user",
+      timestamp: new Date(),
+    };
+
+    setMessages(prev => [...prev, newMessage]);
+
+    try {
+      const content = await sendMessage([...messages, newMessage]);
+      if (content) {
+        const assistantResponse = await handleNewMessage(input, content, messages);
+        setMessages(prev => [...prev, assistantResponse]);
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      // Remove the user message if the API call failed
+      setMessages(prev => prev.filter(msg => msg.id !== newMessage.id));
+    }
   };
 
   return {
@@ -63,6 +82,6 @@ export const useChat = ({
     sendMessage: handleSendMessage,
     initializeChat,
     regenerateMessage,
-    chatTitle // Add this to the return object
+    chatTitle
   };
 };
