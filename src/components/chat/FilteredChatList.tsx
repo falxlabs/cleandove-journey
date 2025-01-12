@@ -21,7 +21,7 @@ export const FilteredChatList = ({ chats }: FilteredChatListProps) => {
           <ChatItem 
             {...chat} 
             onFavorite={() => handleFavorite(chat.id, chat.favorite)}
-            onClick={() => handleChatClick(chat.id, chat.title)}
+            onClick={() => handleChatClick(chat.id)}
           />
         </SwipeableItem>
       ))}

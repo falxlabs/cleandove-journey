@@ -63,14 +63,31 @@ export const useChatOperations = () => {
     }
   };
 
-  const handleChatClick = (chatId: string, title: string) => {
-    navigate("/conversation", { 
-      state: { 
-        chatId,
-        title,
-        isExistingChat: true
-      } 
-    });
+  const handleChatClick = async (chatId: string) => {
+    try {
+      const { data: chat, error } = await supabase
+        .from("chat_histories")
+        .select("title")
+        .eq("id", chatId)
+        .single();
+
+      if (error) throw error;
+
+      navigate("/conversation", { 
+        state: { 
+          chatId,
+          title: chat.title,
+          isExistingChat: true
+        } 
+      });
+    } catch (error) {
+      console.error("Error fetching chat title:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to load chat. Please try again.",
+      });
+    }
   };
 
   const sendChatMessage = async (messages: Message[]): Promise<string> => {
