@@ -11,17 +11,24 @@ const Profile = () => {
 
   useEffect(() => {
     const getProfile = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user?.id) {
-        const { data } = await supabase
+      try {
+        const { data, error } = await supabase
           .from('profiles')
           .select('*')
-          .eq('id', session.user.id)
           .single();
-        setProfile(data);
+          
+        if (error) {
+          console.error('Error fetching profile:', error);
+        } else {
+          setProfile(data);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
+    
     getProfile();
   }, []);
 

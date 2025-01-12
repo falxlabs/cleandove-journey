@@ -18,11 +18,10 @@ export const useSubscriptionDetails = () => {
         throw new Error("No authenticated user");
       }
 
-      // Get the user's plan with explicit user_id filter
+      // Get the user's plan without explicit user_id filter
       const { data: userPlan, error: userPlanError } = await supabase
         .from("user_plans")
         .select("plan, credits")
-        .eq("user_id", session.user.id)
         .single();
 
       if (userPlanError) {
