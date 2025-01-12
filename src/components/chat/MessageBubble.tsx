@@ -29,19 +29,28 @@ export const MessageBubble = ({
         }`}
       >
         <p className="text-sm">{message.content}</p>
-        <div className="flex justify-end mt-1">
-          <span className="text-xs text-muted-foreground">
-            {format(message.timestamp, "HH:mm")}
-          </span>
-        </div>
+        {message.sender === "user" && (
+          <div className="flex justify-end mt-1">
+            <span className="text-xs text-muted-foreground">
+              {format(message.timestamp, "HH:mm")}
+            </span>
+          </div>
+        )}
         {message.sender === "assistant" && (
-          <MessageActions
-            content={message.content}
-            messageId={message.id}
-            onCopy={onCopy}
-            onShare={onShare}
-            onRegenerate={onRegenerate}
-          />
+          <div className="space-y-2">
+            <MessageActions
+              content={message.content}
+              messageId={message.id}
+              onCopy={onCopy}
+              onShare={onShare}
+              onRegenerate={onRegenerate}
+            />
+            <div className="flex justify-end">
+              <span className="text-xs text-muted-foreground">
+                {format(message.timestamp, "HH:mm")}
+              </span>
+            </div>
+          </div>
         )}
       </div>
     </div>
