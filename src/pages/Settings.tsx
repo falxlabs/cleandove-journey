@@ -23,8 +23,6 @@ const Settings = () => {
         });
         return;
       }
-      // Clear any local session data
-      await supabase.auth.clearSession();
       navigate('/auth');
     } catch (error) {
       console.error('Logout error:', error);
