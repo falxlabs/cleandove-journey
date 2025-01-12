@@ -7,10 +7,10 @@ import {
 
 const personalRecords = [
   {
-    title: "Total XP",
+    title: "Total Tasks",
     value: "0",
     date: "Oct 18, 2024",
-    icon: "🏆",
+    icon: "📝",
     color: "bg-yellow-500",
   },
   {
