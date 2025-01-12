@@ -72,9 +72,11 @@ const History = () => {
   return (
     <div className="min-h-screen pb-20">
       <div className="sticky top-0 z-10 bg-background border-b shadow-sm">
-        <div className="flex items-center justify-between px-6 pt-6">
-          <h1 className="text-2xl font-semibold">History</h1>
-        </div>
+        <PageHeader
+          title="History"
+          emoji="🕊️"
+          description="Let's look back at our previous conversations"
+        />
 
         <div className="px-6 space-y-4 pb-4">
           <SearchBar 
