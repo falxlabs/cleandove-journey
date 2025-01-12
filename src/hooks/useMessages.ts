@@ -12,18 +12,41 @@ interface UseMessagesProps {
 }
 
 export const useMessages = ({ 
+  initialTopic,
+  context,
+  improvement,
   chatId,
   isExistingChat,
   setMessages 
 }: UseMessagesProps) => {
   const [isInitialLoading, setIsInitialLoading] = useState(false);
 
-  const getInitialMessage = (): Message => ({
-    id: "1",
-    content: "Hello! I'm Pace, your personal accountability partner. I'm here to help you stay on track with your goals and build better habits. How can I assist you today?",
-    sender: "assistant",
-    timestamp: new Date(),
-  });
+  const getInitialMessage = (): Message => {
+    if (context && improvement) {
+      return {
+        id: "1",
+        content: `I understand you want to work on your ${improvement.toLowerCase()}. I'm here to help you with that. What specific aspects of ${improvement.toLowerCase()} would you like to focus on?`,
+        sender: "assistant",
+        timestamp: new Date(),
+      };
+    }
+
+    if (initialTopic) {
+      return {
+        id: "1",
+        content: `I see you're interested in ${initialTopic}. How can I help you with that today?`,
+        sender: "assistant",
+        timestamp: new Date(),
+      };
+    }
+
+    return {
+      id: "1",
+      content: "Hello! I'm Pace, your personal accountability partner. I'm here to help you stay on track with your goals and build better habits. How can I assist you today?",
+      sender: "assistant",
+      timestamp: new Date(),
+    };
+  };
 
   const loadExistingMessages = async () => {
     if (!chatId) return;

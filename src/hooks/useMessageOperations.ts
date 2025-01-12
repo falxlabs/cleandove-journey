@@ -17,12 +17,14 @@ export const useMessageOperations = (chatId: string | undefined) => {
       return;
     }
 
+    // Only check credits when actually sending a message
     const creditsAvailable = await handleCredits();
     if (!creditsAvailable) return;
 
     setIsLoading(true);
     try {
       const content = await sendChatMessage(messages);
+      setInput(""); // Clear input after successful send
       return content;
     } catch (error) {
       console.error('Error sending chat message:', error);
