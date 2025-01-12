@@ -13,14 +13,14 @@ export const useCredits = () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user?.id) return;
 
-      const { data: profile } = await supabase
-        .from('profiles')
+      const { data: userPlan } = await supabase
+        .from('user_plans')
         .select('credits')
-        .eq('id', session.user.id)
-        .single();
+        .eq('user_id', session.user.id)
+        .maybeSingle();
 
-      if (profile) {
-        setCredits(profile.credits);
+      if (userPlan) {
+        setCredits(userPlan.credits);
       }
     };
 

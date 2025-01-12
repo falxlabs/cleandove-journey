@@ -108,7 +108,6 @@ export type Database = {
         Row: {
           avatar_url: string | null
           created_at: string
-          credits: number
           id: string
           updated_at: string
           username: string | null
@@ -116,7 +115,6 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           created_at?: string
-          credits?: number
           id: string
           updated_at?: string
           username?: string | null
@@ -124,7 +122,6 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           created_at?: string
-          credits?: number
           id?: string
           updated_at?: string
           username?: string | null
@@ -134,19 +131,25 @@ export type Database = {
       user_plans: {
         Row: {
           created_at: string
+          credits: number
           id: string
+          last_credit_reset: string | null
           plan: Database["public"]["Enums"]["subscription_plan"] | null
           user_id: string | null
         }
         Insert: {
           created_at?: string
+          credits?: number
           id?: string
+          last_credit_reset?: string | null
           plan?: Database["public"]["Enums"]["subscription_plan"] | null
           user_id?: string | null
         }
         Update: {
           created_at?: string
+          credits?: number
           id?: string
+          last_credit_reset?: string | null
           plan?: Database["public"]["Enums"]["subscription_plan"] | null
           user_id?: string | null
         }

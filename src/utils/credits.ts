@@ -4,13 +4,13 @@ export async function checkCredits(): Promise<boolean> {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session?.user?.id) return false;
 
-  const { data: profile } = await supabase
-    .from('profiles')
+  const { data: userPlan } = await supabase
+    .from('user_plans')
     .select('credits')
-    .eq('id', session.user.id)
-    .single();
+    .eq('user_id', session.user.id)
+    .maybeSingle();
 
-  return profile?.credits ? profile.credits > 0 : false;
+  return userPlan?.credits ? userPlan.credits > 0 : false;
 }
 
 export async function deductCredit(): Promise<boolean> {
