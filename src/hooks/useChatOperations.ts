@@ -1,8 +1,8 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate, useLocation } from "react-router-dom";
 import { Message } from "@/types/chat";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export const useChatOperations = () => {
   const { toast } = useToast();
@@ -65,8 +65,14 @@ export const useChatOperations = () => {
 
   const sendChatMessage = async (messages: Message[]): Promise<string> => {
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('No active session');
+
       const { data, error } = await supabase.functions.invoke('chat', {
-        body: { messages }
+        body: { messages },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`
+        }
       });
 
       if (error) throw error;

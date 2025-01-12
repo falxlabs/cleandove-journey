@@ -54,23 +54,48 @@ serve(async (req) => {
   }
 
   try {
-    const { messages, userId } = await req.json();
+    const { messages } = await req.json();
+
+    // Get the user ID from the authorization header
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      throw new Error('No authorization header');
+    }
 
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
+    // Get user ID from the JWT token
+    const { data: { user }, error: authError } = await supabase.auth.getUser(authHeader.replace('Bearer ', ''));
+    
+    if (authError || !user) {
+      console.error('Auth error:', authError);
+      throw new Error('Failed to authenticate user');
+    }
+
+    console.log('Fetching preferences for user:', user.id);
+
     // Get user preferences
     const { data: preferences, error: preferencesError } = await supabase
       .from('user_preferences')
       .select('religious_content, reading_type')
-      .eq('user_id', userId)
-      .single();
+      .eq('user_id', user.id)
+      .maybeSingle();
 
     if (preferencesError) {
       console.error('Error fetching preferences:', preferencesError);
       throw new Error('Failed to fetch user preferences');
+    }
+
+    if (!preferences) {
+      console.log('No preferences found, using defaults');
+      // Use default preferences if none exist
+      preferences = {
+        religious_content: false,
+        reading_type: 'both'
+      };
     }
 
     // Construct system message based on preferences
