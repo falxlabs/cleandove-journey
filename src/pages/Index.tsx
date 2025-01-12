@@ -5,7 +5,7 @@ import WeekProgress from "@/components/home/WeekProgress";
 import TaskList from "@/components/home/TaskList";
 
 const Index = () => {
-  const weekDays = ["M", "T", "W", "T", "F", "S", "S"];
+  const weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   
   const { data: streak, isLoading: isStreakLoading } = useQuery({
     queryKey: ['streak'],
