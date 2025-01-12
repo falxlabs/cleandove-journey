@@ -8,7 +8,7 @@ interface PlanConfiguration {
 }
 
 export const useSubscriptionDetails = () => {
-  const { data: currentPlan } = useQuery({
+  const { data: currentPlan, isLoading: isPlanLoading } = useQuery({
     queryKey: ["userPlan"],
     queryFn: async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -24,7 +24,7 @@ export const useSubscriptionDetails = () => {
     },
   });
 
-  const { data: planDetails } = useQuery({
+  const { data: planDetails, isLoading: isPlanDetailsLoading } = useQuery({
     queryKey: ["planConfiguration", currentPlan],
     queryFn: async () => {
       if (!currentPlan) return null;
@@ -43,5 +43,6 @@ export const useSubscriptionDetails = () => {
   return {
     currentPlan,
     planDetails,
+    isLoading: isPlanLoading || isPlanDetailsLoading,
   };
 };

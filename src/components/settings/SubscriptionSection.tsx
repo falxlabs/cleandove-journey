@@ -7,9 +7,9 @@ import { useSubscriptionDetails } from "@/hooks/useSubscriptionDetails";
 
 const SubscriptionSection = () => {
   const { credits } = useCredits();
-  const { planDetails } = useSubscriptionDetails();
+  const { planDetails, isLoading } = useSubscriptionDetails();
 
-  if (!planDetails) {
+  if (isLoading || !planDetails) {
     return (
       <div className="px-6 mt-8">
         <h2 className="text-xl font-semibold mb-4">Subscription</h2>
