@@ -6,6 +6,7 @@ import SubscriptionSection from "@/components/settings/SubscriptionSection";
 import SupportSection from "@/components/settings/SupportSection";
 import FooterLinks from "@/components/settings/FooterLinks";
 import { useToast } from "@/components/ui/use-toast";
+import { AuthError } from "@supabase/supabase-js";
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -14,25 +15,35 @@ const Settings = () => {
   const handleSignOut = async () => {
     try {
       // First check if we have a session
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
+      if (sessionError) {
+        console.error('Session error:', sessionError);
+        // If we can't get the session, just redirect to auth
+        navigate('/auth');
+        return;
+      }
+
       if (!session) {
         // If no session, just redirect to auth
         navigate('/auth');
         return;
       }
 
-      // Attempt to sign out with proper options
-      const { error } = await supabase.auth.signOut({
-        scope: 'global'
-      });
+      // Attempt to sign out
+      const { error } = await supabase.auth.signOut();
 
       if (error) {
         console.error('Logout error:', error);
+        // Check if it's an AuthError and handle accordingly
+        const message = error instanceof AuthError 
+          ? error.message
+          : "Please try again later";
+          
         toast({
           variant: "destructive",
           title: "Error signing out",
-          description: error.message || "Please try again later",
+          description: message,
         });
         return;
       }
