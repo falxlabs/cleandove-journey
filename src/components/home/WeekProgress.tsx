@@ -57,7 +57,7 @@ const WeekProgress = ({
             className="h-2"
           />
           <p className="text-sm text-muted-foreground mt-2">
-            Today's Progress: {progress}% completed
+            {progress}% completed today
           </p>
         </>
       )}
