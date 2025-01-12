@@ -140,7 +140,7 @@ const awards = [
       { value: 365, requirement: "Complete 365 tasks before 9 AM" },
     ],
     currentLevel: 0,
-    progress: "3 of 5",
+    progress: "0 of 1",
     icon: "🌅",
     color: "bg-yellow-500",
     description: "Complete tasks early in the morning",
