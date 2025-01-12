@@ -20,7 +20,8 @@ const WeekProgress = ({
   isWeekLoading
 }: WeekProgressProps) => {
   // Get the start of the current week (Monday)
-  const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 });
+  const today = new Date();
+  const weekStart = startOfWeek(today, { weekStartsOn: 1 });
 
   return (
     <div>
@@ -54,9 +55,6 @@ const WeekProgress = ({
           <Progress 
             value={progress} 
             className="h-2"
-            style={{
-              backgroundColor: progress === 100 ? '#9b87f5' : undefined,
-            }}
           />
           <p className="text-sm text-muted-foreground mt-2">Today's Progress: {progress}% completed</p>
         </>
