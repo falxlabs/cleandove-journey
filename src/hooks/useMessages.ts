@@ -98,21 +98,29 @@ export const useMessages = ({
 
   const getInitialMessage = (): Message => {
     if (context && improvement) {
-      return {
-        id: "1",
-        content: `I understand you want to work on your ${improvement.toLowerCase()}. I'm here to help you with that. What specific aspects of ${improvement.toLowerCase()} would you like to focus on?`,
-        sender: "assistant",
-        timestamp: new Date(),
-      };
+      const topicContext = getTopicContext(initialTopic || '');
+      if (topicContext) {
+        const messages = {
+          improvement: `I'd love to help you improve your ${improvement.toLowerCase()}. What specific area would you like to focus on developing?`,
+          temptation: `I understand you're facing challenges with ${improvement.toLowerCase()}. You're not alone, and I'm here to support you. What would you like to discuss?`,
+          learn: `I'd be happy to help you learn about ${improvement.toLowerCase()}. What specific aspects would you like to understand better?`
+        };
+        return {
+          id: "1",
+          content: messages[topicContext.category as keyof typeof messages] || messages.improvement,
+          sender: "assistant",
+          timestamp: new Date(),
+        };
+      }
     }
 
     if (initialTopic) {
       const topicContext = getTopicContext(initialTopic);
       if (topicContext) {
         const messages = {
-          improvement: `Let's work on improving your ${topicContext.label.toLowerCase()}. What specific aspects would you like to focus on developing?`,
-          temptation: `I hear you're facing challenges with ${topicContext.label.toLowerCase()}. You're not alone in this. Would you like to share what you're experiencing?`,
-          learn: `What aspects of ${topicContext.label} would you like to learn more about? I can explain the concepts, techniques, and practical applications.`
+          improvement: `I'd love to help you improve your ${topicContext.label.toLowerCase()}. What specific area would you like to focus on developing?`,
+          temptation: `I understand you're facing challenges with ${topicContext.label.toLowerCase()}. You're not alone, and I'm here to support you. What would you like to discuss?`,
+          learn: `I'd be happy to help you learn about ${topicContext.label}. What specific aspects would you like to understand better?`
         };
 
         return {
