@@ -13,9 +13,14 @@ export const ChatHeader = ({ topic, title }: ChatHeaderProps) => {
   const location = useLocation();
   
   const handleBack = () => {
-    // Get the previous route from state, default to /chat if not specified
-    const previousRoute = location.state?.from || "/chat";
-    navigate(previousRoute);
+    const isExistingChat = location.state?.isExistingChat;
+    // If it's an existing chat, go to history, otherwise use the previous route or default to /chat
+    if (isExistingChat) {
+      navigate('/history');
+    } else {
+      const previousRoute = location.state?.from || "/chat";
+      navigate(previousRoute);
+    }
   };
 
   return (
