@@ -8,7 +8,7 @@ import { useTopicSelection } from "@/hooks/useTopicSelection";
 const Chat = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { selectedTopic, setSelectedTopic, improvements, temptations, therapyTopics } = useTopicSelection();
+  const { selectedTopic, setSelectedTopic, improvements, temptations, learnTopics } = useTopicSelection();
 
   const handleStartChat = () => {
     navigate("/conversation", {
@@ -31,7 +31,7 @@ const Chat = () => {
         context: `I want to improve my ${topicId}`,
         improvement: improvements.find(i => i.id === topicId)?.label || 
                     temptations.find(i => i.id === topicId)?.label ||
-                    therapyTopics.find(i => i.id === topicId)?.label,
+                    learnTopics.find(i => i.id === topicId)?.label,
         from: location.pathname
       },
     });
@@ -73,8 +73,8 @@ const Chat = () => {
         />
 
         <TopicCarousel
-          title="Ask about..."
-          topics={therapyTopics}
+          title="Learn about..."
+          topics={learnTopics}
           onTopicSelect={handleTopicSelect}
         />
       </section>

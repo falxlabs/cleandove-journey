@@ -31,10 +31,9 @@ export const useTopicSelection = () => {
     { id: "trauma", emoji: "🩹", label: "Trauma" },
   ];
 
-  const therapyTopics = [
+  const learnTopics = [
     { id: "cbt", emoji: "🧠", label: "CBT" },
     { id: "breathing", emoji: "🫁", label: "Breathing" },
-    { id: "habits", emoji: "📝", label: "Habits" },
     { id: "cold-shower", emoji: "🚿", label: "Cold Shower" },
     { id: "brain", emoji: "🎯", label: "Brain Training" },
     { id: "meditation", emoji: "🧘", label: "Meditation" },
@@ -49,6 +48,6 @@ export const useTopicSelection = () => {
     setSelectedTopic,
     improvements,
     temptations,
-    therapyTopics,
+    learnTopics,
   };
 };
