@@ -14,7 +14,7 @@ const SubscriptionSection = () => {
     return (
       <div className="px-6 mt-8">
         <h2 className="text-xl font-semibold mb-4">Subscription</h2>
-        <Alert variant="destructive">
+        <Alert>
           <AlertDescription>Please sign in to view subscription details.</AlertDescription>
         </Alert>
       </div>

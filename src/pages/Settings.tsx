@@ -1,5 +1,6 @@
-import { Button } from "@/components/ui/button";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import AccountSection from "@/components/settings/AccountSection";
 import SubscriptionSection from "@/components/settings/SubscriptionSection";
@@ -13,6 +14,12 @@ const Settings = () => {
   const { toast } = useToast();
   const session = useSession();
 
+  useEffect(() => {
+    if (session === null) {
+      navigate('/auth', { replace: true });
+    }
+  }, [session, navigate]);
+
   const handleSignOut = async () => {
     try {
       // First clear any cached data
@@ -21,7 +28,9 @@ const Settings = () => {
       
       // Then sign out from Supabase
       const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
       
       // Navigate to auth page after successful signout
       navigate('/auth', { replace: true });
@@ -32,9 +41,6 @@ const Settings = () => {
         title: "Error signing out",
         description: "Please try again"
       });
-      
-      // Still navigate to auth page even if there's an error
-      navigate('/auth', { replace: true });
     }
   };
 
@@ -42,8 +48,7 @@ const Settings = () => {
     navigate(-1);
   };
 
-  if (!session) {
-    navigate('/auth', { replace: true });
+  if (session === null) {
     return null;
   }
 
