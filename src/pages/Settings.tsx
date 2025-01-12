@@ -6,7 +6,6 @@ import SubscriptionSection from "@/components/settings/SubscriptionSection";
 import SupportSection from "@/components/settings/SupportSection";
 import FooterLinks from "@/components/settings/FooterLinks";
 import { useToast } from "@/hooks/use-toast";
-import { AuthError } from "@supabase/supabase-js";
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -14,14 +13,18 @@ const Settings = () => {
 
   const handleSignOut = async () => {
     try {
-      const { error } = await supabase.auth.signOut({ scope: 'local' });
+      // First clear the local session
+      await supabase.auth.clearSession();
+      
+      // Then attempt to sign out
+      const { error } = await supabase.auth.signOut();
       
       if (error) {
         console.error('Logout error:', error);
         toast({
           variant: "destructive",
           title: "Error signing out",
-          description: error.message
+          description: "Please try again"
         });
         return;
       }
@@ -31,11 +34,9 @@ const Settings = () => {
       
     } catch (error) {
       console.error('Unexpected error during logout:', error);
-      toast({
-        variant: "destructive",
-        title: "Error signing out",
-        description: "An unexpected error occurred. Please try again."
-      });
+      // Even if there's an error, we should try to redirect to auth
+      // since the session is likely invalid
+      navigate('/auth', { replace: true });
     }
   };
 
