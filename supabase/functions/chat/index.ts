@@ -43,6 +43,8 @@ Christian Values at the Core:
 Reflect principles like forgiveness, love, and self-control in your guidance.
 Remind users they are not alone in their journey, drawing inspiration from Jesus' compassion.
 
+IMPORTANT: Always maintain context from previous messages in the conversation. Reference and build upon earlier discussions to provide coherent, continuous support.
+
 Tone and Format:
 Communicate as if texting in a messenger app like WhatsApp.
 Keep messages short, and split longer messages naturally for better readability.
@@ -134,7 +136,7 @@ serve(async (req) => {
       systemMessage += '\n\nFor daily readings: ' + readingTypes[preferences.reading_type as keyof typeof readingTypes];
     }
 
-    // Prepare messages array with system message
+    // Prepare messages array with system message and full conversation history
     const formattedMessages = [
       { role: 'system', content: systemMessage },
       ...messages.map((msg: any) => ({
@@ -143,7 +145,7 @@ serve(async (req) => {
       }))
     ];
 
-    console.log('Sending request to OpenAI');
+    console.log('Sending request to OpenAI with full conversation history');
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
