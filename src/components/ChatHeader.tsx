@@ -23,6 +23,8 @@ export const ChatHeader = ({ topic, title }: ChatHeaderProps) => {
     }
   };
 
+  const displayTitle = title || (topic ? `Chat about ${topic}` : "Chat");
+
   return (
     <div className="flex items-center gap-2 px-4 py-3 border-b">
       <Button
@@ -43,7 +45,7 @@ export const ChatHeader = ({ topic, title }: ChatHeaderProps) => {
       <div>
         <h2 className="font-semibold">Pace</h2>
         <p className="text-sm text-muted-foreground">
-          {title || (topic ? `Chat about ${topic}` : "Chat")}
+          {displayTitle}
         </p>
       </div>
     </div>
