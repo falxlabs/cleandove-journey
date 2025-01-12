@@ -6,6 +6,7 @@ import SubscriptionSection from "@/components/settings/SubscriptionSection";
 import SupportSection from "@/components/settings/SupportSection";
 import FooterLinks from "@/components/settings/FooterLinks";
 import { useToast } from "@/hooks/use-toast";
+import { AuthError } from "@supabase/supabase-js";
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -13,14 +14,32 @@ const Settings = () => {
 
   const handleSignOut = async () => {
     try {
-      // First clear the local session
-      await supabase.auth.clearSession();
+      // First check if we have a session
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
-      // Then attempt to sign out
+      if (sessionError) {
+        console.error('Session error:', sessionError);
+        navigate('/auth', { replace: true });
+        return;
+      }
+
+      if (!session) {
+        // No session found, redirect to auth
+        navigate('/auth', { replace: true });
+        return;
+      }
+
+      // Attempt to sign out
       const { error } = await supabase.auth.signOut();
       
       if (error) {
         console.error('Logout error:', error);
+        // If we get a 403 or session not found, just redirect to auth
+        if (error.status === 403 || (error as AuthError).message.includes('session')) {
+          navigate('/auth', { replace: true });
+          return;
+        }
+        
         toast({
           variant: "destructive",
           title: "Error signing out",
