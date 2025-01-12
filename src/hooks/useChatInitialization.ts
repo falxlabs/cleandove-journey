@@ -26,8 +26,13 @@ export const useChatInitialization = (
     if (!chatId) {
       const newChatId = await createChatHistory(userInput, content);
       if (newChatId) {
-        await saveMessages(newChatId, currentMessages, userInput, content);
-        await generateTitle([...currentMessages, assistantResponse], newChatId);
+        // Only save the actual conversation messages, not the initial greeting
+        const conversationMessages = currentMessages.filter(msg => 
+          msg.sender === "user" || 
+          (msg.sender === "assistant" && messages.indexOf(msg) > 0)
+        );
+        await saveMessages(newChatId, conversationMessages, userInput, content);
+        await generateTitle([...conversationMessages, assistantResponse], newChatId);
       }
     } else {
       await updateExistingChat(chatId, userInput, content, messages.length);

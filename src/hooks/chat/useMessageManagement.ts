@@ -14,30 +14,20 @@ export const useMessageManagement = () => {
     assistantResponse: string
   ) => {
     try {
-      const messagesToInsert = [];
-
-      if (messages && messages.length > 0) {
-        messagesToInsert.push({
+      const messagesToInsert = [
+        {
           chat_id: newChatId,
-          content: messages[0].content,
-          sender: "assistant",
+          content: input,
+          sender: "user",
           sequence_number: 1,
-        });
-      }
-
-      messagesToInsert.push({
-        chat_id: newChatId,
-        content: input,
-        sender: "user",
-        sequence_number: messages.length > 0 ? 2 : 1,
-      });
-
-      messagesToInsert.push({
-        chat_id: newChatId,
-        content: assistantResponse,
-        sender: "assistant",
-        sequence_number: messages.length > 0 ? 3 : 2,
-      });
+        },
+        {
+          chat_id: newChatId,
+          content: assistantResponse,
+          sender: "assistant",
+          sequence_number: 2,
+        }
+      ];
 
       const { error: messagesError } = await supabase
         .from("messages")
