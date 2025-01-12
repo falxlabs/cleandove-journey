@@ -6,19 +6,22 @@ import SubscriptionSection from "@/components/settings/SubscriptionSection";
 import SupportSection from "@/components/settings/SupportSection";
 import FooterLinks from "@/components/settings/FooterLinks";
 import { useToast } from "@/hooks/use-toast";
+import { useSession } from "@supabase/auth-helpers-react";
 
 const Settings = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const session = useSession();
 
   const handleSignOut = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      
-      // Clear any cached data
+      // First clear any cached data
       localStorage.clear();
       sessionStorage.clear();
+      
+      // Then sign out from Supabase
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
       
       // Navigate to auth page after successful signout
       navigate('/auth', { replace: true });
@@ -38,6 +41,11 @@ const Settings = () => {
   const handleDone = () => {
     navigate(-1);
   };
+
+  if (!session) {
+    navigate('/auth', { replace: true });
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-background pb-20">

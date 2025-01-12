@@ -1,13 +1,38 @@
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { CreditCard, Loader2 } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import SettingsButton from "./SettingsButton";
 import { useCredits } from "@/hooks/useCredits";
 import { useSubscriptionDetails } from "@/hooks/useSubscriptionDetails";
+import { useSession } from "@supabase/auth-helpers-react";
 
 const SubscriptionSection = () => {
+  const session = useSession();
   const { credits } = useCredits();
-  const { data: planDetails, isLoading } = useSubscriptionDetails();
+  const { data: planDetails, isLoading, error } = useSubscriptionDetails();
+
+  if (!session) {
+    return (
+      <div className="px-6 mt-8">
+        <h2 className="text-xl font-semibold mb-4">Subscription</h2>
+        <Alert variant="destructive">
+          <AlertDescription>Please sign in to view subscription details.</AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="px-6 mt-8">
+        <h2 className="text-xl font-semibold mb-4">Subscription</h2>
+        <Alert variant="destructive">
+          <AlertDescription>Failed to load subscription details. Please try again.</AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
 
   if (isLoading || !planDetails) {
     return (

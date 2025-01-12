@@ -14,19 +14,17 @@ export const useSubscriptionDetails = () => {
   return useQuery({
     queryKey: ["subscription", session?.user?.id],
     queryFn: async () => {
-      if (!session?.user?.id) {
-        return {
-          plan: "free",
-          daily_credits: 10,
-          description: "Free tier with limited features"
-        };
+      const { data: { session: currentSession } } = await supabase.auth.getSession();
+      
+      if (!currentSession?.user?.id) {
+        throw new Error("No authenticated user");
       }
 
       // First get the user's plan
       const { data: userPlan, error: userPlanError } = await supabase
         .from("user_plans")
         .select("*")
-        .eq("user_id", session.user.id)
+        .eq("user_id", currentSession.user.id)
         .maybeSingle();
 
       if (userPlanError) {
@@ -37,7 +35,7 @@ export const useSubscriptionDetails = () => {
       if (!userPlan) {
         return {
           plan: "free",
-          daily_credits: 10,
+          daily_credits: 5, // Updated to match our new configuration
           description: "Free tier with limited features"
         };
       }
@@ -60,11 +58,8 @@ export const useSubscriptionDetails = () => {
         description: planConfig.description || `${userPlan.plan} plan`
       };
     },
-    // Only run the query if we have a session
-    enabled: true,
-    // Add some retry logic
+    enabled: !!session?.user?.id,
     retry: 1,
-    // Add stale time to prevent unnecessary refetches
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 };
