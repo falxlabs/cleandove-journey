@@ -92,10 +92,7 @@ const readingTypes = {
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response(null, { 
-      status: 204,
-      headers: corsHeaders 
-    });
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
@@ -164,7 +161,7 @@ serve(async (req) => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'gpt-4',
+        model: 'gpt-4o-mini',
         messages: formattedMessages,
         temperature: 0.7,
         max_tokens: 500
