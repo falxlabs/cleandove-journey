@@ -57,9 +57,9 @@ const TaskList = ({ tasks, isTasksLoading, onTaskComplete }: TaskListProps) => {
     } catch (error) {
       console.error('Error updating task:', error);
       toast({
+        variant: "destructive",
         title: "Error",
         description: "Failed to update task status.",
-        variant: "destructive",
       });
     }
   };
