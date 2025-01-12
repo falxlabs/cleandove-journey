@@ -44,10 +44,6 @@ const Settings = () => {
     }
   };
 
-  const handleDone = () => {
-    navigate(-1);
-  };
-
   if (session === null) {
     return null;
   }
@@ -61,7 +57,7 @@ const Settings = () => {
             <Button 
               variant="ghost" 
               className="text-primary"
-              onClick={handleDone}
+              onClick={() => navigate("/profile")}
             >
               Done
             </Button>

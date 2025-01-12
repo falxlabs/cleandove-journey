@@ -48,7 +48,7 @@ const PreferencesSection = () => {
               className="text-primary"
               onClick={() => navigate("/settings")}
             >
-              Done
+              Back
             </Button>
           </div>
         </div>
