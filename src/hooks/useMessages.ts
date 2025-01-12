@@ -163,21 +163,6 @@ export const useMessages = ({
     }
   };
 
-  const updateReplyCount = async (chatId: string, messages: Message[]) => {
-    const firstUserMessageIndex = messages.findIndex(msg => msg.sender === 'user');
-    if (firstUserMessageIndex === -1) return;
-
-    const assistantMessagesAfterUser = messages
-      .slice(firstUserMessageIndex + 1)
-      .filter(msg => msg.sender === 'assistant')
-      .length;
-
-    await supabase
-      .from('chat_histories')
-      .update({ reply_count: assistantMessagesAfterUser })
-      .eq('id', chatId);
-  };
-
   const loadExistingMessages = async () => {
     if (!chatId) return;
 
@@ -208,9 +193,6 @@ export const useMessages = ({
           timestamp: new Date(msg.created_at)
         }));
         setMessages(formattedMessages);
-        
-        // Update reply count after loading messages
-        await updateReplyCount(chatId, formattedMessages);
       }
     } catch (error) {
       console.error('Error in loadExistingMessages:', error);
@@ -223,7 +205,7 @@ export const useMessages = ({
     try {
       if (isExistingChat) {
         await loadExistingMessages();
-      } else {
+      } else if (!chatId) { // Only add initial message for new chats
         const initialMessage = await getInitialMessage();
         setMessages([initialMessage]);
       }
