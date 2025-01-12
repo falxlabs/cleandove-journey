@@ -28,13 +28,14 @@ const WeekProgress = ({
       <div className="flex justify-between mb-4">
         {weekDays.map((day, index) => {
           const currentDate = format(addDays(weekStart, index), 'yyyy-MM-dd');
+          const isToday = currentDate === format(today, 'yyyy-MM-dd');
           const hasCompletedTasks = weekCompletions?.[currentDate];
 
           return (
             <div
               key={`${day}-${index}`}
               className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
-                !isWeekLoading && hasCompletedTasks
+                !isWeekLoading && hasCompletedTasks && (!isToday || progress === 100)
                   ? "bg-[#9b87f5] text-primary-foreground"
                   : "bg-secondary text-secondary-foreground"
               }`}

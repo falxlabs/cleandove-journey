@@ -10,16 +10,17 @@ import { startOfWeek, addDays, format } from "date-fns";
 const Index = () => {
   const weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const [completedTasks, setCompletedTasks] = useState<string[]>([]);
+  const [weekCompletions, setWeekCompletions] = useState<{ [key: string]: boolean }>({});
   
   // Get the start of the current week (Monday)
   const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 });
   
   // Fetch completed tasks for the current week
-  const { data: weekCompletions, isLoading: isWeekLoading } = useQuery({
+  const { data: weekCompletionsData, isLoading: isWeekLoading } = useQuery({
     queryKey: ['week-completions'],
     queryFn: async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return {};  // Return empty object instead of empty array
+      if (!session) return {};
 
       const weekDates = Array.from({ length: 7 }, (_, i) => 
         format(addDays(weekStart, i), 'yyyy-MM-dd')
@@ -34,7 +35,6 @@ const Index = () => {
 
       if (error) throw error;
       
-      // Create a map of dates with completed tasks
       return data.reduce((acc: { [key: string]: boolean }, task) => {
         acc[task.date] = true;
         return acc;
@@ -94,6 +94,12 @@ const Index = () => {
     }
   }, [completedTasksData]);
 
+  useEffect(() => {
+    if (weekCompletionsData) {
+      setWeekCompletions(weekCompletionsData);
+    }
+  }, [weekCompletionsData]);
+
   const progress = tasks && tasks.length > 0 
     ? Math.round((completedTasks.length / tasks.length) * 100) 
     : 0;
@@ -101,6 +107,14 @@ const Index = () => {
   const handleTaskComplete = (taskType: string, completed: boolean) => {
     if (completed) {
       setCompletedTasks(prev => [...prev, taskType]);
+      // Update week completions immediately
+      const today = format(new Date(), 'yyyy-MM-dd');
+      if (tasks && completedTasks.length + 1 === tasks.length) {
+        setWeekCompletions(prev => ({
+          ...prev,
+          [today]: true
+        }));
+      }
     } else {
       setCompletedTasks(prev => prev.filter(t => t !== taskType));
     }
