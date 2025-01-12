@@ -1,13 +1,15 @@
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { ChatHeader } from "@/components/ChatHeader";
 import { MessageList } from "@/components/MessageList";
 import { ChatInput } from "@/components/ChatInput";
 import { CreditAlert } from "@/components/chat/CreditAlert";
 import { useChat } from "@/hooks/useChat";
+import { supabase } from "@/integrations/supabase/client";
 
 const ChatConversation = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const {
     input,
     setInput,
@@ -29,8 +31,25 @@ const ChatConversation = () => {
   });
 
   useEffect(() => {
-    initializeChat();
-  }, []);
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate('/auth');
+        return;
+      }
+      initializeChat();
+    };
+
+    checkAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT') {
+        navigate('/auth');
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {

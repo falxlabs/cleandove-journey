@@ -20,15 +20,16 @@ export const useMessages = ({
   const [messages, setMessages] = useState<Message[]>([]);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
 
-  const getInitialMessage = (): string => {
-    if (context && improvement) {
-      return `Hello! I understand you want to improve your ${improvement}. I'm here to help you on this journey. What specific aspects would you like to work on?`;
-    }
-    if (initialTopic) {
-      return `Hello! I see you want to discuss ${initialTopic}. How can I help you with that today?`;
-    }
-    return "Hello! How can I help you today?";
-  };
+  const getInitialMessage = (): Message => ({
+    id: "1",
+    content: context && improvement
+      ? `Hello! I understand you want to improve your ${improvement}. I'm here to help you on this journey. What specific aspects would you like to work on?`
+      : initialTopic
+      ? `Hello! I see you want to discuss ${initialTopic}. How can I help you with that today?`
+      : "Hello! How can I help you today?",
+    sender: "assistant",
+    timestamp: new Date(),
+  });
 
   const loadExistingMessages = async () => {
     if (!chatId) return;
@@ -70,12 +71,7 @@ export const useMessages = ({
       if (isExistingChat) {
         await loadExistingMessages();
       } else {
-        const initialMessage: Message = {
-          id: "1",
-          content: getInitialMessage(),
-          sender: "assistant",
-          timestamp: new Date(),
-        };
+        const initialMessage = getInitialMessage();
         setMessages([initialMessage]);
       }
     } finally {
@@ -84,11 +80,20 @@ export const useMessages = ({
   };
 
   useEffect(() => {
-    if (isExistingChat && chatId) {
-      loadExistingMessages();
-    } else {
-      initializeChat();
-    }
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        if (isExistingChat && chatId) {
+          await loadExistingMessages();
+        } else {
+          const initialMessage = getInitialMessage();
+          setMessages([initialMessage]);
+        }
+      }
+      setIsInitialLoading(false);
+    };
+
+    checkSession();
   }, [chatId, isExistingChat]);
 
   return {
