@@ -1,4 +1,4 @@
-import { useState, useRef, TouchEvent, MouseEvent, ReactNode } from "react";
+import { useState, useRef, TouchEvent, MouseEvent, ReactNode, cloneElement, isValidElement } from "react";
 
 interface SwipeableItemProps {
   id: string;
@@ -8,32 +8,33 @@ interface SwipeableItemProps {
 
 export const SwipeableItem = ({ id, onSwipeComplete, children }: SwipeableItemProps) => {
   const [isActive, setIsActive] = useState(false);
+  const [isSwiping, setIsSwiping] = useState(false);
   const touchStartX = useRef<number>(0);
   const currentOffset = useRef<number>(0);
-  const isSwiping = useRef(false);
   const isDragging = useRef(false);
 
   const handleTouchStart = (e: TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
     setIsActive(true);
-    isSwiping.current = false;
+    setIsSwiping(false);
   };
 
   const handleMouseDown = (e: MouseEvent) => {
     touchStartX.current = e.clientX;
     setIsActive(true);
-    isSwiping.current = false;
+    setIsSwiping(false);
     isDragging.current = true;
   };
 
   const handleMove = (clientX: number) => {
     if (!isActive) return;
+    
     const diff = touchStartX.current - clientX;
     if (Math.abs(diff) > 5) {
-      isSwiping.current = true;
+      setIsSwiping(true);
     }
-    currentOffset.current = Math.max(0, Math.min(diff, 100));
     
+    currentOffset.current = Math.max(0, Math.min(diff, 100));
     const element = document.getElementById(`swipeable-${id}`);
     if (element) {
       element.style.transform = `translateX(-${currentOffset.current}px)`;
@@ -63,9 +64,14 @@ export const SwipeableItem = ({ id, onSwipeComplete, children }: SwipeableItemPr
 
     currentOffset.current = 0;
     setIsActive(false);
-    isSwiping.current = false;
     isDragging.current = false;
+    // Don't reset isSwiping here to prevent click after swipe
   };
+
+  // Clone child and pass isSwiping prop
+  const childrenWithProps = isValidElement(children)
+    ? cloneElement(children, { isSwiping })
+    : children;
 
   return (
     <div
@@ -79,7 +85,7 @@ export const SwipeableItem = ({ id, onSwipeComplete, children }: SwipeableItemPr
       onMouseUp={handleDragEnd}
       onMouseLeave={handleDragEnd}
     >
-      {children}
+      {childrenWithProps}
     </div>
   );
 };

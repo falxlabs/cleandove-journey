@@ -9,6 +9,7 @@ interface ChatItemProps {
   favorite: boolean;
   onFavorite: () => void;
   onClick: () => void;
+  isSwiping?: boolean;
 }
 
 export const ChatItem = ({ 
@@ -19,7 +20,8 @@ export const ChatItem = ({
   replies, 
   favorite, 
   onFavorite,
-  onClick 
+  onClick,
+  isSwiping = false
 }: ChatItemProps) => {
   const truncateText = (text: string, maxLength: number) => {
     if (text.length <= maxLength) return text;
@@ -32,11 +34,17 @@ export const ChatItem = ({
     onFavorite();
   };
 
+  const handleClick = () => {
+    if (!isSwiping) {
+      onClick();
+    }
+  };
+
   return (
     <>
       <div 
         className="p-4 bg-card rounded-lg border shadow-sm hover:shadow-md transition-all cursor-pointer"
-        onClick={onClick}
+        onClick={handleClick}
       >
         <div className="flex justify-between items-start mb-2">
           <h3 className="font-medium">{title}</h3>
