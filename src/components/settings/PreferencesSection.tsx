@@ -26,7 +26,9 @@ const PreferencesSection = () => {
       <div className="px-6 mt-8">
         <div className="space-y-6 bg-card rounded-lg p-6 shadow-sm">
           <ChristFocusedToggle />
-          <ContentTypePreference />
+          <div className="border-t pt-6">
+            <ContentTypePreference />
+          </div>
         </div>
       </div>
     </div>

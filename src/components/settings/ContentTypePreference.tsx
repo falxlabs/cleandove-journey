@@ -11,64 +11,91 @@ export const ContentTypePreference = () => {
 
   useEffect(() => {
     const loadPreferences = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
 
-      // First check if preferences exist
-      const { data: existingPrefs, error: checkError } = await supabase
-        .from('user_preferences')
-        .select('reading_type')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (checkError) {
-        console.error('Error checking preferences:', checkError);
-        return;
-      }
-
-      // If no preferences exist, create them
-      if (!existingPrefs) {
-        const { error: insertError } = await supabase
+        const { data: preferences, error } = await supabase
           .from('user_preferences')
-          .insert([{ user_id: user.id }]);
+          .select('reading_type')
+          .eq('user_id', user.id)
+          .maybeSingle();
 
-        if (insertError) {
-          console.error('Error creating preferences:', insertError);
+        if (error) {
+          console.error('Error loading preferences:', error);
+          toast({
+            variant: "destructive",
+            description: "Failed to load preferences",
+          });
           return;
         }
-      } else {
-        setReadingType(existingPrefs.reading_type);
-      }
 
-      setIsLoading(false);
+        if (!preferences) {
+          // Create default preferences if they don't exist
+          const { error: insertError } = await supabase
+            .from('user_preferences')
+            .insert([{ 
+              user_id: user.id,
+              reading_type: 'both'
+            }]);
+
+          if (insertError) {
+            console.error('Error creating preferences:', insertError);
+            toast({
+              variant: "destructive",
+              description: "Failed to create preferences",
+            });
+            return;
+          }
+          setReadingType('both');
+        } else {
+          setReadingType(preferences.reading_type);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        toast({
+          variant: "destructive",
+          description: "An error occurred while loading preferences",
+        });
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     loadPreferences();
-  }, []);
+  }, [toast]);
 
   const handleValueChange = async (value: string) => {
     if (!value) return;
     
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-    const { error } = await supabase
-      .from('user_preferences')
-      .update({ reading_type: value })
-      .eq('user_id', user.id);
+      const { error } = await supabase
+        .from('user_preferences')
+        .update({ reading_type: value })
+        .eq('user_id', user.id);
 
-    if (error) {
+      if (error) {
+        toast({
+          variant: "destructive",
+          description: "Failed to update preference",
+        });
+        return;
+      }
+
+      setReadingType(value);
+      toast({
+        description: "Reading type preference updated",
+      });
+    } catch (error) {
+      console.error('Error updating preference:', error);
       toast({
         variant: "destructive",
         description: "Failed to update preference",
       });
-      return;
     }
-
-    setReadingType(value);
-    toast({
-      description: "Reading type preference updated",
-    });
   };
 
   if (isLoading) {

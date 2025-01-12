@@ -11,62 +11,89 @@ export const ChristFocusedToggle = () => {
 
   useEffect(() => {
     const loadPreferences = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
 
-      // First check if preferences exist
-      const { data: existingPrefs, error: checkError } = await supabase
-        .from('user_preferences')
-        .select('religious_content')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (checkError) {
-        console.error('Error checking preferences:', checkError);
-        return;
-      }
-
-      // If no preferences exist, create them
-      if (!existingPrefs) {
-        const { error: insertError } = await supabase
+        const { data: preferences, error } = await supabase
           .from('user_preferences')
-          .insert([{ user_id: user.id }]);
+          .select('religious_content')
+          .eq('user_id', user.id)
+          .maybeSingle();
 
-        if (insertError) {
-          console.error('Error creating preferences:', insertError);
+        if (error) {
+          console.error('Error loading preferences:', error);
+          toast({
+            variant: "destructive",
+            description: "Failed to load preferences",
+          });
           return;
         }
-      } else {
-        setEnabled(existingPrefs.religious_content);
-      }
 
-      setIsLoading(false);
+        if (!preferences) {
+          // Create default preferences if they don't exist
+          const { error: insertError } = await supabase
+            .from('user_preferences')
+            .insert([{ 
+              user_id: user.id,
+              religious_content: false
+            }]);
+
+          if (insertError) {
+            console.error('Error creating preferences:', insertError);
+            toast({
+              variant: "destructive",
+              description: "Failed to create preferences",
+            });
+            return;
+          }
+          setEnabled(false);
+        } else {
+          setEnabled(preferences.religious_content);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        toast({
+          variant: "destructive",
+          description: "An error occurred while loading preferences",
+        });
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     loadPreferences();
-  }, []);
+  }, [toast]);
 
   const handleToggle = async (checked: boolean) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-    const { error } = await supabase
-      .from('user_preferences')
-      .update({ religious_content: checked })
-      .eq('user_id', user.id);
+      const { error } = await supabase
+        .from('user_preferences')
+        .update({ religious_content: checked })
+        .eq('user_id', user.id);
 
-    if (error) {
+      if (error) {
+        toast({
+          variant: "destructive",
+          description: "Failed to update preference",
+        });
+        return;
+      }
+
+      setEnabled(checked);
+      toast({
+        description: "Christ-focused messages preference updated",
+      });
+    } catch (error) {
+      console.error('Error updating preference:', error);
       toast({
         variant: "destructive",
         description: "Failed to update preference",
       });
-      return;
     }
-
-    setEnabled(checked);
-    toast({
-      description: "Christ-focused messages preference updated",
-    });
   };
 
   if (isLoading) {
