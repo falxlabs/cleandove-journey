@@ -96,48 +96,71 @@ export const useMessages = ({
     }
   };
 
-  const getInitialMessage = (): Message => {
-    if (context && improvement) {
-      const topicContext = getTopicContext(initialTopic || '');
-      if (topicContext) {
-        const messages = {
-          improvement: `I'd love to help you improve your ${improvement.toLowerCase()}. What specific area would you like to focus on developing?`,
-          temptation: `I understand you're facing challenges with ${improvement.toLowerCase()}. You're not alone, and I'm here to support you. What would you like to discuss?`,
-          learn: `I'd be happy to help you learn about ${improvement.toLowerCase()}. What specific aspects would you like to understand better?`
-        };
-        return {
-          id: "1",
-          content: messages[topicContext.category as keyof typeof messages] || messages.improvement,
-          sender: "assistant",
-          timestamp: new Date(),
-        };
+  const getInitialMessage = async (): Promise<Message> => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error('No active session');
       }
-    }
 
-    if (initialTopic) {
-      const topicContext = getTopicContext(initialTopic);
-      if (topicContext) {
-        const messages = {
-          improvement: `I'd love to help you improve your ${topicContext.label.toLowerCase()}. What specific area would you like to focus on developing?`,
-          temptation: `I understand you're facing challenges with ${topicContext.label.toLowerCase()}. You're not alone, and I'm here to support you. What would you like to discuss?`,
-          learn: `I'd be happy to help you learn about ${topicContext.label}. What specific aspects would you like to understand better?`
-        };
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('username')
+        .eq('id', session.user.id)
+        .single();
 
-        return {
-          id: "1",
-          content: messages[topicContext.category as keyof typeof messages],
-          sender: "assistant",
-          timestamp: new Date(),
-        };
+      const username = profile?.username || 'there';
+
+      if (context && improvement) {
+        const topicContext = getTopicContext(initialTopic || '');
+        if (topicContext) {
+          const messages = {
+            improvement: `Hi ${username}! I'd love to help you improve your ${improvement.toLowerCase()}. What specific area would you like to focus on developing?`,
+            temptation: `Hi ${username}! I understand you're facing challenges with ${improvement.toLowerCase()}. You're not alone, and I'm here to support you. What would you like to discuss?`,
+            learn: `Hi ${username}! I'd be happy to help you learn about ${improvement.toLowerCase()}. What specific aspects would you like to understand better?`
+          };
+          return {
+            id: "1",
+            content: messages[topicContext.category as keyof typeof messages] || messages.improvement,
+            sender: "assistant",
+            timestamp: new Date(),
+          };
+        }
       }
-    }
 
-    return {
-      id: "1",
-      content: "Hi! I'm Pace, your personal growth companion. Whether you're looking to build better habits, overcome challenges, or learn something new, I'm here to support your journey. What's on your mind today?",
-      sender: "assistant",
-      timestamp: new Date(),
-    };
+      if (initialTopic) {
+        const topicContext = getTopicContext(initialTopic);
+        if (topicContext) {
+          const messages = {
+            improvement: `Hi ${username}! I'd love to help you improve your ${topicContext.label.toLowerCase()}. What specific area would you like to focus on developing?`,
+            temptation: `Hi ${username}! I understand you're facing challenges with ${topicContext.label.toLowerCase()}. You're not alone, and I'm here to support you. What would you like to discuss?`,
+            learn: `Hi ${username}! I'd be happy to help you learn about ${topicContext.label}. What specific aspects would you like to understand better?`
+          };
+
+          return {
+            id: "1",
+            content: messages[topicContext.category as keyof typeof messages],
+            sender: "assistant",
+            timestamp: new Date(),
+          };
+        }
+      }
+
+      return {
+        id: "1",
+        content: `Hi ${username}! What's on your mind today?`,
+        sender: "assistant",
+        timestamp: new Date(),
+      };
+    } catch (error) {
+      console.error('Error fetching username:', error);
+      return {
+        id: "1",
+        content: "Hi there! What's on your mind today?",
+        sender: "assistant",
+        timestamp: new Date(),
+      };
+    }
   };
 
   const loadExistingMessages = async () => {
@@ -183,7 +206,7 @@ export const useMessages = ({
       if (isExistingChat) {
         await loadExistingMessages();
       } else {
-        const initialMessage = getInitialMessage();
+        const initialMessage = await getInitialMessage();
         setMessages([initialMessage]);
       }
     } catch (error) {
