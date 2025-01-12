@@ -1,9 +1,10 @@
-import { useState, useRef, TouchEvent, MouseEvent, ReactNode, cloneElement, isValidElement } from "react";
+import { useState, useRef, TouchEvent, MouseEvent, ReactElement } from "react";
+import { ChatItem } from "./ChatItem";
 
 interface SwipeableItemProps {
   id: string;
   onSwipeComplete: () => Promise<void>;
-  children: ReactNode;
+  children: ReactElement<{ isSwiping?: boolean }>;
 }
 
 export const SwipeableItem = ({ id, onSwipeComplete, children }: SwipeableItemProps) => {
@@ -68,11 +69,6 @@ export const SwipeableItem = ({ id, onSwipeComplete, children }: SwipeableItemPr
     // Don't reset isSwiping here to prevent click after swipe
   };
 
-  // Clone child and pass isSwiping prop
-  const childrenWithProps = isValidElement(children)
-    ? cloneElement(children, { isSwiping })
-    : children;
-
   return (
     <div
       id={`swipeable-${id}`}
@@ -85,7 +81,7 @@ export const SwipeableItem = ({ id, onSwipeComplete, children }: SwipeableItemPr
       onMouseUp={handleDragEnd}
       onMouseLeave={handleDragEnd}
     >
-      {childrenWithProps}
+      {React.cloneElement(children, { isSwiping })}
     </div>
   );
 };
