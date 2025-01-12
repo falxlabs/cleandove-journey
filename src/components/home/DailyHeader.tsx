@@ -42,7 +42,7 @@ const DailyHeader = ({ streak, isStreakLoading }: DailyHeaderProps) => {
               size="icon" 
               className="px-4 pr-6 gap-0.5"
             >
-              <span className="text-xl">💎</span>
+              <span className="text-xl">🦪</span>
               <span className="text-sm text-muted-foreground">{profile?.pearls || 0}</span>
             </Button>
           )}
