@@ -12,20 +12,27 @@ const Settings = () => {
   const { toast } = useToast();
 
   const handleSignOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    
-    if (error) {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
+      // Clear any cached data
+      localStorage.clear();
+      sessionStorage.clear();
+      
+      // Navigate to auth page after successful signout
+      navigate('/auth', { replace: true });
+    } catch (error) {
       console.error('Sign out error:', error);
       toast({
         variant: "destructive",
         title: "Error signing out",
         description: "Please try again"
       });
+      
+      // Still navigate to auth page even if there's an error
+      navigate('/auth', { replace: true });
     }
-    
-    // Always navigate to auth page, even if there was an error
-    // This ensures users can try to log in again if needed
-    navigate('/auth', { replace: true });
   };
 
   const handleDone = () => {

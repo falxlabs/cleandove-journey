@@ -17,7 +17,14 @@ import Achievements from "./pages/Achievements";
 import Streak from "./pages/Streak";
 import PreferencesSection from "./components/settings/PreferencesSection";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      staleTime: 1000 * 60 * 5, // 5 minutes
+    },
+  },
+});
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
@@ -43,15 +50,9 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
     checkAuth();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      try {
-        setAuthenticated(!!session);
-      } catch (error) {
-        console.error('Auth state change error:', error);
-        setAuthenticated(false);
-      } finally {
-        setLoading(false);
-      }
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setAuthenticated(!!session);
+      setLoading(false);
     });
 
     return () => subscription.unsubscribe();
