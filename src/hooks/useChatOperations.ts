@@ -18,7 +18,6 @@ export const useChatOperations = () => {
 
       if (error) throw error;
 
-      // Invalidate and refetch chat history
       queryClient.invalidateQueries({ queryKey: ["chat-history"] });
 
       toast({
@@ -44,7 +43,6 @@ export const useChatOperations = () => {
 
       if (error) throw error;
 
-      // Invalidate and refetch chat history
       queryClient.invalidateQueries({ queryKey: ["chat-history"] });
 
       toast({

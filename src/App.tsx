@@ -99,6 +99,14 @@ const App = () => (
                 }
               />
               <Route
+                path="/chat/:id"
+                element={
+                  <ProtectedRoute>
+                    <ChatConversation />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/conversation"
                 element={
                   <ProtectedRoute>
