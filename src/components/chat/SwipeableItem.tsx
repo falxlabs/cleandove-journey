@@ -13,11 +13,13 @@ export const SwipeableItem = ({ id, onSwipeComplete, onItemClick, children }: Sw
   const currentOffset = useRef<number>(0);
   const isSwiping = useRef(false);
   const isDragging = useRef(false);
+  const hasSwipedSignificantly = useRef(false);
 
   const handleTouchStart = (e: TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
     setIsActive(true);
     isSwiping.current = false;
+    hasSwipedSignificantly.current = false;
   };
 
   const handleMouseDown = (e: MouseEvent) => {
@@ -25,6 +27,7 @@ export const SwipeableItem = ({ id, onSwipeComplete, onItemClick, children }: Sw
     setIsActive(true);
     isSwiping.current = false;
     isDragging.current = true;
+    hasSwipedSignificantly.current = false;
   };
 
   const handleMove = (clientX: number) => {
@@ -32,6 +35,9 @@ export const SwipeableItem = ({ id, onSwipeComplete, onItemClick, children }: Sw
     const diff = touchStartX.current - clientX;
     if (Math.abs(diff) > 5) {
       isSwiping.current = true;
+    }
+    if (Math.abs(diff) > 20) {
+      hasSwipedSignificantly.current = true;
     }
     currentOffset.current = Math.max(0, Math.min(diff, 100));
     
@@ -60,7 +66,7 @@ export const SwipeableItem = ({ id, onSwipeComplete, onItemClick, children }: Sw
       await onSwipeComplete();
     } else {
       element.style.transform = 'translateX(0)';
-      if (!isSwiping.current && onItemClick) {
+      if (!isSwiping.current && !hasSwipedSignificantly.current && onItemClick) {
         onItemClick();
       }
     }
@@ -69,6 +75,7 @@ export const SwipeableItem = ({ id, onSwipeComplete, onItemClick, children }: Sw
     setIsActive(false);
     isSwiping.current = false;
     isDragging.current = false;
+    hasSwipedSignificantly.current = false;
   };
 
   return (
