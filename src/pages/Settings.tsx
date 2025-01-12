@@ -23,7 +23,9 @@ const Settings = () => {
       });
     }
     
-    navigate('/auth');
+    // Always navigate to auth page, even if there was an error
+    // This ensures users can try to log in again if needed
+    navigate('/auth', { replace: true });
   };
 
   const handleDone = () => {
