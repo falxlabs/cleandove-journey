@@ -44,7 +44,7 @@ const WeekProgress = ({
             value={progress} 
             className={`h-2 ${progress === 100 ? "bg-[#9b87f5]" : ""}`}
           />
-          <p className="text-sm text-muted-foreground mt-2">Today's Progress: {progress}%</p>
+          <p className="text-sm text-muted-foreground mt-2">{progress}% completed today</p>
         </>
       )}
     </div>
