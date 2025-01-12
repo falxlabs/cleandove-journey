@@ -10,22 +10,25 @@ const personalRecords = [
     title: "Total Tasks",
     value: "0",
     date: "Oct 18, 2024",
-    icon: "📝",
+    icon: "📊",
     color: "bg-green-500",
+    description: "Total number of tasks completed since joining", // Lifetime metric
   },
   {
-    title: "Longest Streak",
+    title: "Current Streak",
     value: "1",
     date: "Oct 18, 2024",
     icon: "🔥",
     color: "bg-orange-500",
+    description: "Current streak of days with at least one task completed", // Active streak
   },
   {
     title: "Perfect Days",
     value: "1",
     date: "Oct 18, 2024",
-    icon: "✨",
+    icon: "⭐",
     color: "bg-purple-500",
+    description: "Total number of days where all tasks were completed", // Perfect day count
   },
 ];
 

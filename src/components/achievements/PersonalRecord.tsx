@@ -6,6 +6,7 @@ interface PersonalRecordProps {
   date: string;
   icon: string;
   color: string;
+  description?: string; // Added description prop but not displaying it in UI
 }
 
 const PersonalRecord = ({ title, value, date, icon, color }: PersonalRecordProps) => {

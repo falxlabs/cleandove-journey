@@ -3,48 +3,54 @@ import AwardCard from "./AwardCard";
 const awards = [
   {
     title: "Task Master",
-    value: "500",
-    progress: "3 of 10",
+    value: "100",
+    progress: "3 of 100",
     icon: "📝",
     color: "bg-green-500",
+    description: "Complete 100 total tasks", // Tracks lifetime task completion
   },
   {
     title: "Perfect Week",
-    value: "5",
-    progress: "2 of 5",
+    value: "7",
+    progress: "2 of 7",
     icon: "✨",
     color: "bg-purple-500",
+    description: "Complete all tasks for 7 consecutive days", // Requires completing all daily tasks
   },
   {
-    title: "Quest Champion",
-    value: "15",
-    progress: "9 of 10",
+    title: "Steady Streak",
+    value: "7",
+    progress: "4 of 7",
     icon: "🎯",
     color: "bg-orange-500",
+    description: "Complete at least one task daily for 7 days", // More accessible streak achievement
   },
   {
-    title: "Daily Conqueror",
-    value: "10",
+    title: "Perfect Month",
+    value: "30",
     progress: "Locked",
-    icon: "🏆",
+    icon: "🌟",
     color: "bg-gray-300",
     locked: true,
+    description: "Complete all tasks for 30 consecutive days", // Ultimate perfect streak achievement
   },
   {
-    title: "Streak Master",
-    value: "7",
+    title: "Task Legend",
+    value: "500",
     progress: "Locked",
-    icon: "🔥",
+    icon: "👑",
     color: "bg-gray-300",
     locked: true,
+    description: "Complete 500 total tasks", // Advanced lifetime achievement
   },
   {
-    title: "Challenge Expert",
-    value: "10",
+    title: "Weekend Warrior",
+    value: "8",
     progress: "Locked",
-    icon: "⭐",
+    icon: "⚔️",
     color: "bg-gray-300",
     locked: true,
+    description: "Get perfect days on 8 weekend days", // Weekend-specific challenge
   },
 ];
 

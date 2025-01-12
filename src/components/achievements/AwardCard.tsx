@@ -8,6 +8,7 @@ interface AwardCardProps {
   icon: string;
   color: string;
   locked?: boolean;
+  description?: string; // Added description prop but not displaying it in UI
 }
 
 const AwardCard = ({ title, value, progress, icon, color, locked }: AwardCardProps) => {
