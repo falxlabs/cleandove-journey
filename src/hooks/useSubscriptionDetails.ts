@@ -1,59 +1,70 @@
+import { useSession } from "@supabase/auth-helpers-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 interface PlanConfiguration {
   plan: string;
   daily_credits: number;
-  description: string | null;
+  description: string;
 }
 
 export const useSubscriptionDetails = () => {
-  const { data: currentPlan, isLoading: isPlanLoading } = useQuery({
-    queryKey: ["userPlan"],
-    queryFn: async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.user?.id) return null;
+  const session = useSession();
 
-      const { data } = await supabase
+  return useQuery({
+    queryKey: ["subscription", session?.user?.id],
+    queryFn: async () => {
+      if (!session?.user?.id) {
+        return {
+          plan: "free",
+          daily_credits: 10,
+          description: "Free tier with limited features"
+        };
+      }
+
+      // First get the user's plan
+      const { data: userPlan, error: userPlanError } = await supabase
         .from("user_plans")
         .select("*")
         .eq("user_id", session.user.id)
         .maybeSingle();
 
-      return data?.plan || "free";
-    },
-  });
-
-  const { data: planDetails, isLoading: isPlanDetailsLoading } = useQuery({
-    queryKey: ["planConfiguration", currentPlan],
-    queryFn: async () => {
-      if (!currentPlan) return null;
-      
-      const { data } = await supabase
-        .from("plan_configurations")
-        .select("*")
-        .eq("plan", currentPlan)
-        .maybeSingle();
-
-      if (!data) {
-        // Return default configuration based on current plan
-        return {
-          plan: currentPlan,
-          daily_credits: currentPlan === "dev" ? 100 : 10,
-          description: currentPlan === "dev" 
-            ? "Developer plan with extended daily messages" 
-            : "Free plan with limited daily messages"
-        } as PlanConfiguration;
+      if (userPlanError) {
+        console.error("Error fetching user plan:", userPlanError);
+        throw userPlanError;
       }
 
-      return data as PlanConfiguration;
-    },
-    enabled: !!currentPlan,
-  });
+      if (!userPlan) {
+        return {
+          plan: "free",
+          daily_credits: 10,
+          description: "Free tier with limited features"
+        };
+      }
 
-  return {
-    currentPlan,
-    planDetails,
-    isLoading: isPlanLoading || isPlanDetailsLoading,
-  };
+      // Then get the plan configuration
+      const { data: planConfig, error: planConfigError } = await supabase
+        .from("plan_configurations")
+        .select("*")
+        .eq("plan", userPlan.plan)
+        .single();
+
+      if (planConfigError) {
+        console.error("Error fetching plan configuration:", planConfigError);
+        throw planConfigError;
+      }
+
+      return {
+        plan: userPlan.plan,
+        daily_credits: planConfig.daily_credits,
+        description: planConfig.description || `${userPlan.plan} plan`
+      };
+    },
+    // Only run the query if we have a session
+    enabled: true,
+    // Add some retry logic
+    retry: 1,
+    // Add stale time to prevent unnecessary refetches
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
 };

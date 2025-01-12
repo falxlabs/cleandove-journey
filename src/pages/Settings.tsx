@@ -5,13 +5,41 @@ import AccountSection from "@/components/settings/AccountSection";
 import SubscriptionSection from "@/components/settings/SubscriptionSection";
 import SupportSection from "@/components/settings/SupportSection";
 import FooterLinks from "@/components/settings/FooterLinks";
+import { useToast } from "@/hooks/use-toast";
+import { AuthError } from "@supabase/supabase-js";
 
 const Settings = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    navigate('/auth');
+    try {
+      const { error } = await supabase.auth.signOut();
+
+      if (error) {
+        console.error('Logout error:', error);
+        const message = error instanceof AuthError 
+          ? error.message
+          : "Please try again later";
+          
+        toast({
+          variant: "destructive",
+          title: "Error signing out",
+          description: message,
+        });
+        return;
+      }
+
+      // If successful, navigate to auth page
+      navigate('/auth');
+    } catch (error) {
+      console.error('Logout error:', error);
+      toast({
+        variant: "destructive",
+        title: "Error signing out",
+        description: "An unexpected error occurred. Please try again later",
+      });
+    }
   };
 
   const handleDone = () => {
