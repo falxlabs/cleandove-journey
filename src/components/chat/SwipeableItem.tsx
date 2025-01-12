@@ -1,4 +1,4 @@
-import { useState, useRef, TouchEvent, MouseEvent, ReactElement } from "react";
+import React, { useState, useRef, TouchEvent, MouseEvent, ReactElement } from "react";
 import { ChatItem } from "./ChatItem";
 
 interface SwipeableItemProps {
