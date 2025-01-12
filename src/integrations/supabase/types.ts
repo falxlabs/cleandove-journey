@@ -80,6 +80,30 @@ export type Database = {
           },
         ]
       }
+      plan_configurations: {
+        Row: {
+          created_at: string
+          daily_credits: number
+          description: string | null
+          plan: Database["public"]["Enums"]["subscription_plan"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          daily_credits: number
+          description?: string | null
+          plan: Database["public"]["Enums"]["subscription_plan"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          daily_credits?: number
+          description?: string | null
+          plan?: Database["public"]["Enums"]["subscription_plan"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
