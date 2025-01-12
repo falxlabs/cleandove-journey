@@ -30,28 +30,42 @@ export const useChatInitialization = (
       const newChatId = await createChatHistory(userInput, content);
       
       if (newChatId && initialMessage) {
-        // Save messages in correct sequence: initial -> user -> assistant
-        const messagesToSave = [
-          {
+        // First, check if an initial message already exists for this chat
+        const { data: existingInitialMessage } = await supabase
+          .from("messages")
+          .select("id")
+          .eq("chat_id", newChatId)
+          .eq("is_initial_message", true)
+          .single();
+
+        // Only include initial message if one doesn't exist yet
+        const messagesToSave = [];
+        
+        if (!existingInitialMessage) {
+          messagesToSave.push({
             chat_id: newChatId,
             content: initialMessage.content,
             sender: "assistant",
             sequence_number: 1,
             is_initial_message: true
-          },
+          });
+        }
+
+        // Always add the user message and assistant response
+        messagesToSave.push(
           {
             chat_id: newChatId,
             content: userInput,
             sender: "user",
-            sequence_number: 2
+            sequence_number: existingInitialMessage ? 1 : 2
           },
           {
             chat_id: newChatId,
             content,
             sender: "assistant",
-            sequence_number: 3
+            sequence_number: existingInitialMessage ? 2 : 3
           }
-        ];
+        );
 
         const { error: messagesError } = await supabase
           .from("messages")
