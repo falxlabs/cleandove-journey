@@ -16,7 +16,7 @@ export const useSubscriptionDetails = () => {
 
       const { data } = await supabase
         .from("user_plans")
-        .select("plan")
+        .select("*")
         .eq("user_id", session.user.id)
         .maybeSingle();
 
