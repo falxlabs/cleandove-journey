@@ -53,7 +53,6 @@ export const useMessages = ({
     const therapyTopics = [
       { id: "cbt", emoji: "🧠", label: "CBT" },
       { id: "breathing", emoji: "🫁", label: "Breathing" },
-      { id: "habits", emoji: "📝", label: "Habits" },
       { id: "cold-shower", emoji: "🚿", label: "Cold Shower" },
       { id: "brain", emoji: "🎯", label: "Brain Training" },
       { id: "meditation", emoji: "🧘", label: "Meditation" },
@@ -87,11 +86,11 @@ export const useMessages = ({
 
     switch (topicContext.category) {
       case "improvement":
-        return `You are a supportive AI assistant focused on helping users improve their ${topicContext.label.toLowerCase()}. Provide practical advice, encouragement, and actionable steps.`;
+        return `You are a supportive AI assistant focused on helping users improve their ${topicContext.label.toLowerCase()}. Provide practical advice, encouragement, and actionable steps while maintaining a positive and motivating tone.`;
       case "temptation":
-        return `You are a compassionate AI assistant helping users overcome challenges with ${topicContext.label.toLowerCase()}. Offer understanding, coping strategies, and positive reinforcement.`;
+        return `You are a compassionate AI assistant helping users overcome challenges with ${topicContext.label.toLowerCase()}. Offer understanding, practical coping strategies, and positive reinforcement while maintaining a non-judgmental and supportive tone.`;
       case "therapy":
-        return `You are a knowledgeable AI assistant explaining ${topicContext.label} techniques and practices. Focus on evidence-based information and practical implementation.`;
+        return `You are a knowledgeable AI assistant explaining ${topicContext.label} techniques and practices. Focus on evidence-based information, practical implementation, and scientific understanding while maintaining an educational and accessible tone.`;
       default:
         return "";
     }
@@ -111,9 +110,9 @@ export const useMessages = ({
       const topicContext = getTopicContext(initialTopic);
       if (topicContext) {
         const messages = {
-          improvement: `I see you want to improve your ${topicContext.label.toLowerCase()}. What specific aspects would you like to work on?`,
-          temptation: `I understand you're struggling with ${topicContext.label.toLowerCase()}. I'm here to help you overcome this challenge. Would you like to share more about your experience?`,
-          therapy: `I can help you learn more about ${topicContext.label}. What specific aspects would you like to understand better?`
+          improvement: `Let's work on improving your ${topicContext.label.toLowerCase()}. What specific aspects would you like to focus on developing?`,
+          temptation: `I hear you're facing challenges with ${topicContext.label.toLowerCase()}. You're not alone in this. Would you like to share what you're experiencing?`,
+          therapy: `Let's explore ${topicContext.label} together. What would you like to learn about this approach?`
         };
 
         return {
