@@ -64,7 +64,13 @@ export const useChatOperations = () => {
   };
 
   const handleChatClick = (chatId: string, title: string) => {
-    navigate(`/chat/${chatId}`, { state: { title } });
+    navigate("/conversation", { 
+      state: { 
+        chatId,
+        title,
+        isExistingChat: true
+      } 
+    });
   };
 
   const sendChatMessage = async (messages: Message[]): Promise<string> => {
