@@ -23,27 +23,29 @@ const TaskList = ({ tasks, isTasksLoading, onTaskComplete }: TaskListProps) => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
 
+      const today = new Date().toISOString().split('T')[0];
       const newStatus = !currentStatus;
       
       if (newStatus) {
-        // Complete task
+        // Complete task - upsert to handle potential duplicates
         const { error } = await supabase
           .from('daily_tasks')
-          .insert({
+          .upsert({
             user_id: session.user.id,
             task_type: taskType,
+            date: today,
             completed_at: new Date().toISOString()
           });
 
         if (error) throw error;
       } else {
-        // Uncomplete task
+        // Uncomplete task - update existing record
         const { error } = await supabase
           .from('daily_tasks')
-          .delete()
+          .update({ completed_at: null })
           .eq('user_id', session.user.id)
           .eq('task_type', taskType)
-          .eq('date', new Date().toISOString().split('T')[0]);
+          .eq('date', today);
 
         if (error) throw error;
       }
