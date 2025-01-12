@@ -13,23 +13,38 @@ const Settings = () => {
 
   const handleSignOut = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
+      // First check if we have a session
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        // If no session, just redirect to auth
+        navigate('/auth');
+        return;
+      }
+
+      // Attempt to sign out with proper options
+      const { error } = await supabase.auth.signOut({
+        scope: 'global'
+      });
+
       if (error) {
         console.error('Logout error:', error);
         toast({
           variant: "destructive",
           title: "Error signing out",
-          description: "Please try again later",
+          description: error.message || "Please try again later",
         });
         return;
       }
+
+      // Only navigate after successful logout
       navigate('/auth');
     } catch (error) {
       console.error('Logout error:', error);
       toast({
         variant: "destructive",
         title: "Error signing out",
-        description: "Please try again later",
+        description: "An unexpected error occurred. Please try again later",
       });
     }
   };
