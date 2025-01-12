@@ -126,7 +126,7 @@ export const useMessages = ({
 
     return {
       id: "1",
-      content: "Hello! I'm Pace, your personal accountability partner. I'm here to help you stay on track with your goals and build better habits. How can I assist you today?",
+      content: "Hi! I'm Pace, your personal growth companion. Whether you're looking to build better habits, overcome challenges, or learn something new, I'm here to support your journey. What's on your mind today?",
       sender: "assistant",
       timestamp: new Date(),
     };
