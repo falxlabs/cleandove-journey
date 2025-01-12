@@ -1,36 +1,63 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useSession } from "@supabase/auth-helpers-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import ProfileStats from "@/components/profile/ProfileStats";
 import ProfileOverview from "@/components/profile/ProfileOverview";
 import ProfileAchievements from "@/components/profile/ProfileAchievements";
 
 const Profile = () => {
+  const session = useSession();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Redirect if not authenticated
+    if (!session) {
+      navigate('/auth');
+      return;
+    }
+
     const getProfile = async () => {
       try {
         const { data, error } = await supabase
           .from('profiles')
           .select('*')
+          .eq('id', session.user.id)
           .single();
           
         if (error) {
           console.error('Error fetching profile:', error);
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Failed to load profile data. Please try again.",
+          });
         } else {
           setProfile(data);
         }
       } catch (error) {
         console.error('Error:', error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "An unexpected error occurred.",
+        });
       } finally {
         setLoading(false);
       }
     };
     
     getProfile();
-  }, []);
+  }, [session, navigate, toast]);
+
+  if (!session) {
+    return null;
+  }
 
   if (loading) {
     return (
