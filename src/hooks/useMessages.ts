@@ -22,11 +22,7 @@ export const useMessages = ({
 
   const getInitialMessage = (): Message => ({
     id: "1",
-    content: context && improvement
-      ? `Hello! I understand you want to improve your ${improvement}. I'm here to help you on this journey. What specific aspects would you like to work on?`
-      : initialTopic
-      ? `Hello! I see you want to discuss ${initialTopic}. How can I help you with that today?`
-      : "Hello! How can I help you today?",
+    content: "Hello! I'm Pace, your personal accountability partner. I'm here to help you stay on track with your goals and build better habits. How can I assist you today?",
     sender: "assistant",
     timestamp: new Date(),
   });
@@ -61,6 +57,8 @@ export const useMessages = ({
         }));
         setMessages(formattedMessages);
       }
+    } catch (error) {
+      console.error('Error in loadExistingMessages:', error);
     } finally {
       setIsInitialLoading(false);
     }
@@ -68,32 +66,27 @@ export const useMessages = ({
 
   const initializeChat = async () => {
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        console.error('No active session');
+        return;
+      }
+
       if (isExistingChat) {
         await loadExistingMessages();
       } else {
         const initialMessage = getInitialMessage();
         setMessages([initialMessage]);
       }
+    } catch (error) {
+      console.error('Error in initializeChat:', error);
     } finally {
       setIsInitialLoading(false);
     }
   };
 
   useEffect(() => {
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        if (isExistingChat && chatId) {
-          await loadExistingMessages();
-        } else {
-          const initialMessage = getInitialMessage();
-          setMessages([initialMessage]);
-        }
-      }
-      setIsInitialLoading(false);
-    };
-
-    checkSession();
+    initializeChat();
   }, [chatId, isExistingChat]);
 
   return {

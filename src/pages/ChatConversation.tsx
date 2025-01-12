@@ -6,10 +6,12 @@ import { ChatInput } from "@/components/ChatInput";
 import { CreditAlert } from "@/components/chat/CreditAlert";
 import { useChat } from "@/hooks/useChat";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const ChatConversation = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const {
     input,
     setInput,
@@ -32,18 +34,31 @@ const ChatConversation = () => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        
+        if (!session) {
+          navigate('/auth');
+          return;
+        }
+        
+        await initializeChat();
+      } catch (error) {
+        console.error('Authentication error:', error);
+        toast({
+          variant: "destructive",
+          title: "Authentication Error",
+          description: "Please try logging in again.",
+        });
         navigate('/auth');
-        return;
       }
-      initializeChat();
     };
 
     checkAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_OUT') {
+      if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
         navigate('/auth');
       }
     });
