@@ -15,7 +15,6 @@ interface AwardCardProps {
   color: string;
   locked?: boolean;
   description?: string;
-  isSecret?: boolean;
 }
 
 const AwardCard = ({ 
@@ -25,12 +24,11 @@ const AwardCard = ({
   progress, 
   icon, 
   color, 
-  locked,
-  isSecret 
+  locked 
 }: AwardCardProps) => {
   return (
     <Card className={`p-4 flex flex-col items-center text-center ${locked ? 'opacity-50' : ''}`}>
-      <div className={`${locked ? 'bg-gray-300' : color} w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-3`}>
+      <div className={`${color} w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-3`}>
         {icon}
       </div>
       <div className="text-sm text-foreground mb-1">{title}</div>
@@ -45,9 +43,7 @@ const AwardCard = ({
           </Badge>
         )}
       </div>
-      <div className="text-xs text-muted-foreground">
-        {isSecret ? "???" : progress}
-      </div>
+      <div className="text-xs text-muted-foreground">{progress}</div>
     </Card>
   );
 };
