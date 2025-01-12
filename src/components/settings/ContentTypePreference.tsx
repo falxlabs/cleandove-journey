@@ -14,20 +14,32 @@ export const ContentTypePreference = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data, error } = await supabase
+      // First check if preferences exist
+      const { data: existingPrefs, error: checkError } = await supabase
         .from('user_preferences')
         .select('reading_type')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
-      if (error) {
-        console.error('Error loading preferences:', error);
+      if (checkError) {
+        console.error('Error checking preferences:', checkError);
         return;
       }
 
-      if (data?.reading_type) {
-        setReadingType(data.reading_type);
+      // If no preferences exist, create them
+      if (!existingPrefs) {
+        const { error: insertError } = await supabase
+          .from('user_preferences')
+          .insert([{ user_id: user.id }]);
+
+        if (insertError) {
+          console.error('Error creating preferences:', insertError);
+          return;
+        }
+      } else {
+        setReadingType(existingPrefs.reading_type);
       }
+
       setIsLoading(false);
     };
 

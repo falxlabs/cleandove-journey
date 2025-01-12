@@ -14,18 +14,32 @@ export const ChristFocusedToggle = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data, error } = await supabase
+      // First check if preferences exist
+      const { data: existingPrefs, error: checkError } = await supabase
         .from('user_preferences')
         .select('religious_content')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
-      if (error) {
-        console.error('Error loading preferences:', error);
+      if (checkError) {
+        console.error('Error checking preferences:', checkError);
         return;
       }
 
-      setEnabled(data?.religious_content ?? false);
+      // If no preferences exist, create them
+      if (!existingPrefs) {
+        const { error: insertError } = await supabase
+          .from('user_preferences')
+          .insert([{ user_id: user.id }]);
+
+        if (insertError) {
+          console.error('Error creating preferences:', insertError);
+          return;
+        }
+      } else {
+        setEnabled(existingPrefs.religious_content);
+      }
+
       setIsLoading(false);
     };
 
