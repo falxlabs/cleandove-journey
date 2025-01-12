@@ -32,17 +32,11 @@ export const ChatItem = ({
     onFavorite();
   };
 
-  const handleItemClick = (e: React.MouseEvent) => {
-    if (!(e.target as HTMLElement).closest('button')) {
-      onClick();
-    }
-  };
-
   return (
     <>
       <div 
         className="p-4 bg-card rounded-lg border shadow-sm hover:shadow-md transition-all cursor-pointer"
-        onClick={handleItemClick}
+        onClick={onClick}
       >
         <div className="flex justify-between items-start mb-2">
           <h3 className="font-medium">{title}</h3>

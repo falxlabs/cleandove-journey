@@ -3,11 +3,10 @@ import { useState, useRef, TouchEvent, MouseEvent, ReactNode } from "react";
 interface SwipeableItemProps {
   id: string;
   onSwipeComplete: () => Promise<void>;
-  onItemClick?: () => void;
   children: ReactNode;
 }
 
-export const SwipeableItem = ({ id, onSwipeComplete, onItemClick, children }: SwipeableItemProps) => {
+export const SwipeableItem = ({ id, onSwipeComplete, children }: SwipeableItemProps) => {
   const [isActive, setIsActive] = useState(false);
   const touchStartX = useRef<number>(0);
   const currentOffset = useRef<number>(0);
@@ -60,9 +59,6 @@ export const SwipeableItem = ({ id, onSwipeComplete, onItemClick, children }: Sw
       await onSwipeComplete();
     } else {
       element.style.transform = 'translateX(0)';
-      if (!isSwiping.current && onItemClick) {
-        onItemClick();
-      }
     }
 
     currentOffset.current = 0;
