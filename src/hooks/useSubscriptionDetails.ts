@@ -27,6 +27,8 @@ export const useSubscriptionDetails = () => {
   const { data: planDetails } = useQuery({
     queryKey: ["planConfiguration", currentPlan],
     queryFn: async () => {
+      if (!currentPlan) return null;
+      
       const { data } = await supabase
         .from("plan_configurations")
         .select("*")
