@@ -23,13 +23,14 @@ export const useSubscriptionDetails = () => {
         .from("user_plans")
         .select("plan, credits")
         .eq("user_id", session.user.id)
-        .single();
+        .maybeSingle();
 
       if (userPlanError) {
         console.error("Error fetching user plan:", userPlanError);
         throw userPlanError;
       }
 
+      // If no plan exists, return default free plan
       if (!userPlan) {
         return {
           plan: "free",
@@ -42,7 +43,7 @@ export const useSubscriptionDetails = () => {
       // Then get the plan configuration
       const { data: planConfig, error: planConfigError } = await supabase
         .from("plan_configurations")
-        .select("*")
+        .select("daily_credits, description")
         .eq("plan", userPlan.plan)
         .single();
 
