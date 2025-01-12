@@ -37,7 +37,7 @@ export const MessageBubble = ({
           </div>
         )}
         {message.sender === "assistant" && (
-          <div className="space-y-2">
+          <div className="flex items-center justify-between mt-2">
             <MessageActions
               content={message.content}
               messageId={message.id}
@@ -45,11 +45,9 @@ export const MessageBubble = ({
               onShare={onShare}
               onRegenerate={onRegenerate}
             />
-            <div className="flex justify-end">
-              <span className="text-xs text-muted-foreground">
-                {format(message.timestamp, "HH:mm")}
-              </span>
-            </div>
+            <span className="text-xs text-muted-foreground ml-2">
+              {format(message.timestamp, "HH:mm")}
+            </span>
           </div>
         )}
       </div>
