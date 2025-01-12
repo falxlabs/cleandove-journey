@@ -7,6 +7,14 @@ export const useChatHistory = () => {
   const [chatId, setChatId] = useState<string | null>(null);
   const { toast } = useToast();
 
+  const generateInitialTitle = (message: string) => {
+    // Truncate and clean the message to create a title
+    const cleanedMessage = message.replace(/[^\w\s]/gi, '').trim();
+    return cleanedMessage.length > 50 
+      ? `${cleanedMessage.substring(0, 47)}...` 
+      : cleanedMessage;
+  };
+
   const createChatHistory = async (userMessage: string, assistantMessage: string) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
@@ -19,10 +27,12 @@ export const useChatHistory = () => {
     }
 
     try {
+      const initialTitle = generateInitialTitle(userMessage);
+
       const { data: chatHistory, error: chatError } = await supabase
         .from("chat_histories")
         .insert({
-          title: "New Chat",
+          title: initialTitle,
           preview: assistantMessage,
           user_id: user.id,
           reply_count: 0
