@@ -74,7 +74,8 @@ export const useChat = ({
     };
 
     setMessages(prev => [...prev, newMessage]);
-    setInput("");
+    const currentInput = input; // Store current input
+    setInput(""); // Clear input immediately after sending
 
     try {
       const content = await sendMessage([...messages, newMessage]);
@@ -87,7 +88,7 @@ export const useChat = ({
         }
         
         if (lastMessage) {
-          await handleNewMessage(input, content, messages);
+          await handleNewMessage(currentInput, content, messages);
         }
       }
     } catch (error) {

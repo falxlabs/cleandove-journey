@@ -38,9 +38,14 @@ export const MessageList = ({ messages, isLoading, onRegenerate }: MessageListPr
     }
   };
 
+  // Sort messages by timestamp to ensure correct order
+  const sortedMessages = [...messages].sort(
+    (a, b) => a.timestamp.getTime() - b.timestamp.getTime()
+  );
+
   return (
     <div className="flex-1 overflow-y-auto p-4 space-y-4">
-      {messages.map((message) => (
+      {sortedMessages.map((message) => (
         <MessageBubble
           key={message.id}
           message={message}

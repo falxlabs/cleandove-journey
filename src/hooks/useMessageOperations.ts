@@ -24,7 +24,6 @@ export const useMessageOperations = (chatId: string | undefined) => {
     setIsLoading(true);
     try {
       const content = await sendChatMessage(messages);
-      setInput(""); // Clear input after successful send
       return content;
     } catch (error) {
       console.error('Error sending chat message:', error);
