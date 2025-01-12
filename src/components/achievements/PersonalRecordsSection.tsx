@@ -11,7 +11,7 @@ const personalRecords = [
     value: "0",
     date: "Oct 18, 2024",
     icon: "📝",
-    color: "bg-yellow-500",
+    color: "bg-green-500",
   },
   {
     title: "Longest Streak",
@@ -25,7 +25,7 @@ const personalRecords = [
     value: "1",
     date: "Oct 18, 2024",
     icon: "✨",
-    color: "bg-green-500",
+    color: "bg-purple-500",
   },
 ];
 

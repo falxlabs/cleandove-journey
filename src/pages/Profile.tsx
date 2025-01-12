@@ -86,16 +86,16 @@ const Profile = () => {
 
   const mockAchievements = [
     {
-      icon: "🏃‍♂️",
-      color: "bg-pink-500",
-      title: "XP Olympian",
-      progress: "3 of 10",
+      icon: "✨",
+      color: "bg-purple-500",
+      title: "Perfect Week",
+      progress: "5 of 7 days",
     },
     {
-      icon: "🎯",
+      icon: "📝",
       color: "bg-green-500",
-      title: "Flawless Finisher",
-      progress: "2 of 5",
+      title: "Task Master",
+      progress: "15 of 20 tasks",
     },
   ];
 
