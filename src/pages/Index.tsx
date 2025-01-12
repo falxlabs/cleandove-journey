@@ -19,7 +19,7 @@ const Index = () => {
     queryKey: ['week-completions'],
     queryFn: async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return [];
+      if (!session) return {};  // Return empty object instead of empty array
 
       const weekDates = Array.from({ length: 7 }, (_, i) => 
         format(addDays(weekStart, i), 'yyyy-MM-dd')
@@ -70,7 +70,6 @@ const Index = () => {
     ],
   });
 
-  // Fetch completed tasks for today
   const { data: completedTasksData } = useQuery({
     queryKey: ['completed-tasks'],
     queryFn: async () => {
