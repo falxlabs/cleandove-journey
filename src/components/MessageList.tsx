@@ -38,17 +38,10 @@ export const MessageList = ({ messages, isLoading, onRegenerate }: MessageListPr
     }
   };
 
-  // Sort messages by timestamp and only filter out initial messages if there are other messages
-  const sortedMessages = [...messages]
-    .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
-    .filter(message => {
-      // Keep initial message if it's the only message or if we're in a new chat
-      if (messages.length === 1) {
-        return true;
-      }
-      // Otherwise, filter out initial messages in history view
-      return !message.isInitialMessage;
-    });
+  // Sort messages by timestamp only, without filtering out initial messages
+  const sortedMessages = [...messages].sort((a, b) => 
+    a.timestamp.getTime() - b.timestamp.getTime()
+  );
 
   return (
     <div className="flex-1 overflow-y-auto p-4 space-y-4">
