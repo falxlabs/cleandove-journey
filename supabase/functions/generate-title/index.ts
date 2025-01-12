@@ -34,18 +34,22 @@ serve(async (req) => {
         messages: [
           { 
             role: 'system', 
-            content: `You are a helpful assistant that generates concise, discreet titles for conversations.
+            content: `You are a helpful assistant that generates clear but appropriate titles for conversations.
             Important guidelines:
             - Keep titles under 60 characters
-            - For sensitive or personal topics (relationships, temptations, struggles), use general, non-specific titles like "Personal Growth Discussion" or "Self-Improvement Chat"
-            - Never include names or specific details that could identify people
-            - Never mention explicit content or sensitive topics directly
-            - Focus on the theme of growth, improvement, or support rather than the specific challenge
-            - Maintain complete privacy and discretion`
+            - For sensitive topics like addiction, use clear but appropriate terms like:
+              * "Overcoming Addiction Discussion"
+              * "Breaking Free from Habits"
+              * "Recovery Support Chat"
+              * "Addiction Recovery Talk"
+            - Never use explicit language or graphic terms
+            - Focus on recovery, healing, and growth
+            - Use clinical or medical terms when appropriate
+            - Maintain professionalism while being clear about the topic`
           },
           { 
             role: 'user', 
-            content: `Generate a discreet title for this conversation.\nUser: ${firstUserMessage}\nAssistant: ${firstAssistantMessage}` 
+            content: `Generate an appropriate but clear title for this conversation.\nUser: ${firstUserMessage}\nAssistant: ${firstAssistantMessage}` 
           }
         ],
         max_tokens: 60,
