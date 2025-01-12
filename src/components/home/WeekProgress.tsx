@@ -40,7 +40,10 @@ const WeekProgress = ({
         <Skeleton className="h-2 w-full" />
       ) : (
         <>
-          <Progress value={progress} className="h-2" />
+          <Progress 
+            value={progress} 
+            className={`h-2 ${progress === 100 ? "bg-[#9b87f5]" : ""}`}
+          />
           <p className="text-sm text-muted-foreground mt-2">{progress}% completed today</p>
         </>
       )}

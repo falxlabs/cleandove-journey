@@ -19,41 +19,33 @@ const TaskList = ({ tasks, isTasksLoading, onTaskComplete }: TaskListProps) => {
   const { toast } = useToast();
 
   const handleTaskClick = async (taskType: string, currentStatus: boolean) => {
+    // If task is already completed, don't allow uncompleting
+    if (currentStatus) {
+      return;
+    }
+
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
 
       const today = new Date().toISOString().split('T')[0];
-      const newStatus = !currentStatus;
       
-      if (newStatus) {
-        // Complete task - upsert to handle potential duplicates
-        const { error } = await supabase
-          .from('daily_tasks')
-          .upsert({
-            user_id: session.user.id,
-            task_type: taskType,
-            date: today,
-            completed_at: new Date().toISOString()
-          });
+      // Complete task - upsert to handle potential duplicates
+      const { error } = await supabase
+        .from('daily_tasks')
+        .upsert({
+          user_id: session.user.id,
+          task_type: taskType,
+          date: today,
+          completed_at: new Date().toISOString()
+        });
 
-        if (error) throw error;
-      } else {
-        // Uncomplete task - update existing record
-        const { error } = await supabase
-          .from('daily_tasks')
-          .update({ completed_at: null })
-          .eq('user_id', session.user.id)
-          .eq('task_type', taskType)
-          .eq('date', today);
+      if (error) throw error;
 
-        if (error) throw error;
-      }
-
-      onTaskComplete(taskType, newStatus);
+      onTaskComplete(taskType, true);
       
       toast({
-        title: newStatus ? "Task completed!" : "Task uncompleted",
+        title: "Task completed!",
         description: "Your progress has been updated.",
       });
     } catch (error) {
@@ -81,8 +73,10 @@ const TaskList = ({ tasks, isTasksLoading, onTaskComplete }: TaskListProps) => {
       {tasks?.map((task) => (
         <div
           key={task.title}
-          className="p-4 bg-card rounded-lg border shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-          onClick={() => handleTaskClick(task.type, task.completed)}
+          className={`p-4 bg-card rounded-lg border shadow-sm transition-shadow ${
+            !task.completed ? "hover:shadow-md cursor-pointer" : ""
+          }`}
+          onClick={() => !task.completed && handleTaskClick(task.type, task.completed)}
         >
           <div className="flex justify-between items-center">
             <div>
