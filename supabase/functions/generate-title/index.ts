@@ -6,11 +6,9 @@ const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -22,7 +20,6 @@ serve(async (req) => {
 
     const { messages } = await req.json();
     
-    // Get only the first user message
     const firstUserMessage = messages.find((msg: any) => msg.sender === 'user')?.content || '';
     const firstAssistantMessage = messages.find((msg: any) => msg.sender === 'assistant')?.content || '';
 
@@ -37,11 +34,18 @@ serve(async (req) => {
         messages: [
           { 
             role: 'system', 
-            content: 'You are a helpful assistant that generates concise, descriptive titles for conversations. Keep titles under 60 characters.' 
+            content: `You are a helpful assistant that generates concise, discreet titles for conversations.
+            Important guidelines:
+            - Keep titles under 60 characters
+            - For sensitive or personal topics (relationships, temptations, struggles), use general, non-specific titles like "Personal Growth Discussion" or "Self-Improvement Chat"
+            - Never include names or specific details that could identify people
+            - Never mention explicit content or sensitive topics directly
+            - Focus on the theme of growth, improvement, or support rather than the specific challenge
+            - Maintain complete privacy and discretion`
           },
           { 
             role: 'user', 
-            content: `Generate a title for this conversation.\nUser: ${firstUserMessage}\nAssistant: ${firstAssistantMessage}` 
+            content: `Generate a discreet title for this conversation.\nUser: ${firstUserMessage}\nAssistant: ${firstAssistantMessage}` 
           }
         ],
         max_tokens: 60,
@@ -50,14 +54,14 @@ serve(async (req) => {
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      console.error('OpenAI API error:', error);
-      throw new Error(`OpenAI API error: ${error.error?.message || response.statusText}`);
+      console.error('OpenAI API error:', await response.text());
+      throw new Error(`OpenAI API error: ${response.statusText}`);
     }
 
     const data = await response.json();
     const title = data.choices[0].message.content.replace(/["']/g, '');
 
+    console.log('Generated title:', title);
     return new Response(JSON.stringify({ title }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
