@@ -22,6 +22,7 @@ export const useSubscriptionDetails = () => {
       const { data: userPlan, error: userPlanError } = await supabase
         .from("user_plans")
         .select("plan, credits")
+        .eq("user_id", session.user.id)
         .single();
 
       if (userPlanError) {
