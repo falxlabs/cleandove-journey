@@ -36,15 +36,17 @@ export const MessageBubble = ({
             </span>
           </div>
         )}
-        {message.sender === "assistant" && !message.isInitialMessage && (
+        {message.sender === "assistant" && (
           <div className="flex items-center justify-between mt-2">
-            <MessageActions
-              content={message.content}
-              messageId={message.id}
-              onCopy={onCopy}
-              onShare={onShare}
-              onRegenerate={onRegenerate}
-            />
+            {!message.isInitialMessage && (
+              <MessageActions
+                content={message.content}
+                messageId={message.id}
+                onCopy={onCopy}
+                onShare={onShare}
+                onRegenerate={onRegenerate}
+              />
+            )}
             <span className="text-xs text-muted-foreground ml-2">
               {format(message.timestamp, "HH:mm")}
             </span>
