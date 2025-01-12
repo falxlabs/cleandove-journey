@@ -7,7 +7,7 @@ import { useSubscriptionDetails } from "@/hooks/useSubscriptionDetails";
 
 const SubscriptionSection = () => {
   const { credits } = useCredits();
-  const { data: planDetails, isLoading } = useSubscriptionDetails();
+  const { planDetails, isLoading } = useSubscriptionDetails();
 
   if (isLoading || !planDetails) {
     return (

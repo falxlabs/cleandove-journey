@@ -21,7 +21,7 @@ const WeekProgress = ({
       <div className="flex justify-between mb-4">
         {weekDays.map((day, index) => (
           <div
-            key={`${day}-${index}`}
+            key={day}
             className={`w-10 h-10 rounded-full flex items-center justify-center ${
               !isStreakLoading && streak !== undefined && index < streak
                 ? "bg-primary text-primary-foreground"
