@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Message } from "@/types/chat";
 import { useChatOperations } from "./useChatOperations";
 import { useCredits } from "./useCredits";
+import { supabase } from "@/integrations/supabase/client";
 
 export const useMessageOperations = (chatId: string | undefined) => {
   const [input, setInput] = useState("");
@@ -11,6 +12,12 @@ export const useMessageOperations = (chatId: string | undefined) => {
 
   const sendMessage = async (messages: Message[], onSuccess: (content: string) => void) => {
     if (!input.trim()) return;
+
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      console.error('No active session');
+      return;
+    }
 
     const creditsAvailable = await handleCredits();
     if (!creditsAvailable) return;

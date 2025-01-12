@@ -24,6 +24,9 @@ export const useMessages = ({
     if (context && improvement) {
       return `Hello! I understand you want to improve your ${improvement}. I'm here to help you on this journey. What specific aspects would you like to work on?`;
     }
+    if (initialTopic) {
+      return `Hello! I see you want to discuss ${initialTopic}. How can I help you with that today?`;
+    }
     return "Hello! How can I help you today?";
   };
 
@@ -31,6 +34,12 @@ export const useMessages = ({
     if (!chatId) return;
 
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        console.error('No active session');
+        return;
+      }
+
       const { data: existingMessages, error } = await supabase
         .from('messages')
         .select('*')
@@ -77,6 +86,8 @@ export const useMessages = ({
   useEffect(() => {
     if (isExistingChat && chatId) {
       loadExistingMessages();
+    } else {
+      initializeChat();
     }
   }, [chatId, isExistingChat]);
 
