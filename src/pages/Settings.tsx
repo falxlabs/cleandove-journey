@@ -5,13 +5,35 @@ import AccountSection from "@/components/settings/AccountSection";
 import SubscriptionSection from "@/components/settings/SubscriptionSection";
 import SupportSection from "@/components/settings/SupportSection";
 import FooterLinks from "@/components/settings/FooterLinks";
+import { useToast } from "@/components/ui/use-toast";
 
 const Settings = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    navigate('/auth');
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('Logout error:', error);
+        toast({
+          variant: "destructive",
+          title: "Error signing out",
+          description: "Please try again later",
+        });
+        return;
+      }
+      // Clear any local session data
+      await supabase.auth.clearSession();
+      navigate('/auth');
+    } catch (error) {
+      console.error('Logout error:', error);
+      toast({
+        variant: "destructive",
+        title: "Error signing out",
+        description: "Please try again later",
+      });
+    }
   };
 
   const handleDone = () => {
