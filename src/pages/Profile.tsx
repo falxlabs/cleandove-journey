@@ -16,18 +16,25 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Redirect if not authenticated
-    if (!session) {
+    if (!session?.user?.id) {
       navigate('/auth');
       return;
     }
 
     const getProfile = async () => {
       try {
+        setLoading(true);
+        const { data: { session: currentSession } } = await supabase.auth.getSession();
+        
+        if (!currentSession) {
+          navigate('/auth');
+          return;
+        }
+
         const { data, error } = await supabase
           .from('profiles')
           .select('*')
-          .eq('id', session.user.id)
+          .eq('id', currentSession.user.id)
           .single();
           
         if (error) {
@@ -37,7 +44,10 @@ const Profile = () => {
             title: "Error",
             description: "Failed to load profile data. Please try again.",
           });
-        } else {
+          return;
+        }
+
+        if (data) {
           setProfile(data);
         }
       } catch (error) {
@@ -53,7 +63,7 @@ const Profile = () => {
     };
     
     getProfile();
-  }, [session, navigate, toast]);
+  }, [session?.user?.id, navigate, toast]);
 
   if (!session) {
     return null;
