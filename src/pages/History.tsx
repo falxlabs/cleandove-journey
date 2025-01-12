@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import PageHeader from "@/components/PageHeader";
@@ -8,12 +8,14 @@ import ChatList from "@/components/ChatList";
 import { format } from "date-fns";
 import { useToast } from "@/components/ui/use-toast";
 import type { Database } from "@/integrations/supabase/types";
+import { useDebounce } from "@/hooks/useDebounce";
 
 type ChatHistory = Database['public']['Tables']['chat_histories']['Row'];
 
 const History = () => {
   const [filter, setFilter] = useState<"all" | "favorites">("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery);
   const { toast } = useToast();
 
   const { data: chats = [], isLoading } = useQuery({
@@ -52,14 +54,20 @@ const History = () => {
     staleTime: 0,
   });
 
-  const filteredChats = chats
-    .filter((chat) => filter === "all" || (filter === "favorites" && chat.favorite))
-    .filter(
-      (chat) =>
-        searchQuery === "" ||
-        chat.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        chat.preview.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+  const filteredChats = useMemo(() => {
+    return chats
+      .filter((chat) => filter === "all" || (filter === "favorites" && chat.favorite))
+      .filter((chat) => {
+        if (!debouncedSearchQuery) return true;
+        
+        const searchLower = debouncedSearchQuery.toLowerCase();
+        const titleMatch = chat.title.toLowerCase().includes(searchLower);
+        const previewMatch = chat.preview.toLowerCase().includes(searchLower);
+        const dateMatch = chat.date.toLowerCase().includes(searchLower);
+        
+        return titleMatch || previewMatch || dateMatch;
+      });
+  }, [chats, filter, debouncedSearchQuery]);
 
   return (
     <div className="min-h-screen pb-20">
@@ -71,7 +79,12 @@ const History = () => {
         />
 
         <div className="px-6 space-y-4 pb-4">
-          <SearchBar value={searchQuery} onChange={setSearchQuery} isLoading={isLoading} />
+          <SearchBar 
+            value={searchQuery} 
+            onChange={setSearchQuery} 
+            isLoading={isLoading}
+            placeholder="Search by title, content, or date..."
+          />
           <FilterButtons filter={filter} onFilterChange={setFilter} isLoading={isLoading} />
         </div>
       </div>
