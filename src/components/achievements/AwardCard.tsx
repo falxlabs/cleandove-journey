@@ -15,6 +15,7 @@ interface AwardCardProps {
   color: string;
   locked?: boolean;
   description?: string;
+  isSecret?: boolean;
 }
 
 const AwardCard = ({ 
@@ -24,7 +25,8 @@ const AwardCard = ({
   progress, 
   icon, 
   color, 
-  locked 
+  locked,
+  isSecret 
 }: AwardCardProps) => {
   return (
     <Card className={`p-4 flex flex-col items-center text-center ${locked ? 'opacity-50' : ''}`}>
@@ -43,7 +45,9 @@ const AwardCard = ({
           </Badge>
         )}
       </div>
-      <div className="text-xs text-muted-foreground">{progress}</div>
+      <div className="text-xs text-muted-foreground">
+        {isSecret ? "???" : progress}
+      </div>
     </Card>
   );
 };
