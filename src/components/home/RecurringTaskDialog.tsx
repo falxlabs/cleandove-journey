@@ -26,6 +26,7 @@ interface RecurringTaskDialogProps {
   onOpenChange: (open: boolean) => void;
   taskType: string;
   taskTitle: string;
+  onUpdate?: (description?: string) => void;
 }
 
 export function RecurringTaskDialog({
@@ -33,6 +34,7 @@ export function RecurringTaskDialog({
   onOpenChange,
   taskType,
   taskTitle,
+  onUpdate,
 }: RecurringTaskDialogProps) {
   const [startDate, setStartDate] = useState<Date>(new Date());
   const [endDate, setEndDate] = useState<Date | undefined>();
@@ -67,6 +69,22 @@ export function RecurringTaskDialog({
       });
 
       if (error) throw error;
+
+      // Create description based on frequency
+      let description = `every ${interval} `;
+      if (frequency === "daily") {
+        description += interval === "1" ? "day" : "days";
+      } else if (frequency === "weekly") {
+        description += interval === "1" ? "week" : "weeks";
+        if (selectedDays.length > 0) {
+          description += ` on ${selectedDays.join(", ")}`;
+        }
+      } else if (frequency === "monthly") {
+        description += interval === "1" ? "month" : "months";
+      }
+
+      // Call onUpdate with the description if it exists
+      onUpdate?.(description);
 
       toast({
         title: "Success",
