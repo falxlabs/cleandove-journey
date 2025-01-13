@@ -1,9 +1,8 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { RepeatIcon, Trash2Icon } from "lucide-react";
+import { RepeatIcon, Trash2 } from "lucide-react";
+import { SwipeableItem } from "../chat/SwipeableItem";
 
 interface Task {
   title: string;
@@ -106,46 +105,46 @@ const TaskList = ({ tasks, isTasksLoading, onTaskComplete }: TaskListProps) => {
     );
   }
 
+  const TaskContent = ({ task }: { task: Task }) => (
+    <div className="p-4 bg-card rounded-lg border shadow-sm transition-shadow">
+      <div className="flex justify-between items-center">
+        <div
+          className={`flex-1 ${!task.completed ? "cursor-pointer" : ""}`}
+          onClick={() => !task.completed && handleTaskClick(task.type, task.completed)}
+        >
+          <h3 className="font-medium">{task.title}</h3>
+          <p className="text-sm text-muted-foreground">{task.time}</p>
+        </div>
+        <div className="flex items-center gap-2">
+          {task.isRecurring && (
+            <RepeatIcon className="h-4 w-4 text-muted-foreground" />
+          )}
+          <div
+            className={`w-6 h-6 rounded-full border-2 transition-colors ${
+              task.completed
+                ? "bg-primary border-primary"
+                : "border-muted-foreground"
+            }`}
+          />
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="space-y-4">
       {tasks?.map((task) => (
-        <div
-          key={task.title}
-          className={`p-4 bg-card rounded-lg border shadow-sm transition-shadow ${
-            !task.completed ? "hover:shadow-md" : ""
-          }`}
-        >
-          <div className="flex justify-between items-center">
-            <div
-              className={`flex-1 cursor-pointer ${!task.completed ? "cursor-pointer" : ""}`}
-              onClick={() => !task.completed && handleTaskClick(task.type, task.completed)}
-            >
-              <h3 className="font-medium">{task.title}</h3>
-              <p className="text-sm text-muted-foreground">{task.time}</p>
-            </div>
-            <div className="flex items-center gap-2">
-              {task.isRecurring && (
-                <RepeatIcon className="h-4 w-4 text-muted-foreground" />
-              )}
-              {task.isCustom && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleDeleteTask(task.type)}
-                >
-                  <Trash2Icon className="h-4 w-4" />
-                </Button>
-              )}
-              <div
-                className={`w-6 h-6 rounded-full border-2 transition-colors ${
-                  task.completed
-                    ? "bg-primary border-primary"
-                    : "border-muted-foreground"
-                }`}
-              />
-            </div>
-          </div>
-        </div>
+        task.isCustom ? (
+          <SwipeableItem
+            key={task.type}
+            id={task.type}
+            onSwipeComplete={() => handleDeleteTask(task.type)}
+          >
+            <TaskContent task={task} />
+          </SwipeableItem>
+        ) : (
+          <TaskContent key={task.type} task={task} />
+        )
       ))}
     </div>
   );
