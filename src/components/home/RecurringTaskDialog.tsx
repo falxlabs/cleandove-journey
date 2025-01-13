@@ -44,14 +44,21 @@ export function RecurringTaskDialog({
   const weekDays = ["M", "T", "W", "T", "F", "S", "S"];
 
   useEffect(() => {
-    if (frequency === "weekly") {
-      const today = new Date().getDay();
-      const dayIndex = today === 0 ? 6 : today - 1; // Convert to Monday-based index
-      setSelectedDays([weekDays[dayIndex]]);
+    if (frequency === "daily" && interval === "1") {
+      // Select all days for daily frequency with interval of 1
+      setSelectedDays(weekDays);
+    } else if (frequency === "weekly") {
+      // For weekly frequency, if no days are selected, select current day
+      if (selectedDays.length === 0) {
+        const today = new Date().getDay();
+        const dayIndex = today === 0 ? 6 : today - 1; // Convert to Monday-based index
+        setSelectedDays([weekDays[dayIndex]]);
+      }
     } else {
+      // Clear selected days for other frequencies or intervals
       setSelectedDays([]);
     }
-  }, [frequency]);
+  }, [frequency, interval]);
 
   const handleSave = async () => {
     try {
@@ -64,7 +71,9 @@ export function RecurringTaskDialog({
         start_date: startDate,
         frequency,
         interval: parseInt(interval),
-        weekdays: frequency === "weekly" ? selectedDays : null,
+        weekdays: frequency === "weekly" || (frequency === "daily" && interval === "1") 
+          ? selectedDays 
+          : null,
       });
 
       if (error) throw error;
@@ -72,6 +81,9 @@ export function RecurringTaskDialog({
       let description = `every ${interval} `;
       if (frequency === "daily") {
         description += interval === "1" ? "day" : "days";
+        if (interval === "1" && selectedDays.length > 0) {
+          description += ` on ${selectedDays.join(", ")}`;
+        }
       } else if (frequency === "weekly") {
         description += interval === "1" ? "week" : "weeks";
         if (selectedDays.length > 0) {
@@ -98,12 +110,22 @@ export function RecurringTaskDialog({
   };
 
   const toggleDay = (day: string) => {
-    setSelectedDays((current) =>
-      current.includes(day)
-        ? current.filter((d) => d !== day)
-        : [...current, day]
-    );
+    if (frequency === "daily" && interval === "1") {
+      // If removing a day in daily mode with interval 1, switch to weekly
+      if (selectedDays.includes(day)) {
+        setFrequency("weekly");
+        setSelectedDays(weekDays.filter(d => d !== day));
+      }
+    } else {
+      setSelectedDays(current =>
+        current.includes(day)
+          ? current.filter(d => d !== day)
+          : [...current, day]
+      );
+    }
   };
+
+  const showDaySelection = frequency === "weekly" || (frequency === "daily" && interval === "1");
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -139,7 +161,7 @@ export function RecurringTaskDialog({
             </div>
           </div>
 
-          {frequency === "weekly" && (
+          {showDaySelection && (
             <div className="space-y-2">
               <Label>On</Label>
               <div className="flex gap-1">
