@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -15,7 +16,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -41,7 +41,17 @@ export function RecurringTaskDialog({
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const { toast } = useToast();
 
-  const weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const weekDays = ["M", "T", "W", "T", "F", "S", "S"];
+
+  useEffect(() => {
+    if (frequency === "weekly") {
+      const today = new Date().getDay();
+      const dayIndex = today === 0 ? 6 : today - 1; // Convert to Monday-based index
+      setSelectedDays([weekDays[dayIndex]]);
+    } else {
+      setSelectedDays([]);
+    }
+  }, [frequency]);
 
   const handleSave = async () => {
     try {
@@ -72,12 +82,10 @@ export function RecurringTaskDialog({
       }
 
       onUpdate?.(description);
-
       toast({
         title: "Success",
         description: "Recurring task has been set up.",
       });
-
       onOpenChange(false);
     } catch (error) {
       console.error("Error setting up recurring task:", error);
@@ -101,18 +109,11 @@ export function RecurringTaskDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[400px]">
         <DialogHeader>
-          <DialogTitle>Make "{taskTitle}" Recurring</DialogTitle>
+          <DialogTitle>Repeat "{taskTitle}"</DialogTitle>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
+        
+        <div className="space-y-4 py-4">
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Start Date</Label>
-              <Input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-              />
-            </div>
             <div className="space-y-2">
               <Label>Every</Label>
               <Input
@@ -120,35 +121,35 @@ export function RecurringTaskDialog({
                 min="1"
                 value={interval}
                 onChange={(e) => setInterval(e.target.value)}
+                className="w-full"
               />
             </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label>Frequency</Label>
-            <Select value={frequency} onValueChange={setFrequency}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="daily">Daily</SelectItem>
-                <SelectItem value="weekly">Weekly</SelectItem>
-                <SelectItem value="monthly">Monthly</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="space-y-2">
+              <Label>Frequency</Label>
+              <Select value={frequency} onValueChange={setFrequency}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="daily">Day(s)</SelectItem>
+                  <SelectItem value="weekly">Week(s)</SelectItem>
+                  <SelectItem value="monthly">Month(s)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           {frequency === "weekly" && (
             <div className="space-y-2">
-              <Label>Repeat On</Label>
-              <div className="flex flex-wrap gap-2">
+              <Label>On</Label>
+              <div className="flex gap-1">
                 {weekDays.map((day) => (
                   <Button
                     key={day}
                     size="sm"
                     variant={selectedDays.includes(day) ? "default" : "outline"}
                     onClick={() => toggleDay(day)}
-                    className="flex-1"
+                    className="w-8 h-8 p-0"
                   >
                     {day}
                   </Button>
@@ -156,7 +157,17 @@ export function RecurringTaskDialog({
               </div>
             </div>
           )}
+
+          <div className="space-y-2">
+            <Label>Start date</Label>
+            <Input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+            />
+          </div>
         </div>
+
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
