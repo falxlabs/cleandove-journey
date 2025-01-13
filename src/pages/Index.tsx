@@ -64,9 +64,6 @@ const Index = () => {
     queryFn: async () => [
       { title: "Reflect with Pace", time: "2 min", type: "reflect", completed: false },
       { title: "Read and Be Inspired", time: "1 min", type: "read", completed: false },
-      { title: "Move with Purpose", time: "30 min", type: "move", completed: false },
-      { title: "Practice Gratitude", time: "2 min", type: "gratitude", completed: false },
-      { title: "Breathe to Reset", time: "3 min", type: "breathe", completed: false },
     ],
   });
 

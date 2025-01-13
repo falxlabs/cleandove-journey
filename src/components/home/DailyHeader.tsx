@@ -1,8 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 
 interface DailyHeaderProps {
   streak: number | undefined;
@@ -12,40 +10,11 @@ interface DailyHeaderProps {
 const DailyHeader = ({ streak, isStreakLoading }: DailyHeaderProps) => {
   const navigate = useNavigate();
 
-  const { data: profile, isLoading: isProfileLoading } = useQuery({
-    queryKey: ['profile-pearls'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('No user found');
-      
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('pearls')
-        .eq('id', user.id)
-        .single();
-        
-      if (error) throw error;
-      return data;
-    },
-  });
-
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Today's Quest</h1>
         <div className="flex items-center gap-2">
-          {isProfileLoading ? (
-            <Skeleton className="h-10 w-20" />
-          ) : (
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="px-4 pr-6 gap-0.5"
-            >
-              <span className="text-xl">🫧</span>
-              <span className="text-sm text-muted-foreground">{profile?.pearls || 0}</span>
-            </Button>
-          )}
           {isStreakLoading ? (
             <Skeleton className="h-10 w-20" />
           ) : (
