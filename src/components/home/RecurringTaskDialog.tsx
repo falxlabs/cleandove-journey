@@ -19,6 +19,7 @@ import {
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 interface RecurringTaskDialogProps {
   open: boolean;
@@ -39,10 +40,15 @@ export function RecurringTaskDialog({
   const [frequency, setFrequency] = useState("daily");
   const [interval, setInterval] = useState("1");
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
-  const [monthlyDayOfMonth, setMonthlyDayOfMonth] = useState(format(new Date(), 'd'));
+  const [monthlyPattern, setMonthlyPattern] = useState("day_of_month");
+  const [monthlyDayOfMonth, setMonthlyDayOfMonth] = useState("1");
+  const [monthlyDayOfWeek, setMonthlyDayOfWeek] = useState("Monday");
+  const [monthlyWeekOfMonth, setMonthlyWeekOfMonth] = useState("first");
   const { toast } = useToast();
 
   const weekDays = ["M", "T", "W", "T", "F", "S", "S"];
+  const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+  const weeksOfMonth = ["first", "second", "third", "fourth", "last"];
 
   useEffect(() => {
     if (frequency === "daily" && interval === "1") {
@@ -72,8 +78,9 @@ export function RecurringTaskDialog({
         weekdays: frequency === "weekly" || (frequency === "daily" && interval === "1") 
           ? selectedDays 
           : null,
-        monthly_pattern: frequency === "monthly" ? "day_of_month" : null,
-        monthly_day_of_month: frequency === "monthly" ? monthlyDayOfMonth : null,
+        monthly_pattern: frequency === "monthly" ? monthlyPattern : null,
+        monthly_day_of_week: frequency === "monthly" && monthlyPattern === "day_of_week" ? monthlyDayOfWeek : null,
+        monthly_week_of_month: frequency === "monthly" && monthlyPattern === "day_of_week" ? monthlyWeekOfMonth : null,
       });
 
       if (error) throw error;
@@ -91,7 +98,11 @@ export function RecurringTaskDialog({
         }
       } else if (frequency === "monthly") {
         description += interval === "1" ? "month" : "months";
-        description += ` on day ${monthlyDayOfMonth}`;
+        if (monthlyPattern === "day_of_month") {
+          description += ` on day ${monthlyDayOfMonth}`;
+        } else {
+          description += ` on the ${monthlyWeekOfMonth} ${monthlyDayOfWeek}`;
+        }
       }
 
       onUpdate?.(description);
@@ -181,16 +192,62 @@ export function RecurringTaskDialog({
           )}
 
           {frequency === "monthly" && (
-            <div className="space-y-2">
-              <Label>Day of month</Label>
-              <Input
-                type="number"
-                min="1"
-                max="31"
-                value={monthlyDayOfMonth}
-                onChange={(e) => setMonthlyDayOfMonth(e.target.value)}
-                className="w-full"
-              />
+            <div className="space-y-4">
+              <RadioGroup value={monthlyPattern} onValueChange={setMonthlyPattern}>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="day_of_month" id="day_of_month" />
+                  <Label htmlFor="day_of_month">Day of month</Label>
+                  {monthlyPattern === "day_of_month" && (
+                    <Input
+                      type="number"
+                      min="1"
+                      max="31"
+                      value={monthlyDayOfMonth}
+                      onChange={(e) => setMonthlyDayOfMonth(e.target.value)}
+                      className="w-20 ml-2"
+                    />
+                  )}
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="day_of_week" id="day_of_week" />
+                  <Label htmlFor="day_of_week">Day of week</Label>
+                </div>
+              </RadioGroup>
+
+              {monthlyPattern === "day_of_week" && (
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Week</Label>
+                    <Select value={monthlyWeekOfMonth} onValueChange={setMonthlyWeekOfMonth}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {weeksOfMonth.map((week) => (
+                          <SelectItem key={week} value={week}>
+                            {week}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Day</Label>
+                    <Select value={monthlyDayOfWeek} onValueChange={setMonthlyDayOfWeek}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {daysOfWeek.map((day) => (
+                          <SelectItem key={day} value={day}>
+                            {day}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
