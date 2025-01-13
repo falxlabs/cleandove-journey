@@ -67,21 +67,36 @@ const Index = () => {
     queryKey: ['tasks'],
     queryFn: async () => {
       const defaultTasks = [
-        { title: "Reflect with Pace", time: "2 min", type: "reflect", completed: false },
-        { title: "Read and Be Inspired", time: "1 min", type: "read", completed: false },
+        { title: "Reflect with Pace", time: "2 min", type: "reflect", completed: false, isCustom: false },
+        { title: "Read and Be Inspired", time: "1 min", type: "read", completed: false, isCustom: false },
       ];
 
-      const { data: customTasks, error } = await supabase
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return defaultTasks;
+
+      // Fetch custom tasks
+      const { data: customTasks, error: customError } = await supabase
         .from('custom_tasks')
         .select('title, time, task_type');
 
-      if (error) throw error;
+      if (customError) throw customError;
+
+      // Fetch recurring tasks
+      const { data: recurringTasks, error: recurringError } = await supabase
+        .from('recurring_tasks')
+        .select('task_type');
+
+      if (recurringError) throw recurringError;
+
+      const recurringTaskTypes = recurringTasks.map(task => task.task_type);
 
       const formattedCustomTasks = customTasks?.map(task => ({
         title: task.title,
         time: task.time,
         type: task.task_type,
-        completed: false
+        completed: false,
+        isCustom: true,
+        isRecurring: recurringTaskTypes.includes(task.task_type)
       })) || [];
 
       return [...defaultTasks, ...formattedCustomTasks];
