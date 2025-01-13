@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Calendar } from "@/components/ui/calendar";
 import {
   Dialog,
   DialogContent,
@@ -36,22 +35,13 @@ export function RecurringTaskDialog({
   taskTitle,
   onUpdate,
 }: RecurringTaskDialogProps) {
-  const [startDate, setStartDate] = useState<Date>(new Date());
-  const [endDate, setEndDate] = useState<Date | undefined>();
+  const [startDate, setStartDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [frequency, setFrequency] = useState("daily");
   const [interval, setInterval] = useState("1");
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const { toast } = useToast();
 
-  const weekDays = [
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-    "Sunday",
-  ];
+  const weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
   const handleSave = async () => {
     try {
@@ -61,8 +51,7 @@ export function RecurringTaskDialog({
       const { error } = await supabase.from("recurring_tasks").insert({
         user_id: session.user.id,
         task_type: taskType,
-        start_date: format(startDate, "yyyy-MM-dd"),
-        end_date: endDate ? format(endDate, "yyyy-MM-dd") : null,
+        start_date: startDate,
         frequency,
         interval: parseInt(interval),
         weekdays: frequency === "weekly" ? selectedDays : null,
@@ -70,7 +59,6 @@ export function RecurringTaskDialog({
 
       if (error) throw error;
 
-      // Create description based on frequency
       let description = `every ${interval} `;
       if (frequency === "daily") {
         description += interval === "1" ? "day" : "days";
@@ -83,7 +71,6 @@ export function RecurringTaskDialog({
         description += interval === "1" ? "month" : "months";
       }
 
-      // Call onUpdate with the description if it exists
       onUpdate?.(description);
 
       toast({
@@ -112,46 +99,20 @@ export function RecurringTaskDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[400px]">
         <DialogHeader>
           <DialogTitle>Make "{taskTitle}" Recurring</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <div className="space-y-2">
-            <Label>Start Date</Label>
-            <Calendar
-              mode="single"
-              selected={startDate}
-              onSelect={(date) => date && setStartDate(date)}
-              className="rounded-md border"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label>End Date (Optional)</Label>
-            <Calendar
-              mode="single"
-              selected={endDate}
-              onSelect={setEndDate}
-              className="rounded-md border"
-            />
-          </div>
-
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Frequency</Label>
-              <Select value={frequency} onValueChange={setFrequency}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="daily">Daily</SelectItem>
-                  <SelectItem value="weekly">Weekly</SelectItem>
-                  <SelectItem value="monthly">Monthly</SelectItem>
-                </SelectContent>
-              </Select>
+              <Label>Start Date</Label>
+              <Input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+              />
             </div>
-
             <div className="space-y-2">
               <Label>Every</Label>
               <Input
@@ -163,6 +124,20 @@ export function RecurringTaskDialog({
             </div>
           </div>
 
+          <div className="space-y-2">
+            <Label>Frequency</Label>
+            <Select value={frequency} onValueChange={setFrequency}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="daily">Daily</SelectItem>
+                <SelectItem value="weekly">Weekly</SelectItem>
+                <SelectItem value="monthly">Monthly</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           {frequency === "weekly" && (
             <div className="space-y-2">
               <Label>Repeat On</Label>
@@ -170,9 +145,10 @@ export function RecurringTaskDialog({
                 {weekDays.map((day) => (
                   <Button
                     key={day}
+                    size="sm"
                     variant={selectedDays.includes(day) ? "default" : "outline"}
                     onClick={() => toggleDay(day)}
-                    className="flex-1 min-w-[100px]"
+                    className="flex-1"
                   >
                     {day}
                   </Button>
