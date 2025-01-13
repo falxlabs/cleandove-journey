@@ -195,6 +195,9 @@ export type Database = {
           frequency: string
           id: string
           interval: number
+          monthly_day_of_week: string | null
+          monthly_pattern: string | null
+          monthly_week_of_month: string | null
           start_date: string
           task_type: string
           user_id: string
@@ -206,6 +209,9 @@ export type Database = {
           frequency: string
           id?: string
           interval?: number
+          monthly_day_of_week?: string | null
+          monthly_pattern?: string | null
+          monthly_week_of_month?: string | null
           start_date: string
           task_type: string
           user_id: string
@@ -217,6 +223,9 @@ export type Database = {
           frequency?: string
           id?: string
           interval?: number
+          monthly_day_of_week?: string | null
+          monthly_pattern?: string | null
+          monthly_week_of_month?: string | null
           start_date?: string
           task_type?: string
           user_id?: string
