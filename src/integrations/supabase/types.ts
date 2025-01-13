@@ -188,6 +188,42 @@ export type Database = {
         }
         Relationships: []
       }
+      recurring_tasks: {
+        Row: {
+          created_at: string
+          end_date: string | null
+          frequency: string
+          id: string
+          interval: number
+          start_date: string
+          task_type: string
+          user_id: string
+          weekdays: string[] | null
+        }
+        Insert: {
+          created_at?: string
+          end_date?: string | null
+          frequency: string
+          id?: string
+          interval?: number
+          start_date: string
+          task_type: string
+          user_id: string
+          weekdays?: string[] | null
+        }
+        Update: {
+          created_at?: string
+          end_date?: string | null
+          frequency?: string
+          id?: string
+          interval?: number
+          start_date?: string
+          task_type?: string
+          user_id?: string
+          weekdays?: string[] | null
+        }
+        Relationships: []
+      }
       user_plans: {
         Row: {
           created_at: string
