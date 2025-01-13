@@ -42,6 +42,33 @@ export type Database = {
         }
         Relationships: []
       }
+      custom_tasks: {
+        Row: {
+          created_at: string
+          id: string
+          task_type: string
+          time: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          task_type: string
+          time?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          task_type?: string
+          time?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       daily_tasks: {
         Row: {
           completed_at: string | null

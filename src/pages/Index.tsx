@@ -4,6 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import DailyHeader from "@/components/home/DailyHeader";
 import WeekProgress from "@/components/home/WeekProgress";
 import TaskList from "@/components/home/TaskList";
+import { AddCustomTaskSheet } from "@/components/home/AddCustomTaskSheet";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { startOfWeek, addDays, format } from "date-fns";
 
@@ -11,10 +14,11 @@ const Index = () => {
   const weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const [completedTasks, setCompletedTasks] = useState<string[]>([]);
   const [weekCompletions, setWeekCompletions] = useState<{ [key: string]: boolean }>({});
+  const [isAddingTask, setIsAddingTask] = useState(false);
   
   // Get the start of the current week (Monday)
   const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 });
-  
+
   // Fetch completed tasks for the current week
   const { data: weekCompletionsData, isLoading: isWeekLoading } = useQuery({
     queryKey: ['week-completions'],
@@ -61,10 +65,27 @@ const Index = () => {
 
   const { data: tasks, isLoading: isTasksLoading } = useQuery({
     queryKey: ['tasks'],
-    queryFn: async () => [
-      { title: "Reflect with Pace", time: "2 min", type: "reflect", completed: false },
-      { title: "Read and Be Inspired", time: "1 min", type: "read", completed: false },
-    ],
+    queryFn: async () => {
+      const defaultTasks = [
+        { title: "Reflect with Pace", time: "2 min", type: "reflect", completed: false },
+        { title: "Read and Be Inspired", time: "1 min", type: "read", completed: false },
+      ];
+
+      const { data: customTasks, error } = await supabase
+        .from('custom_tasks')
+        .select('title, time, task_type');
+
+      if (error) throw error;
+
+      const formattedCustomTasks = customTasks?.map(task => ({
+        title: task.title,
+        time: task.time,
+        type: task.task_type,
+        completed: false
+      })) || [];
+
+      return [...defaultTasks, ...formattedCustomTasks];
+    },
   });
 
   const { data: completedTasksData } = useQuery({
@@ -151,8 +172,22 @@ const Index = () => {
             isTasksLoading={isTasksLoading}
             onTaskComplete={handleTaskComplete}
           />
+          
+          <Button
+            variant="outline"
+            className="w-full mt-4"
+            onClick={() => setIsAddingTask(true)}
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Add Custom Task
+          </Button>
         </section>
       </ScrollArea>
+
+      <AddCustomTaskSheet 
+        open={isAddingTask} 
+        onOpenChange={setIsAddingTask}
+      />
     </div>
   );
 };
