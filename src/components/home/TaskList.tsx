@@ -3,6 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { RepeatIcon, Trash2 } from "lucide-react";
 import { SwipeableItem } from "../chat/SwipeableItem";
+import { useState } from "react";
+import { TaskDialog } from "./TaskDialog";
 
 interface Task {
   title: string;
@@ -21,41 +23,12 @@ interface TaskListProps {
 
 const TaskList = ({ tasks, isTasksLoading, onTaskComplete }: TaskListProps) => {
   const { toast } = useToast();
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const handleTaskClick = async (taskType: string, currentStatus: boolean) => {
-    if (currentStatus) return;
-
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
-
-      const today = new Date().toISOString().split('T')[0];
-      
-      const { error } = await supabase
-        .from('daily_tasks')
-        .upsert({
-          user_id: session.user.id,
-          task_type: taskType,
-          date: today,
-          completed_at: new Date().toISOString()
-        });
-
-      if (error) throw error;
-
-      onTaskComplete(taskType, true);
-      
-      toast({
-        title: "Task completed!",
-        description: "Your progress has been updated.",
-      });
-    } catch (error) {
-      console.error('Error updating task:', error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to update task status.",
-      });
-    }
+  const handleTaskClick = async (task: Task) => {
+    setSelectedTask(task);
+    setIsDialogOpen(true);
   };
 
   const handleDeleteTask = async (taskType: string) => {
@@ -95,30 +68,22 @@ const TaskList = ({ tasks, isTasksLoading, onTaskComplete }: TaskListProps) => {
     }
   };
 
-  if (isTasksLoading) {
-    return (
-      <div className="space-y-4">
-        <Skeleton className="h-24 w-full" />
-        <Skeleton className="h-24 w-full" />
-        <Skeleton className="h-24 w-full" />
-      </div>
-    );
-  }
-
   const TaskContent = ({ task }: { task: Task }) => (
-    <div className="p-4 bg-card rounded-lg border shadow-sm transition-shadow">
+    <div 
+      className="p-4 bg-card rounded-lg border shadow-sm transition-shadow cursor-pointer"
+      onClick={() => handleTaskClick(task)}
+    >
       <div className="flex justify-between items-center">
-        <div
-          className={`flex-1 ${!task.completed ? "cursor-pointer" : ""}`}
-          onClick={() => !task.completed && handleTaskClick(task.type, task.completed)}
-        >
-          <h3 className="font-medium">{task.title}</h3>
+        <div className="flex-1">
+          <div className="flex items-center gap-2">
+            <h3 className="font-medium">{task.title}</h3>
+            {(task.isRecurring || task.type === "reflect") && (
+              <RepeatIcon className="h-4 w-4 text-muted-foreground" />
+            )}
+          </div>
           <p className="text-sm text-muted-foreground">{task.time}</p>
         </div>
         <div className="flex items-center gap-2">
-          {task.isRecurring && (
-            <RepeatIcon className="h-4 w-4 text-muted-foreground" />
-          )}
           <div
             className={`w-6 h-6 rounded-full border-2 transition-colors ${
               task.completed
@@ -131,22 +96,45 @@ const TaskList = ({ tasks, isTasksLoading, onTaskComplete }: TaskListProps) => {
     </div>
   );
 
+  if (isTasksLoading) {
+    return (
+      <div className="space-y-4">
+        <Skeleton className="h-24 w-full" />
+        <Skeleton className="h-24 w-full" />
+        <Skeleton className="h-24 w-full" />
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-4">
-      {tasks?.map((task) => (
-        task.isCustom ? (
-          <SwipeableItem
-            key={task.type}
-            id={task.type}
-            onSwipeComplete={() => handleDeleteTask(task.type)}
-          >
-            <TaskContent task={task} />
-          </SwipeableItem>
-        ) : (
-          <TaskContent key={task.type} task={task} />
-        )
-      ))}
-    </div>
+    <>
+      <div className="space-y-4">
+        {tasks?.map((task) => (
+          task.isCustom ? (
+            <SwipeableItem
+              key={task.type}
+              id={task.type}
+              onSwipeComplete={() => handleDeleteTask(task.type)}
+            >
+              <TaskContent task={task} />
+            </SwipeableItem>
+          ) : (
+            <TaskContent key={task.type} task={task} />
+          )
+        ))}
+      </div>
+
+      {selectedTask && (
+        <TaskDialog
+          open={isDialogOpen}
+          onOpenChange={setIsDialogOpen}
+          taskType={selectedTask.type}
+          taskTitle={selectedTask.title}
+          onComplete={() => onTaskComplete(selectedTask.type, true)}
+          isCustomTask={selectedTask.isCustom}
+        />
+      )}
+    </>
   );
 };
 
