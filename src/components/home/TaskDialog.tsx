@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Share2, MessageSquare } from "lucide-react";
+import { Share2, MessageSquare, Edit } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
@@ -79,7 +79,7 @@ export function TaskDialog({
     navigate("/conversation", {
       state: {
         topic: taskType,
-        context: `Let's reflect on today's quote: ${getRandomQuote()}`,
+        context: taskType === "read" ? `Let's reflect on today's quote: ${getRandomQuote()}` : undefined,
       },
     });
     onOpenChange(false);
@@ -90,13 +90,10 @@ export function TaskDialog({
     onOpenChange(false);
   };
 
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>{taskTitle}</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-6">
+  const renderContent = () => {
+    if (taskType === "read") {
+      return (
+        <>
           <p className="text-lg font-medium text-center">{getRandomQuote()}</p>
           <div className="flex flex-col gap-4">
             <Button onClick={handleChatClick} className="w-full">
@@ -111,6 +108,52 @@ export function TaskDialog({
               Done
             </Button>
           </div>
+        </>
+      );
+    }
+
+    if (isCustomTask) {
+      return (
+        <div className="flex flex-col gap-4">
+          <Button onClick={() => {}} className="w-full">
+            <Edit className="mr-2 h-4 w-4" />
+            Edit Task
+          </Button>
+          <Button onClick={handleDone} className="w-full">
+            Done
+          </Button>
+        </div>
+      );
+    }
+
+    if (taskType === "reflect") {
+      return (
+        <div className="flex flex-col gap-4">
+          <Button onClick={handleChatClick} className="w-full">
+            <MessageSquare className="mr-2 h-4 w-4" />
+            Start Reflection
+          </Button>
+        </div>
+      );
+    }
+
+    return (
+      <div className="flex flex-col gap-4">
+        <Button onClick={handleDone} className="w-full">
+          Done
+        </Button>
+      </div>
+    );
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>{taskTitle}</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-6">
+          {renderContent()}
         </div>
       </DialogContent>
     </Dialog>

@@ -77,7 +77,7 @@ const TaskList = ({ tasks, isTasksLoading, onTaskComplete }: TaskListProps) => {
         <div className="flex-1">
           <div className="flex items-center gap-2">
             <h3 className="font-medium">{task.title}</h3>
-            {(task.isRecurring || task.type === "reflect") && (
+            {(task.isRecurring || task.type === "reflect" || task.type === "read") && (
               <RepeatIcon className="h-4 w-4 text-muted-foreground" />
             )}
           </div>
