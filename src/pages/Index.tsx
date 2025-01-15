@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { startOfWeek, addDays, format } from "date-fns";
+import { shouldShowRecurringTask } from "@/utils/taskUtils";
 
 const Index = () => {
   const weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -16,10 +17,8 @@ const Index = () => {
   const [weekCompletions, setWeekCompletions] = useState<{ [key: string]: boolean }>({});
   const [isAddingTask, setIsAddingTask] = useState(false);
   
-  // Get the start of the current week (Monday)
   const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 });
 
-  // Fetch completed tasks for the current week
   const { data: weekCompletionsData, isLoading: isWeekLoading } = useQuery({
     queryKey: ['week-completions'],
     queryFn: async () => {
@@ -44,6 +43,7 @@ const Index = () => {
         return acc;
       }, {});
     },
+    refetchInterval: 30000, // Refetch every 30 seconds
   });
 
   const { data: streak, isLoading: isStreakLoading } = useQuery({
@@ -74,33 +74,44 @@ const Index = () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return defaultTasks;
 
-      // Fetch custom tasks
+      const today = format(new Date(), 'yyyy-MM-dd');
+
+      // Fetch custom tasks created today
       const { data: customTasks, error: customError } = await supabase
         .from('custom_tasks')
-        .select('title, time, task_type');
+        .select('title, time, task_type, created_at');
 
       if (customError) throw customError;
 
       // Fetch recurring tasks
       const { data: recurringTasks, error: recurringError } = await supabase
         .from('recurring_tasks')
-        .select('task_type');
+        .select('*');
 
       if (recurringError) throw recurringError;
 
-      const recurringTaskTypes = recurringTasks.map(task => task.task_type);
+      // Filter custom tasks to only show those created today or with recurring configuration
+      const recurringTaskTypes = recurringTasks
+        .filter(task => shouldShowRecurringTask(task))
+        .map(task => task.task_type);
 
-      const formattedCustomTasks = customTasks?.map(task => ({
-        title: task.title,
-        time: task.time,
-        type: task.task_type,
-        completed: false,
-        isCustom: true,
-        isRecurring: recurringTaskTypes.includes(task.task_type)
-      })) || [];
+      const formattedCustomTasks = customTasks
+        ?.filter(task => {
+          const taskDate = format(new Date(task.created_at), 'yyyy-MM-dd');
+          return taskDate === today || recurringTaskTypes.includes(task.task_type);
+        })
+        .map(task => ({
+          title: task.title,
+          time: task.time,
+          type: task.task_type,
+          completed: false,
+          isCustom: true,
+          isRecurring: recurringTaskTypes.includes(task.task_type)
+        })) || [];
 
       return [...defaultTasks, ...formattedCustomTasks];
     },
+    refetchInterval: 30000, // Refetch every 30 seconds
   });
 
   const { data: completedTasksData } = useQuery({
@@ -133,14 +144,9 @@ const Index = () => {
     }
   }, [weekCompletionsData]);
 
-  const progress = tasks && tasks.length > 0 
-    ? Math.round((completedTasks.length / tasks.length) * 100) 
-    : 0;
-
   const handleTaskComplete = (taskType: string, completed: boolean) => {
     if (completed) {
       setCompletedTasks(prev => [...prev, taskType]);
-      // Update week completions immediately
       const today = format(new Date(), 'yyyy-MM-dd');
       if (tasks && completedTasks.length + 1 === tasks.length) {
         setWeekCompletions(prev => ({
@@ -172,7 +178,9 @@ const Index = () => {
           <WeekProgress
             weekDays={weekDays}
             weekCompletions={weekCompletions}
-            progress={progress}
+            progress={tasks && tasks.length > 0 
+              ? Math.round((completedTasks.length / tasks.length) * 100) 
+              : 0}
             isStreakLoading={isStreakLoading}
             isProgressLoading={isTasksLoading}
             isWeekLoading={isWeekLoading}
