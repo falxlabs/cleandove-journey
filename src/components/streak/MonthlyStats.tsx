@@ -74,9 +74,11 @@ export const MonthlyStats = ({ daysCompleted, tasksByDate }: MonthlyStatsProps) 
             mode="single"
             selected={date}
             onSelect={(newDate) => newDate && setDate(newDate)}
+            month={date}
             defaultMonth={date}
             className="rounded-md border"
             disabled={true}
+            today={undefined}
             modifiers={{
               'perfect-day': (date) => getDayClassName(date) === 'perfect-day',
               'partial-day': (date) => getDayClassName(date) === 'partial-day'
