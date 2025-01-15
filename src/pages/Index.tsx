@@ -1,5 +1,5 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import DailyHeader from "@/components/home/DailyHeader";
 import WeekProgress from "@/components/home/WeekProgress";
@@ -16,6 +16,7 @@ const Index = () => {
   const [completedTasks, setCompletedTasks] = useState<string[]>([]);
   const [weekCompletions, setWeekCompletions] = useState<{ [key: string]: boolean }>({});
   const [isAddingTask, setIsAddingTask] = useState(false);
+  const queryClient = useQueryClient();
   
   const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 });
 
@@ -43,7 +44,9 @@ const Index = () => {
         return acc;
       }, {});
     },
-    refetchInterval: 30000, // Refetch every 30 seconds
+    staleTime: Infinity, // Data won't become stale automatically
+    refetchOnWindowFocus: true, // Refetch when window regains focus
+    refetchOnMount: true, // Refetch when component mounts
   });
 
   const { data: streak, isLoading: isStreakLoading } = useQuery({
@@ -61,6 +64,9 @@ const Index = () => {
       if (error) throw error;
       return data?.current_streak || 0;
     },
+    staleTime: Infinity, // Data won't become stale automatically
+    refetchOnWindowFocus: true, // Refetch when window regains focus
+    refetchOnMount: true, // Refetch when component mounts
   });
 
   const { data: tasks, isLoading: isTasksLoading } = useQuery({
@@ -111,7 +117,9 @@ const Index = () => {
 
       return [...defaultTasks, ...formattedCustomTasks];
     },
-    refetchInterval: 30000, // Refetch every 30 seconds
+    staleTime: Infinity, // Data won't become stale automatically
+    refetchOnWindowFocus: true, // Refetch when window regains focus
+    refetchOnMount: true, // Refetch when component mounts
   });
 
   const { data: completedTasksData } = useQuery({
@@ -130,6 +138,9 @@ const Index = () => {
       if (error) throw error;
       return data.map(task => task.task_type);
     },
+    staleTime: Infinity, // Data won't become stale automatically
+    refetchOnWindowFocus: true, // Refetch when window regains focus
+    refetchOnMount: true, // Refetch when component mounts
   });
 
   useEffect(() => {
@@ -154,6 +165,10 @@ const Index = () => {
           [today]: true
         }));
       }
+      // Invalidate relevant queries when a task is completed
+      queryClient.invalidateQueries({ queryKey: ['streak'] });
+      queryClient.invalidateQueries({ queryKey: ['week-completions'] });
+      queryClient.invalidateQueries({ queryKey: ['completed-tasks'] });
     } else {
       setCompletedTasks(prev => prev.filter(t => t !== taskType));
     }
