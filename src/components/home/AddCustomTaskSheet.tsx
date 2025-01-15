@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { RepeatIcon } from "lucide-react";
 import { RecurringTaskDialog } from "./RecurringTaskDialog";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface AddCustomTaskSheetProps {
   open: boolean;
@@ -27,6 +28,7 @@ export function AddCustomTaskSheet({ open, onOpenChange }: AddCustomTaskSheetPro
   const [hasRecurringConfig, setHasRecurringConfig] = useState(false);
   const [recurringDescription, setRecurringDescription] = useState<string>();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const handleAddTask = async () => {
     try {
@@ -34,6 +36,22 @@ export function AddCustomTaskSheet({ open, onOpenChange }: AddCustomTaskSheetPro
       if (!session) return;
 
       const taskType = title.toLowerCase().replace(/\s+/g, '_');
+
+      // Optimistically update the cache
+      const newTask = {
+        title,
+        time,
+        type: taskType,
+        completed: false,
+        isCustom: true,
+        isRecurring: hasRecurringConfig
+      };
+
+      // Get the current tasks from the cache
+      const previousTasks = queryClient.getQueryData(['tasks']) || [];
+
+      // Optimistically update the cache with the new task
+      queryClient.setQueryData(['tasks'], (old: any) => [...(old || []), newTask]);
 
       const { error: taskError } = await supabase
         .from('custom_tasks')
@@ -45,6 +63,9 @@ export function AddCustomTaskSheet({ open, onOpenChange }: AddCustomTaskSheetPro
         });
 
       if (taskError) throw taskError;
+
+      // Invalidate and refetch to ensure cache is up to date
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
 
       toast({
         title: "Task added successfully",
@@ -58,6 +79,9 @@ export function AddCustomTaskSheet({ open, onOpenChange }: AddCustomTaskSheetPro
       setRecurringDescription(undefined);
     } catch (error) {
       console.error('Error adding task:', error);
+      // Revert the optimistic update on error
+      queryClient.setQueryData(['tasks'], previousTasks);
+      
       toast({
         variant: "destructive",
         title: "Error",
