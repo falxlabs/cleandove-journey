@@ -2,12 +2,14 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface MonthlyStatsProps {
   daysCompleted: number | undefined;
+  tasksByDate: Record<string, { completed_at: string | null }[]> | undefined;
 }
 
-export const MonthlyStats = ({ daysCompleted }: MonthlyStatsProps) => {
+export const MonthlyStats = ({ daysCompleted, tasksByDate }: MonthlyStatsProps) => {
   const [date, setDate] = useState<Date>(new Date());
   const currentMonth = date.toLocaleString('default', { month: 'long' });
   const currentYear = date.getFullYear();
@@ -22,6 +24,26 @@ export const MonthlyStats = ({ daysCompleted }: MonthlyStatsProps) => {
     const newDate = new Date(date);
     newDate.setMonth(date.getMonth() + 1);
     setDate(newDate);
+  };
+
+  const getDayClassName = (day: Date | undefined) => {
+    if (!day || !tasksByDate) return "";
+
+    const dateStr = day.toISOString().split('T')[0];
+    const dayTasks = tasksByDate[dateStr];
+
+    if (!dayTasks?.length) return "";
+
+    // Perfect day - all tasks completed
+    if (dayTasks.every(task => task.completed_at !== null)) {
+      return "bg-[#9b87f5] text-white hover:bg-[#9b87f5] hover:text-white";
+    }
+    // Partial completion - at least one task completed
+    if (dayTasks.some(task => task.completed_at !== null)) {
+      return "bg-black text-white hover:bg-black hover:text-white";
+    }
+
+    return "";
   };
 
   return (
@@ -42,10 +64,10 @@ export const MonthlyStats = ({ daysCompleted }: MonthlyStatsProps) => {
         <div className="grid gap-4">
           <div className="text-center p-4 bg-secondary rounded-lg">
             <div className="flex items-center justify-center gap-2">
-              <span className="text-2xl">✓</span>
+              <span className="text-2xl">✨</span>
               <span className="text-2xl font-bold">{daysCompleted}</span>
             </div>
-            <p className="text-sm text-muted-foreground">Days conquered</p>
+            <p className="text-sm text-muted-foreground">Perfect days</p>
           </div>
           
           <Calendar
@@ -54,6 +76,13 @@ export const MonthlyStats = ({ daysCompleted }: MonthlyStatsProps) => {
             onSelect={(newDate) => newDate && setDate(newDate)}
             defaultMonth={date}
             className="rounded-md border"
+            disabled={true}
+            modifiers={{
+              completed: (date) => getDayClassName(date) !== ""
+            }}
+            modifiersClassNames={{
+              completed: (date) => getDayClassName(date)
+            }}
           />
         </div>
       </CardContent>

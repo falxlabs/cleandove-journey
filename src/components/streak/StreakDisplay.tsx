@@ -12,7 +12,7 @@ export const StreakDisplay = ({ currentStreak, isLoading }: StreakDisplayProps) 
         <Skeleton className="h-24 w-24 rounded-full mx-auto mb-4" />
       ) : (
         <>
-          <div className="text-8xl font-bold mb-2">{currentStreak}</div>
+          <div className="text-8xl font-bold mb-2">{currentStreak || 0}</div>
           <div className="text-xl text-muted-foreground">day streak!</div>
         </>
       )}
