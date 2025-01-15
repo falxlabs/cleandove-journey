@@ -36,11 +36,11 @@ export const MonthlyStats = ({ daysCompleted, tasksByDate }: MonthlyStatsProps) 
 
     // Perfect day - all tasks completed
     if (dayTasks.every(task => task.completed_at !== null)) {
-      return "bg-[#9b87f5] text-white hover:bg-[#9b87f5] hover:text-white";
+      return "perfect-day";
     }
     // Partial completion - at least one task completed
     if (dayTasks.some(task => task.completed_at !== null)) {
-      return "bg-black text-white hover:bg-black hover:text-white";
+      return "partial-day";
     }
 
     return "";
@@ -78,10 +78,12 @@ export const MonthlyStats = ({ daysCompleted, tasksByDate }: MonthlyStatsProps) 
             className="rounded-md border"
             disabled={true}
             modifiers={{
-              completed: (date) => getDayClassName(date) !== ""
+              'perfect-day': (date) => getDayClassName(date) === 'perfect-day',
+              'partial-day': (date) => getDayClassName(date) === 'partial-day'
             }}
             modifiersClassNames={{
-              completed: (date) => getDayClassName(date)
+              'perfect-day': "bg-[#9b87f5] text-white hover:bg-[#9b87f5] hover:text-white",
+              'partial-day': "bg-black text-white hover:bg-black hover:text-white"
             }}
           />
         </div>
