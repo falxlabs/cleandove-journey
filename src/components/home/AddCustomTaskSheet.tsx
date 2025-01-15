@@ -31,6 +31,9 @@ export function AddCustomTaskSheet({ open, onOpenChange }: AddCustomTaskSheetPro
   const queryClient = useQueryClient();
 
   const handleAddTask = async () => {
+    // Move previousTasks outside try block so it's accessible in catch
+    let previousTasks = queryClient.getQueryData(['tasks']) || [];
+    
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
@@ -46,9 +49,6 @@ export function AddCustomTaskSheet({ open, onOpenChange }: AddCustomTaskSheetPro
         isCustom: true,
         isRecurring: hasRecurringConfig
       };
-
-      // Get the current tasks from the cache
-      const previousTasks = queryClient.getQueryData(['tasks']) || [];
 
       // Optimistically update the cache with the new task
       queryClient.setQueryData(['tasks'], (old: any) => [...(old || []), newTask]);
@@ -181,4 +181,4 @@ export function AddCustomTaskSheet({ open, onOpenChange }: AddCustomTaskSheetPro
       />
     </>
   );
-}
+};
