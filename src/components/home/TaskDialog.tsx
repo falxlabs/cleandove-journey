@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { format } from "date-fns";
 
 interface TaskDialogProps {
   open: boolean;
@@ -57,6 +58,27 @@ export function TaskDialog({
     },
   });
 
+  const { data: existingChatId } = useQuery({
+    queryKey: ['reflection-chat', taskType],
+    enabled: taskType === 'reflect' && !chatId,
+    queryFn: async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return null;
+
+      const today = format(new Date(), 'yyyy-MM-dd');
+      const { data, error } = await supabase
+        .from('daily_tasks')
+        .select('chat_id')
+        .eq('user_id', session.user.id)
+        .eq('date', today)
+        .eq('task_type', 'reflect')
+        .maybeSingle();
+
+      if (error) throw error;
+      return data?.chat_id;
+    },
+  });
+
   const getRandomQuote = () => {
     const quotes = preferences?.religious_content ? religiousQuotes : motivationalQuotes;
     const randomIndex = Math.floor(Math.random() * quotes.length);
@@ -78,11 +100,13 @@ export function TaskDialog({
   };
 
   const handleChatClick = async () => {
-    if (chatId) {
+    const chatIdToUse = chatId || existingChatId;
+    
+    if (chatIdToUse) {
       // If we have a chatId, navigate to the existing chat
       navigate("/conversation", {
         state: {
-          chatId,
+          chatId: chatIdToUse,
           isExistingChat: true
         },
       });
@@ -144,7 +168,7 @@ export function TaskDialog({
         <div className="flex flex-col gap-4">
           <Button onClick={handleChatClick} className="w-full">
             <MessageSquare className="mr-2 h-4 w-4" />
-            {chatId ? "Continue Reflection" : "Start Reflection"}
+            {chatId || existingChatId ? "Continue Reflection" : "Start Reflection"}
           </Button>
         </div>
       );
