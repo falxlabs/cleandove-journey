@@ -50,7 +50,7 @@ export function TaskDialog({
         .from('user_preferences')
         .select('religious_content')
         .eq('user_id', session.user.id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       return data;
@@ -77,7 +77,7 @@ export function TaskDialog({
     }
   };
 
-  const handleChatClick = () => {
+  const handleChatClick = async () => {
     if (chatId) {
       // If we have a chatId, navigate to the existing chat
       navigate("/conversation", {
