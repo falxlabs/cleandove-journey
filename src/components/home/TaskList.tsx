@@ -1,11 +1,12 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { RepeatIcon, Trash2 } from "lucide-react";
+import { RepeatIcon } from "lucide-react";
 import { SwipeableItem } from "../chat/SwipeableItem";
 import { useState } from "react";
 import { TaskDialog } from "./TaskDialog";
 import { format } from "date-fns";
+import { useNavigate } from "react-router-dom";
 
 interface Task {
   title: string;
@@ -25,23 +26,47 @@ interface TaskListProps {
 
 const TaskList = ({ tasks, isTasksLoading, onTaskComplete }: TaskListProps) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleTaskClick = async (task: Task) => {
-    if (task.type === "reflect" && !task.chatId && !task.completed) {
-      // For reflection tasks, if there's no chat yet, check if one exists for today
-      const today = format(new Date(), 'yyyy-MM-dd');
-      const { data: existingTask } = await supabase
-        .from('daily_tasks')
-        .select('chat_id')
-        .eq('user_id', (await supabase.auth.getSession()).data.session?.user.id)
-        .eq('date', today)
-        .eq('task_type', 'reflect')
-        .single();
+    if (task.type === "reflect" && !task.completed) {
+      try {
+        // Check if there's already a reflection chat for today
+        const today = format(new Date(), 'yyyy-MM-dd');
+        const { data: existingTask } = await supabase
+          .from('daily_tasks')
+          .select('chat_id')
+          .eq('user_id', (await supabase.auth.getSession()).data.session?.user.id)
+          .eq('date', today)
+          .eq('task_type', 'reflect')
+          .maybeSingle();
 
-      if (existingTask?.chat_id) {
-        task.chatId = existingTask.chat_id;
+        if (existingTask?.chat_id) {
+          // If there's an existing chat, navigate to it
+          navigate('/conversation', { 
+            state: { 
+              chatId: existingTask.chat_id,
+              topic: 'reflect'
+            }
+          });
+        } else {
+          // If no existing chat, start a new reflection
+          navigate('/conversation', { 
+            state: { 
+              topic: 'reflect'
+            }
+          });
+        }
+        return;
+      } catch (error) {
+        console.error('Error checking for existing reflection:', error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to check for existing reflection.",
+        });
       }
     }
     
