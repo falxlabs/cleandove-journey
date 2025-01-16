@@ -44,9 +44,9 @@ const Index = () => {
         return acc;
       }, {});
     },
-    staleTime: Infinity, // Data won't become stale automatically
-    refetchOnWindowFocus: true, // Refetch when window regains focus
-    refetchOnMount: true, // Refetch when component mounts
+    staleTime: Infinity,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
   });
 
   const { data: streak, isLoading: isStreakLoading } = useQuery({
@@ -64,9 +64,9 @@ const Index = () => {
       if (error) throw error;
       return data?.current_streak || 0;
     },
-    staleTime: Infinity, // Data won't become stale automatically
-    refetchOnWindowFocus: true, // Refetch when window regains focus
-    refetchOnMount: true, // Refetch when component mounts
+    staleTime: Infinity,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
   });
 
   const { data: tasks, isLoading: isTasksLoading } = useQuery({
@@ -145,12 +145,6 @@ const Index = () => {
   });
 
   useEffect(() => {
-    if (completedTasksData) {
-      setCompletedTasks(completedTasksData);
-    }
-  }, [completedTasksData]);
-
-  useEffect(() => {
     if (weekCompletionsData) {
       setWeekCompletions(weekCompletionsData);
     }
@@ -189,7 +183,6 @@ const Index = () => {
         // Invalidate relevant queries
         queryClient.invalidateQueries({ queryKey: ['streak'] });
         queryClient.invalidateQueries({ queryKey: ['week-completions'] });
-        queryClient.invalidateQueries({ queryKey: ['completed-tasks'] });
       } else {
         setCompletedTasks(prev => prev.filter(t => t !== taskType));
       }
