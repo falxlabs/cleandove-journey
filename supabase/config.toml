@@ -1,3 +1,4 @@
+# Project Configuration
 project_id = "jsbvghwfvksfsozygkpc"
 
 [api]
@@ -19,18 +20,9 @@ api_url = "http://localhost"
 enabled = true
 port = 54324
 
-[storage]
-enabled = true
-port = 54325
+[functions]
+[functions.generate-title]
+verify_jwt = true
 
-[auth]
-enabled = true
-port = 54326
-
-[realtime]
-enabled = true
-port = 54327
-
-[edge_functions]
-[edge_functions.generate-title]
+[functions.chat]
 verify_jwt = true
