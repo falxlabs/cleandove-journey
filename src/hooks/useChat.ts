@@ -23,7 +23,7 @@ export const useChat = ({
   isExistingChat 
 }: UseChatProps = {}) => {
   const [messages, setMessages] = useState<Message[]>([]);
-  const { isInitialLoading, initializeChat } = useMessages({
+  const { isInitialLoading, initializeChat, getSystemMessage } = useMessages({
     initialTopic,
     context,
     improvement,
@@ -63,52 +63,89 @@ export const useChat = ({
     setInput("");
 
     try {
-      // Create chat first to get the chat ID
-      const newChatId = await handleNewMessage(currentInput, "", messages);
-      
-      // If this is a reflection chat and it's new, mark the task as completed immediately
-      if (initialTopic === 'reflect' && !isExistingChat && newChatId) {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-          const today = format(new Date(), 'yyyy-MM-dd');
-          await supabase
-            .from('daily_tasks')
-            .upsert({
-              user_id: session.user.id,
-              task_type: 'reflect',
-              completed_at: new Date().toISOString(),
-              date: today,
-              chat_id: newChatId
-            });
+      let currentChatId = chatId;
+      let messageSequence = messages.length + 1;
+
+      if (!currentChatId) {
+        // Create new chat and save initial message if this is a new chat
+        currentChatId = await handleNewMessage(currentInput, "", messages);
+        
+        if (initialTopic === 'reflect' && !isExistingChat && currentChatId) {
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session) {
+            const today = format(new Date(), 'yyyy-MM-dd');
+            await supabase
+              .from('daily_tasks')
+              .upsert({
+                user_id: session.user.id,
+                task_type: 'reflect',
+                completed_at: new Date().toISOString(),
+                date: today,
+                chat_id: currentChatId
+              });
+          }
         }
       }
 
+      // Get assistant's response
       const content = await sendMessage([...messages, newMessage]);
-      if (content) {
+      
+      if (content && currentChatId) {
         const messageParts = content.split("[NEXT]").map(part => part.trim()).filter(Boolean);
-        let lastMessage: Message | undefined;
         
-        for (const [index, part] of messageParts.entries()) {
+        // Save all messages in one batch with correct sequence numbers
+        const messagesToSave = [];
+        
+        // Add user message
+        messagesToSave.push({
+          chat_id: currentChatId,
+          content: currentInput,
+          sender: "user",
+          sequence_number: messageSequence++
+        });
+
+        // Add assistant response parts
+        for (const part of messageParts) {
           const assistantResponse: Message = {
-            id: (Date.now() + index + 1).toString(),
+            id: Date.now().toString(),
             content: part,
             sender: "assistant",
             timestamp: new Date(),
           };
           setMessages(prev => [...prev, assistantResponse]);
-          lastMessage = assistantResponse;
-          
-          if (messageParts.length > 1 && index < messageParts.length - 1) {
-            await new Promise(resolve => setTimeout(resolve, 500));
-          }
+
+          messagesToSave.push({
+            chat_id: currentChatId,
+            content: part,
+            sender: "assistant",
+            sequence_number: messageSequence++
+          });
         }
-        
-        if (lastMessage) {
-          await handleNewMessage(currentInput, content, messages);
+
+        // Save all messages in one batch
+        const { error: messagesError } = await supabase
+          .from("messages")
+          .insert(messagesToSave);
+
+        if (messagesError) {
+          console.error("Error saving messages:", messagesError);
+          throw messagesError;
+        }
+
+        // Update chat preview with the last assistant message
+        if (messagesToSave.length > 0) {
+          const lastMessage = messagesToSave[messagesToSave.length - 1];
+          await supabase
+            .from("chat_histories")
+            .update({
+              preview: lastMessage.content,
+              reply_count: messageSequence - 1
+            })
+            .eq("id", currentChatId);
         }
       }
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error('Error in handleSendMessage:', error);
       setMessages(prev => prev.filter(msg => msg.id !== newMessage.id));
     }
   };
