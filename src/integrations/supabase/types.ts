@@ -71,6 +71,7 @@ export type Database = {
       }
       daily_tasks: {
         Row: {
+          chat_id: string | null
           completed_at: string | null
           created_at: string
           date: string
@@ -79,6 +80,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          chat_id?: string | null
           completed_at?: string | null
           created_at?: string
           date?: string
@@ -87,6 +89,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          chat_id?: string | null
           completed_at?: string | null
           created_at?: string
           date?: string
@@ -94,7 +97,15 @@ export type Database = {
           task_type?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "daily_tasks_chat_id_fkey"
+            columns: ["chat_id"]
+            isOneToOne: false
+            referencedRelation: "chat_histories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       messages: {
         Row: {

@@ -13,6 +13,7 @@ interface TaskDialogProps {
   taskTitle: string;
   onComplete?: () => void;
   isCustomTask?: boolean;
+  chatId?: string;
 }
 
 const religiousQuotes = [
@@ -33,7 +34,8 @@ export function TaskDialog({
   taskType, 
   taskTitle,
   onComplete,
-  isCustomTask = false 
+  isCustomTask = false,
+  chatId
 }: TaskDialogProps) {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -76,12 +78,23 @@ export function TaskDialog({
   };
 
   const handleChatClick = () => {
-    navigate("/conversation", {
-      state: {
-        topic: taskType,
-        context: taskType === "read" ? `Let's reflect on today's quote: ${getRandomQuote()}` : undefined,
-      },
-    });
+    if (chatId) {
+      // If we have a chatId, navigate to the existing chat
+      navigate("/conversation", {
+        state: {
+          chatId,
+          isExistingChat: true
+        },
+      });
+    } else {
+      // Otherwise create a new chat
+      navigate("/conversation", {
+        state: {
+          topic: taskType,
+          context: taskType === "read" ? `Let's reflect on today's quote: ${getRandomQuote()}` : undefined,
+        },
+      });
+    }
     onOpenChange(false);
   };
 
@@ -131,7 +144,7 @@ export function TaskDialog({
         <div className="flex flex-col gap-4">
           <Button onClick={handleChatClick} className="w-full">
             <MessageSquare className="mr-2 h-4 w-4" />
-            Start Reflection
+            {chatId ? "Continue Reflection" : "Start Reflection"}
           </Button>
         </div>
       );

@@ -96,6 +96,22 @@ const Index = () => {
 
       if (recurringError) throw recurringError;
 
+      // Fetch today's completed tasks with chat_id
+      const { data: dailyTasks, error: dailyError } = await supabase
+        .from('daily_tasks')
+        .select('task_type, chat_id')
+        .eq('user_id', session.user.id)
+        .eq('date', today)
+        .not('completed_at', 'is', null);
+
+      if (dailyError) throw dailyError;
+
+      // Create a map of completed tasks and their chat IDs
+      const completedTasksMap = dailyTasks?.reduce((acc: { [key: string]: string | undefined }, task) => {
+        acc[task.task_type] = task.chat_id;
+        return acc;
+      }, {}) || {};
+
       // Filter custom tasks to only show those created today or with recurring configuration
       const recurringTaskTypes = recurringTasks
         .filter(task => shouldShowRecurringTask(task))
@@ -115,32 +131,17 @@ const Index = () => {
           isRecurring: recurringTaskTypes.includes(task.task_type)
         })) || [];
 
-      return [...defaultTasks, ...formattedCustomTasks];
+      // Add chat IDs to default tasks if they were completed
+      const tasksWithChatIds = defaultTasks.map(task => ({
+        ...task,
+        chatId: completedTasksMap[task.type]
+      }));
+
+      return [...tasksWithChatIds, ...formattedCustomTasks];
     },
-    staleTime: Infinity, // Data won't become stale automatically
-    refetchOnWindowFocus: true, // Refetch when window regains focus
-    refetchOnMount: true, // Refetch when component mounts
-  });
-
-  const { data: completedTasksData } = useQuery({
-    queryKey: ['completed-tasks'],
-    queryFn: async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return [];
-
-      const today = new Date().toISOString().split('T')[0];
-      const { data, error } = await supabase
-        .from('daily_tasks')
-        .select('task_type')
-        .eq('user_id', session.user.id)
-        .eq('date', today);
-
-      if (error) throw error;
-      return data.map(task => task.task_type);
-    },
-    staleTime: Infinity, // Data won't become stale automatically
-    refetchOnWindowFocus: true, // Refetch when window regains focus
-    refetchOnMount: true, // Refetch when component mounts
+    staleTime: Infinity,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
   });
 
   useEffect(() => {
@@ -155,22 +156,45 @@ const Index = () => {
     }
   }, [weekCompletionsData]);
 
-  const handleTaskComplete = (taskType: string, completed: boolean) => {
-    if (completed) {
-      setCompletedTasks(prev => [...prev, taskType]);
+  const handleTaskComplete = async (taskType: string, completed: boolean, chatId?: string) => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
       const today = format(new Date(), 'yyyy-MM-dd');
-      if (tasks && completedTasks.length + 1 === tasks.length) {
-        setWeekCompletions(prev => ({
-          ...prev,
-          [today]: true
-        }));
+
+      if (completed) {
+        // Insert or update the daily task with chat_id
+        const { error: taskError } = await supabase
+          .from('daily_tasks')
+          .upsert({
+            user_id: session.user.id,
+            task_type: taskType,
+            completed_at: new Date().toISOString(),
+            date: today,
+            chat_id: chatId
+          });
+
+        if (taskError) throw taskError;
+
+        setCompletedTasks(prev => [...prev, taskType]);
+        
+        if (tasks && completedTasks.length + 1 === tasks.length) {
+          setWeekCompletions(prev => ({
+            ...prev,
+            [today]: true
+          }));
+        }
+        
+        // Invalidate relevant queries
+        queryClient.invalidateQueries({ queryKey: ['streak'] });
+        queryClient.invalidateQueries({ queryKey: ['week-completions'] });
+        queryClient.invalidateQueries({ queryKey: ['completed-tasks'] });
+      } else {
+        setCompletedTasks(prev => prev.filter(t => t !== taskType));
       }
-      // Invalidate relevant queries when a task is completed
-      queryClient.invalidateQueries({ queryKey: ['streak'] });
-      queryClient.invalidateQueries({ queryKey: ['week-completions'] });
-      queryClient.invalidateQueries({ queryKey: ['completed-tasks'] });
-    } else {
-      setCompletedTasks(prev => prev.filter(t => t !== taskType));
+    } catch (error) {
+      console.error('Error completing task:', error);
     }
   };
 
