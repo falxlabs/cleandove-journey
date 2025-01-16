@@ -69,14 +69,16 @@ const TaskList = ({ tasks, isTasksLoading, onTaskComplete }: TaskListProps) => {
             state: { 
               chatId: existingTask.chat_id,
               topic: 'reflect',
-              isExistingChat: true
+              isExistingChat: true,
+              from: '/'
             }
           });
         } else {
           // If no existing chat, start a new reflection
           navigate('/conversation', { 
             state: { 
-              topic: 'reflect'
+              topic: 'reflect',
+              from: '/'
             }
           });
         }

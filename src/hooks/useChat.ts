@@ -63,6 +63,26 @@ export const useChat = ({
     setInput("");
 
     try {
+      // Create chat first to get the chat ID
+      const newChatId = await handleNewMessage(currentInput, "", messages);
+      
+      // If this is a reflection chat and it's new, mark the task as completed immediately
+      if (initialTopic === 'reflect' && !isExistingChat && newChatId) {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          const today = format(new Date(), 'yyyy-MM-dd');
+          await supabase
+            .from('daily_tasks')
+            .upsert({
+              user_id: session.user.id,
+              task_type: 'reflect',
+              completed_at: new Date().toISOString(),
+              date: today,
+              chat_id: newChatId
+            });
+        }
+      }
+
       const content = await sendMessage([...messages, newMessage]);
       if (content) {
         const messageParts = content.split("[NEXT]").map(part => part.trim()).filter(Boolean);
@@ -84,24 +104,7 @@ export const useChat = ({
         }
         
         if (lastMessage) {
-          const newChatId = await handleNewMessage(currentInput, content, messages);
-          
-          // If this is a reflection chat, mark the task as completed
-          if (initialTopic === 'reflect' && !isExistingChat && newChatId) {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session) {
-              const today = format(new Date(), 'yyyy-MM-dd');
-              await supabase
-                .from('daily_tasks')
-                .upsert({
-                  user_id: session.user.id,
-                  task_type: 'reflect',
-                  completed_at: new Date().toISOString(),
-                  date: today,
-                  chat_id: newChatId
-                });
-            }
-          }
+          await handleNewMessage(currentInput, content, messages);
         }
       }
     } catch (error) {
