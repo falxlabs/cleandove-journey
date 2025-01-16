@@ -10,17 +10,37 @@ import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { startOfWeek, addDays, format } from "date-fns";
 import { shouldShowRecurringTask } from "@/utils/taskUtils";
+import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
   const weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-  const [completedTasks, setCompletedTasks] = useState<string[]>([]);
-  const [weekCompletions, setWeekCompletions] = useState<{ [key: string]: boolean }>({});
   const [isAddingTask, setIsAddingTask] = useState(false);
   const queryClient = useQueryClient();
+  const { toast } = useToast();
   
   const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 });
 
-  const { data: weekCompletionsData, isLoading: isWeekLoading } = useQuery({
+  // Query for completed tasks
+  const { data: completedTasks = [], isLoading: isCompletedTasksLoading } = useQuery({
+    queryKey: ['completed-tasks'],
+    queryFn: async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return [];
+
+      const today = format(new Date(), 'yyyy-MM-dd');
+      const { data, error } = await supabase
+        .from('daily_tasks')
+        .select('task_type, chat_id')
+        .eq('user_id', session.user.id)
+        .eq('date', today)
+        .not('completed_at', 'is', null);
+
+      if (error) throw error;
+      return data.map(task => task.task_type);
+    },
+  });
+
+  const { data: weekCompletions = {}, isLoading: isWeekLoading } = useQuery({
     queryKey: ['week-completions'],
     queryFn: async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -44,12 +64,9 @@ const Index = () => {
         return acc;
       }, {});
     },
-    staleTime: Infinity,
-    refetchOnWindowFocus: true,
-    refetchOnMount: true,
   });
 
-  const { data: streak, isLoading: isStreakLoading } = useQuery({
+  const { data: streak = 0, isLoading: isStreakLoading } = useQuery({
     queryKey: ['streak'],
     queryFn: async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -64,12 +81,9 @@ const Index = () => {
       if (error) throw error;
       return data?.current_streak || 0;
     },
-    staleTime: Infinity,
-    refetchOnWindowFocus: true,
-    refetchOnMount: true,
   });
 
-  const { data: tasks, isLoading: isTasksLoading } = useQuery({
+  const { data: tasks = [], isLoading: isTasksLoading } = useQuery({
     queryKey: ['tasks'],
     queryFn: async () => {
       const defaultTasks = [
@@ -139,21 +153,19 @@ const Index = () => {
 
       return [...tasksWithChatIds, ...formattedCustomTasks];
     },
-    staleTime: Infinity,
-    refetchOnWindowFocus: true,
-    refetchOnMount: true,
   });
-
-  useEffect(() => {
-    if (weekCompletionsData) {
-      setWeekCompletions(weekCompletionsData);
-    }
-  }, [weekCompletionsData]);
 
   const handleTaskComplete = async (taskType: string, completed: boolean, chatId?: string) => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
+      if (!session) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "You must be logged in to complete tasks.",
+        });
+        return;
+      }
 
       const today = format(new Date(), 'yyyy-MM-dd');
 
@@ -169,29 +181,65 @@ const Index = () => {
             chat_id: chatId
           });
 
-        if (taskError) throw taskError;
-
-        setCompletedTasks(prev => [...prev, taskType]);
-        
-        if (tasks && completedTasks.length + 1 === tasks.length) {
-          setWeekCompletions(prev => ({
-            ...prev,
-            [today]: true
-          }));
+        if (taskError) {
+          console.error('Error completing task:', taskError);
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Failed to complete task. Please try again.",
+          });
+          return;
         }
-        
-        // Invalidate relevant queries
+
+        // Invalidate relevant queries to trigger refetch
+        queryClient.invalidateQueries({ queryKey: ['completed-tasks'] });
         queryClient.invalidateQueries({ queryKey: ['streak'] });
         queryClient.invalidateQueries({ queryKey: ['week-completions'] });
+        
+        toast({
+          title: "Task completed",
+          description: "Great job! Keep up the good work!",
+        });
       } else {
-        setCompletedTasks(prev => prev.filter(t => t !== taskType));
+        // Remove the task completion
+        const { error: deleteError } = await supabase
+          .from('daily_tasks')
+          .delete()
+          .eq('user_id', session.user.id)
+          .eq('task_type', taskType)
+          .eq('date', today);
+
+        if (deleteError) {
+          console.error('Error uncompleting task:', deleteError);
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Failed to uncomplete task. Please try again.",
+          });
+          return;
+        }
+
+        // Invalidate relevant queries
+        queryClient.invalidateQueries({ queryKey: ['completed-tasks'] });
+        queryClient.invalidateQueries({ queryKey: ['streak'] });
+        queryClient.invalidateQueries({ queryKey: ['week-completions'] });
+        
+        toast({
+          title: "Task uncompleted",
+          description: "Task marked as not completed.",
+        });
       }
     } catch (error) {
-      console.error('Error completing task:', error);
+      console.error('Error handling task completion:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+      });
     }
   };
 
-  const tasksWithCompletion = tasks?.map(task => ({
+  const tasksWithCompletion = tasks.map(task => ({
     ...task,
     completed: completedTasks.includes(task.type)
   }));
@@ -210,11 +258,11 @@ const Index = () => {
           <WeekProgress
             weekDays={weekDays}
             weekCompletions={weekCompletions}
-            progress={tasks && tasks.length > 0 
+            progress={tasks.length > 0 
               ? Math.round((completedTasks.length / tasks.length) * 100) 
               : 0}
             isStreakLoading={isStreakLoading}
-            isProgressLoading={isTasksLoading}
+            isProgressLoading={isTasksLoading || isCompletedTasksLoading}
             isWeekLoading={isWeekLoading}
           />
         </section>
