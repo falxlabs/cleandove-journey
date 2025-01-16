@@ -4,6 +4,8 @@ import { useMessages } from "./useMessages";
 import { useMessageOperations } from "./useMessageOperations";
 import { useChatInitialization } from "./useChatInitialization";
 import { useChatTitle } from "./useChatTitle";
+import { supabase } from "@/integrations/supabase/client";
+import { format } from "date-fns";
 
 interface UseChatProps {
   initialTopic?: string;
@@ -76,14 +78,30 @@ export const useChat = ({
           setMessages(prev => [...prev, assistantResponse]);
           lastMessage = assistantResponse;
           
-          // Only add a small delay between parts if there are multiple
           if (messageParts.length > 1 && index < messageParts.length - 1) {
             await new Promise(resolve => setTimeout(resolve, 500));
           }
         }
         
         if (lastMessage) {
-          await handleNewMessage(currentInput, content, messages);
+          const newChatId = await handleNewMessage(currentInput, content, messages);
+          
+          // If this is a reflection chat, mark the task as completed
+          if (initialTopic === 'reflect' && !isExistingChat && newChatId) {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+              const today = format(new Date(), 'yyyy-MM-dd');
+              await supabase
+                .from('daily_tasks')
+                .upsert({
+                  user_id: session.user.id,
+                  task_type: 'reflect',
+                  completed_at: new Date().toISOString(),
+                  date: today,
+                  chat_id: newChatId
+                });
+            }
+          }
         }
       }
     } catch (error) {

@@ -77,12 +77,14 @@ export const useChatInitialization = (
         }
 
         await generateTitle([...currentMessages, assistantResponse], newChatId);
+        return newChatId;
       }
     } else {
       await updateExistingChat(chatId, userInput, content, messages.length);
+      return chatId;
     }
 
-    return assistantResponse;
+    return null;
   };
 
   return {

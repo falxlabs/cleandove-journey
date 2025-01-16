@@ -31,24 +31,45 @@ const TaskList = ({ tasks, isTasksLoading, onTaskComplete }: TaskListProps) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleTaskClick = async (task: Task) => {
-    if (task.type === "reflect" && !task.completed) {
+    if (task.type === "reflect") {
       try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Please sign in to continue.",
+          });
+          return;
+        }
+
         // Check if there's already a reflection chat for today
         const today = format(new Date(), 'yyyy-MM-dd');
-        const { data: existingTask } = await supabase
+        const { data: existingTask, error } = await supabase
           .from('daily_tasks')
           .select('chat_id')
-          .eq('user_id', (await supabase.auth.getSession()).data.session?.user.id)
+          .eq('user_id', session.user.id)
           .eq('date', today)
           .eq('task_type', 'reflect')
           .maybeSingle();
+
+        if (error) {
+          console.error('Error checking for existing reflection:', error);
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Failed to check for existing reflection.",
+          });
+          return;
+        }
 
         if (existingTask?.chat_id) {
           // If there's an existing chat, navigate to it
           navigate('/conversation', { 
             state: { 
               chatId: existingTask.chat_id,
-              topic: 'reflect'
+              topic: 'reflect',
+              isExistingChat: true
             }
           });
         } else {
