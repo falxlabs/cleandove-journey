@@ -31,16 +31,34 @@ const WeekProgress = ({
           const isToday = currentDate === format(today, 'yyyy-MM-dd');
           const hasCompletedTasks = weekCompletions?.[currentDate];
 
+          let circleClassName = "w-10 h-10 rounded-full flex items-center justify-center transition-colors ";
+
+          if (!isWeekLoading) {
+            if (isToday) {
+              // Today's circle: purple for 100%, black for partial, secondary for none
+              if (progress === 100) {
+                circleClassName += "bg-[#9b87f5] text-primary-foreground";
+              } else if (progress && progress > 0) {
+                circleClassName += "bg-black text-white";
+              } else {
+                circleClassName += "bg-secondary text-secondary-foreground";
+              }
+            } else {
+              // Past/Future days: purple for completed, secondary for not
+              if (hasCompletedTasks) {
+                circleClassName += "bg-[#9b87f5] text-primary-foreground";
+              } else {
+                circleClassName += "bg-secondary text-secondary-foreground";
+              }
+            }
+          } else {
+            circleClassName += "bg-secondary text-secondary-foreground";
+          }
+
           return (
             <div
               key={`${day}-${index}`}
-              className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
-                !isWeekLoading && hasCompletedTasks && (!isToday || progress === 100)
-                  ? "bg-[#9b87f5] text-primary-foreground"
-                  : isToday && progress && progress > 0 && progress < 100
-                  ? "bg-secondary text-secondary-foreground"
-                  : "bg-secondary text-secondary-foreground"
-              }`}
+              className={circleClassName}
             >
               {isStreakLoading ? (
                 <Skeleton className="h-6 w-6 rounded-full" />
